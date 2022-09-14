@@ -1,0 +1,46 @@
+/* General styles - put these straight into your stylesheet */
+
+body {
+  margin: 0;
+}
+
+html {
+  font-family: 'Helvetica neue', Arial, 'sans serif';
+  font-size: 10px;
+  background-color: #ccc;
+}
+
+/* Selectors to be matched up with rulesets */
+
+/* Rulesets to be matched up with selectors */
+
+.card {
+  width: 35em;
+  height: 22em;
+  margin: 5em auto;
+  background-color: red;
+  border: 0.2em solid black;
+  border-radius: 1.5em;
+}
+
+.card header, .card footer{
+  height: 30px;
+  padding: 10px;
+}
+
+.card header{
+  background-image: linear-gradient(to bottom,rgba(65,1,1,0.1), rgba(255,7,7,0));
+  border-radius: 1.5em 1.5em 0 0;
+}
+
+.card footer{
+  background-image: linear-gradient(to bottom,rgba(184,0,0,0), rgba(80,2,2,0.1));
+  border-radius: 0 0 1.5em 1.5em;
+}
+
+.card article img{
+  max-height: 100%;
+  height: 15em;
+  width: 15em;
+  float: right;
+}
