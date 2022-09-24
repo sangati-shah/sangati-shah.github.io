@@ -1,0 +1,168 @@
+h1 {
+
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 100px;
+    line-height: 200px;
+    /* identical to box height, or 111% */
+
+    letter-spacing: -0.015em;
+    text-transform: lowercase;
+
+    color: #000000;
+}
+
+h2 {
+
+    font-family: 'Montserrat Alternates';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 72px;
+    /* or 90% */
+
+    letter-spacing: -0.015em;
+
+    color: #000000;
+}
+
+h3 {
+
+    font-family: 'Philosopher';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 60px;
+    line-height: 36px;
+    /* or 36% */
+
+    letter-spacing: -0.015em;
+    text-transform: lowercase;
+
+    color: #000000;
+}
+
+h4 {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 30px;
+    /* or 38% */
+
+    letter-spacing: -0.015em;
+
+    color: #000000;
+}
+
+h5 {
+    font-family: 'Esteban';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 22px;
+    /* or 28% */
+
+    letter-spacing: -0.015em;
+
+    color: #000000;
+}
+
+h6 {
+    font-family: 'Karla';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 30px;
+    /* or 38% */
+
+    letter-spacing: -0.015em;
+
+    color: #000000;
+}
+p {
+    font-family: 'Esteban';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 40px;
+    /* or 133% */
+
+    letter-spacing: -0.015em;
+
+    color: #000000;
+}
+
+a{
+    font-family: 'Esteban';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 40px;
+    letter-spacing: -0.015em;
+
+    text-shadow: #CFFFC7 2px 2px, #CFFFC7 -2px -2px;
+    color: #000000;
+    text-decoration: none;  
+    transition: color .0s ease-in-out, text-shadow .0s ease-in-out;
+}
+
+a:hover {
+    color:white;
+    text-shadow: #00526C 0px 0px;
+    text-shadow: 0px 4px 4px #00526C;
+}
+
+a:active {
+    color: #7FB9B9;
+}
+
+button {
+    font-family: 'Montserrat Alternates';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+
+    background-color: #CFFFC7;
+    border-radius: 30px;
+    border: none;
+
+    padding: 15px 20px;
+}
+
+button:hover {
+    background-color: #00526C;
+    color: white; 
+}
+
+button:active {
+    background-color: #7FB9B9;
+    color: black; 
+}
+
+hr {
+    width: 70%;
+    border-top: 3px solid #00526C
+}
+
+ol, ul{
+    font-family: 'Esteban';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 60px;
+
+    letter-spacing: 0.02em;
+
+    color: #000000;
+}
+
+ul{
+    list-style-type: none;
+    padding: 0;
+    
+}
+.styled li::before{
+    content: '👽  ';
+}
+
