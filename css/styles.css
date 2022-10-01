@@ -1,16 +1,54 @@
-h1 {
+nav {
+    background-color: gray;
+    padding: 0;
+    position: sticky;
+    top: 0; 
+}
 
+nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0em 1em;
+}
+
+.grid {
+    margin: 0 10%;
+    padding: 0 0;
+    max-width: auto;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 20px;
+  }
+
+/* For mobile phones: */
+[class*="col-"] {
+    width: 100%;
+}
+  
+  @media only screen and (min-width: 768px) {
+    /* For desktop: */
+    .col-1 {width: 75%;}
+    .col-2 {width: 25%;}
+  }
+
+
+h1 {
     font-family: 'Montserrat';
     font-style: normal;
     font-weight: 400;
-    font-size: 100px;
+    font-size: 150px;
     line-height: 200px;
     /* identical to box height, or 111% */
 
     letter-spacing: -0.015em;
     text-transform: lowercase;
-
-    color: #000000;
 }
 
 h2 {
@@ -18,13 +56,11 @@ h2 {
     font-family: 'Montserrat Alternates';
     font-style: normal;
     font-weight: 400;
-    font-size: 70px;
+    font-size: 60px;
     line-height: 72px;
     /* or 90% */
 
     letter-spacing: -0.015em;
-
-    color: #000000;
 }
 
 h3 {
@@ -38,8 +74,6 @@ h3 {
 
     letter-spacing: -0.015em;
     text-transform: lowercase;
-
-    color: #000000;
 }
 
 h4 {
@@ -51,8 +85,6 @@ h4 {
     /* or 38% */
 
     letter-spacing: -0.015em;
-
-    color: #000000;
 }
 
 h5 {
@@ -64,8 +96,6 @@ h5 {
     /* or 28% */
 
     letter-spacing: -0.015em;
-
-    color: #000000;
 }
 
 h6 {
@@ -77,8 +107,6 @@ h6 {
     /* or 38% */
 
     letter-spacing: -0.015em;
-
-    color: #000000;
 }
 p {
     font-family: 'Esteban';
@@ -89,19 +117,16 @@ p {
     /* or 133% */
 
     letter-spacing: -0.015em;
-
-    color: #000000;
 }
 
 a{
     font-family: 'Esteban';
     font-style: normal;
     font-weight: 400;
-    font-size: 30px;
+    font-size: 20px;
     line-height: 40px;
     letter-spacing: -0.015em;
 
-    text-shadow: #CFFFC7 2px 2px, #CFFFC7 -2px -2px;
     color: #000000;
     text-decoration: none;  
     transition: color .0s ease-in-out, text-shadow .0s ease-in-out;
@@ -165,4 +190,5 @@ ul{
 .styled li::before{
     content: '👽  ';
 }
+
 
