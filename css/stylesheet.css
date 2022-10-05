@@ -32,18 +32,41 @@ a:active{
 }
 
 h1{
-    font-weight: 400;
-    font-size: 150px;
+    font-weight: 100;
+    font-size: 180px;
     text-transform: lowercase;
     color: #143766;
 }
 
 h2{
     font-family: 'Montserrat Alternates';
-    font-weight: 400;
+    font-weight: bolder;
     font-size: 60px;
 }
 
+h3{
+    font-weight: 400;
+    font-size: 60px;
+    text-align: center;
+    text-transform: lowercase;
+    color: #143766;
+}
+
+h4{
+    font-weight: 200;
+    font-size: 40px;
+    text-align: center;
+    text-transform: lowercase;
+    color: #f8c13b;
+    margin: 10px 0;
+}
+p{
+    color: #143766;
+    text-transform: lowercase;
+    text-align: center;
+    font-size: 17px;
+    margin: 5px 40px;
+}
 /* navbar styles */
 
 .navbar{
@@ -67,7 +90,7 @@ h2{
 nav{
     flex: 1;
     text-align: right;
-    font-size: 25px;
+    font-size: 20px;
 }
 
 nav ul li{
@@ -85,27 +108,62 @@ nav ul li{
     margin: 100px 0;
 }
 
-.col-1{
+.introCol1{
     flex-basis: 60%;
     position: relative;
     margin-left: 50px;
-
 }
 
-.col-2{
+.introCol2{
     flex-basis: 40%;
     position: relative;
     margin-left: 50px;
 }
 
-.col-2 ul li{
+.introCol2 ul li{
     list-style: none;
     display: inline-block;
     margin: 40px 40px;
 }
 
+/* style for selection and what's next pages*/
+
+.thirdCol1{
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.thirdCol2{
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.thirdCol3{
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.col-img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    width: 50%; 
+}
+
 /* media queries */
 @media only screen and (max-width:700px){
+    h1{
+        font-size: 60px;
+        text-align: center;
+    }
+    h2{
+        font-size: 0px;
+    }
     nav ul{
         width: 100%;
         position: absolute;
@@ -127,21 +185,15 @@ nav ul li{
         flex-direction: column;
         margin: 0px 0;
     }
-    .col-1{
+    .introCol1{
         flex-basis: 100%;
         margin: 90px 0px;
     }
-    .col-2{
+    .introCol2{
         flex-basis: 100%;
         margin-bottom: 50px;
     }
-    h1{
-        font-size: 60px;
-        text-align: center;
-    }
-    h2{
-        font-size: 0px;
-    }
+    
 
 
 }
