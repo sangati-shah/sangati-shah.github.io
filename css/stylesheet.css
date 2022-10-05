@@ -67,6 +67,24 @@ p{
     font-size: 17px;
     margin: 5px 40px;
 }
+button {
+    font-family: 'Montserrat Alternates';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+
+    background-color: #85d0c6;
+    border: none;
+
+    padding: 15px 20px;
+}
+button:hover{
+    background-color: #143766;
+    color: white; 
+}
+button:active{
+    background-color: #f8c13b;
+}
 /* navbar styles */
 
 .navbar{
@@ -103,9 +121,9 @@ nav ul li{
 
 .row{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin: 100px 0;
+    margin: 50px 0;
 }
 
 .introCol1{
@@ -153,6 +171,14 @@ nav ul li{
     margin-right: auto;
     margin-top: 30px;
     width: 50%; 
+}
+
+/* application page */
+.app{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /* media queries */
