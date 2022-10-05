@@ -4,54 +4,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/stylesheet.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=Karla&family=Montserrat&family=Montserrat+Alternates&family=Philosopher&family=Roboto&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intro Page</title>
 </head>
-
 <body>
-    <nav>
-        <ul>
-          <li>
-            <a href="">logo</a>
-          </li>
-          <li>
-            <a href="">home</a>
-          </li>
-          <li>
-            <a href="">selection</a>
-          </li>
-          <li>
-            <a href="">what's next</a>
-          </li>
-          <li>
-            <a href="">application</a>
-          </li>
-        </ul>
-    </nav>
+    <div class="container">
+        <div class="navbar">
+            <img src = "img/logo.png" class = "logo">
+            <nav>
+                <ul id="menuList">
+                    <li><a href = "">home</a></li>
+                    <li><a href = "">selection</a></li>
+                    <li><a href = "">what's next</a></li>
+                    <li><a href = "">application</a></li>
+                </ul>
+            </nav>
+            <img src = "img/menu.png" class = "menu-icon" onclick = "togglemenu()">
+        </div>
 
-    <main class = "grid">
-        <div>
-            <h1>if you love something, let it go</h1>
+        <div class="row">
+            <div class="col-1">
+                <h1>if you <span style = "color: #f8c13b">love</span> something, let it go.</h1>
+            </div>
+
+            <div class="col-2">
+                <ul>
+                    <li><a href = "selection.html"><h2>selection</h2></a></li>
+                    <li><a href = "next.html"><h2>what's next</h2></a></li>
+                    <li><a href = "application.html"><h2>application</h2></a></li>
+                </ul>
+            </div>
         </div>
-        <div>
-            <ul>
-                <li>
-                  <a href=""><h2>selection</h2></a>
-                </li>
-                <li>
-                  <a href=""><h2>what's next</h2></a>
-                </li>
-                <li>
-                  <a href=""><h2>application</h2></a>
-                </li>
-              </ul>
-        </div>
-    </main>
-      
-    
+    </div>
+
+        <script>
+            var menuList = document.getElementById("menuList");
+
+            menuList.style.maxHeight = "0px";
+
+            function togglemenu(){
+
+                if(menuList.style.maxHeight == "0px")
+                {   
+                    menuList.style.maxHeight = "130px";
+                }
+                else   
+                {
+                    menuList.style.maxHeight = "0px";
+                }
+            }
+        </script>
 </body>
 </html>
