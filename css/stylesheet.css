@@ -33,7 +33,7 @@ a:active{
 
 h1{
     font-weight: 100;
-    font-size: 180px;
+    font-size: 165px;
     text-transform: lowercase;
     color: #143766;
 }
@@ -41,7 +41,7 @@ h1{
 h2{
     font-family: 'Montserrat Alternates';
     font-weight: bolder;
-    font-size: 60px;
+    font-size: 50px;
 }
 
 h3{
@@ -49,7 +49,7 @@ h3{
     font-size: 60px;
     text-align: center;
     text-transform: lowercase;
-    color: #143766;
+    color: #f8c13b;
 }
 
 h4{
@@ -179,6 +179,23 @@ nav ul li{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    background-color: #85d0c630;
+    padding: 40px 100px;
+}
+
+div[class*='row-']{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+input{
+    width: 100%;
+    color: #143766;
+    padding: 10px;
 }
 
 /* media queries */
@@ -196,10 +213,11 @@ nav ul li{
         top: 75px;
         right: 0;
         z-index: 2;
+        background-color: #8a8a8a;
     }
     nav ul li{
         display: block;
-    }
+    }   
     .menu-icon{
         display: block;
     }
