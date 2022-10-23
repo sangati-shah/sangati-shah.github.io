@@ -60,6 +60,7 @@ h4{
     color: #f8c13b;
     margin: 10px 0;
 }
+
 p{
     color: #143766;
     text-transform: lowercase;
@@ -67,6 +68,7 @@ p{
     font-size: 17px;
     margin: 5px 40px;
 }
+
 button {
     font-family: 'Montserrat Alternates';
     font-style: normal;
@@ -78,10 +80,12 @@ button {
 
     padding: 15px 20px;
 }
+
 button:hover{
     background-color: #143766;
     color: white; 
 }
+
 button:active{
     background-color: #f8c13b;
 }
@@ -237,9 +241,5 @@ input{
         flex-basis: 100%;
         margin-bottom: 50px;
     }
-    
-
-
+   
 }
-
-
