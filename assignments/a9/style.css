@@ -30,13 +30,15 @@ body {
 
 button {
   border: 0;
-  background: rgba(150,150,150,0.6);
+  background: #85d0c6;
   text-shadow: 1px 1px 1px white;
   border: 1px solid #999;
   position: absolute;
   cursor: pointer;
   top: 2px;
   left: 2px;
+  font-family: Montserrat;
+  text-transform: lowercase;
 }
 
 .thumb-bar img {

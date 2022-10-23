@@ -5,15 +5,15 @@ const btn = document.querySelector('button');
 const overlay = document.querySelector('.overlay');
 
 /* Declaring the array of image filenames */
-const images = [`pic3.jpg`, `pic4.jpg`, `pic5.jpg`, `pic6.jpg`, `pic7.jpg`];
+const images = [`pic6.jpg`, `pic7.jpg`, `pic8.jpg`, `pic9.jpg`, `pic10.jpg`];
 
 /* Declaring the alternative text for each image file */
 const alts = {
-    'pic3.jpg' : 'purple flowers',
-    'pic4.jpg' : 'egyptian drawings',
-    'pic5.jpg' : 'butterfly',
     'pic6.jpg' : 'disease looking leaves, pink and green',
-    'pic7.jpg' : 'picture of building and sky with tree'
+    'pic7.jpg' : 'picture of building and sky with tree',
+    'pic8.jpg' : 'sign that says liquor',
+    'pic9.jpg' : 'sunset between two tree branches',
+    'pic10.jpg' : 'mountains'
   }
 
 /* Looping through images */
