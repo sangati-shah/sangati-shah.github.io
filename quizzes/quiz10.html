@@ -13,7 +13,7 @@
         box-sizing: border-box;
       }
     </style>
-    <link rel="stylesheet" href="../styles.css" />
+    
   </head>
 
   <body>
@@ -45,12 +45,25 @@
       // Add your code here
       const cats = JSON.parse(catString);
 
-      for (const cat in cats){
-        
-        for (const kitten in cat){
-
+      for (let i =0; i < cats.length; i++){
+        for (const kitten in cats[i]){
+          total++;
+          if (kitten.gender === 'm'){
+            male++;
+          }
+          
         }
+
+        if (i < (cats.length - 1)){
+          motherInfo += `${ cats[i].name }, `;
+        } else {
+          motherInfo += `and ${ cats[i].name }.`;
+        }
+
       }
+
+      kittenInfo = `There are ${total} kittens in total, ${male} male and ${total - male} females.`;
+
       // Don't edit the code below here!
 
       para1.textContent = motherInfo;
