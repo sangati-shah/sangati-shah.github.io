@@ -82,5 +82,3 @@ for (const emp of empArr) {
 }
 console.log("PROBLEM 6");
 console.log(JSON);
-
-
