@@ -52,7 +52,6 @@ console.log(JSON);
 empArr = JSON.employees;
 let totSal = 0;
 for (const emp of empArr){
-    console.log(emp.salary);
     totSal += emp.salary;
 }
 console.log("PROBLEM 4");
