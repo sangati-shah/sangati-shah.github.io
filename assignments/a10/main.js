@@ -46,7 +46,7 @@ let emp4 = {
 };
 console.log("PROBLEM 3");
 JSON.employees.push(emp4);
-console.log(JSON);
+console.log(JSON);  
 
 // PROBLEM 4
 empArr = JSON.employees;
