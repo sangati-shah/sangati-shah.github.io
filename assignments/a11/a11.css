@@ -1,0 +1,61 @@
+* {
+    font-family: 'Verdana';
+    text-transform: lowercase; 
+    text-align: center;
+}
+
+.heading {
+    padding: 30px;
+    background: #1abc9c;
+    color: white;
+}
+h1 {
+    font-size: 40px;
+    font-weight: bold;
+    letter-spacing: .1rem;
+}
+h2 {
+    font-size: 30px;
+    font-weight: lighter;
+    letter-spacing: .15rem;
+    opacity: .8;
+}
+h3 {
+    font-size: 20px;
+    font-weight: 1;
+    letter-spacing: .2rem;
+    opacity: .7;
+}
+h4 {
+    font-size: 20px;
+    font-weight: 1;
+}
+
+.quotes {
+    padding: 30px;
+    font-size: 20px;
+}
+
+button {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    color: black;
+
+    background-color: #CFFFC7;
+    border-radius: 30px;
+    border: none;
+    
+    margin: 20px;
+    padding: 20px 20px;
+}
+
+.cat {
+    margin: 0;
+}
+
+img {  
+    width:  300px;
+    height: 300px;
+    object-fit: cover;  
+}  
