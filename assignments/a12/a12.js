@@ -12,7 +12,9 @@ addEventListener("mouseover", function() {
     mousex = event.clientX;
     mousey = event.clientY;
     let addto = document.getElementById('number');
-    addto.append(getRandomNumber());
+    let num = getRandomNumber();
+    addto.append(num);
+    console.log(num);
 });
 
 function getRandomNumber(){
@@ -36,7 +38,6 @@ function randomColor() {
 }
 
 function Ball() {
-    this.textContent = getRandomNumber();
     this.color = randomColor();
     this.radius = Math.random() * 20 + 14;
     this.startradius = this.radius;
