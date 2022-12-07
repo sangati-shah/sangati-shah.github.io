@@ -1,5 +1,4 @@
 /* style for everything */
-
 *{
     padding: 0;
     font-family: Montserrat;
@@ -14,8 +13,7 @@
     overflow: hidden;
 }
 
-/* styles from style sheet */
-
+/* default styling */
 a{
     text-decoration: none;
     color: #85d0c6;
@@ -88,8 +86,8 @@ button:hover{
 button:active{
     background-color: #f8c13b;
 }
-/* navbar styles */
 
+/* navbar */
 .navbar{
     width: 100%;
     display: flex;
@@ -120,8 +118,7 @@ nav ul li{
     margin-right: 30px;
 }
 
-/* style for columns on index page */
-
+/* index page */
 .row{
     display: flex;
     justify-content: center;
@@ -147,8 +144,7 @@ nav ul li{
     margin: 40px 40px;
 }
 
-/* style for selection and what's next pages*/
-
+/* selection page */  
 .thirdCol1{
     flex-basis: 33%;
     display: flex;
@@ -174,6 +170,22 @@ nav ul li{
     margin-right: auto;
     margin-top: 30px;
     width: 50%; 
+}
+
+/* what's next page */
+.side-by-side{
+    display: grid;
+    padding: 2rem;
+    grid-template-columns: 300px 1fr;
+    gap: 1rem;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    font: 500 100%/1.5 system-ui;
+}
+.ss-img{
+    max-width: 100%;
+    height: auto;
 }
 
 /* application page */
@@ -240,5 +252,14 @@ input{
         flex-basis: 100%;
         margin-bottom: 50px;
     }
-   
+    .side-by-side{
+        display: block;
+        font-size: 80%;
+    }
+    p{
+        position: relative;
+        margin: -3rem 0 2rem 1rem;
+        padding: 1rem;
+        background: rgba(white, 0.8);
+    }
 }

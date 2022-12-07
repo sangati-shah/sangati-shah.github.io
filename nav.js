@@ -5,9 +5,8 @@ fetch('nav.html')
     let newelem = document.createElement("div");
     newelem.innerHTML = text;
     oldelem.parentNode.replaceChild(newelem,oldelem);
+    let menuList = this.getElementById("menuList");
 })
-
-var menuList = document.getElementById("menuList");
 
 menuList.style.maxHeight = "0px";
 

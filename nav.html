@@ -11,11 +11,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=Karla&family=Montserrat&family=Montserrat+Alternates&family=Philosopher&family=Roboto&display=swap" rel="stylesheet">
-    <link rel="icon" href="img/logo.png" type="image/icon type">
 </head>
+
 <body>
     <div class="navbar" id ="nav">
-        <a href="index.html"><img src = "img/logo.png" class = "logo"></a>
+        <a href="index.html"><img src = "img/logo.png" class = "logo" alt="image of spaceship"></a>
         <nav>
             <ul id="menuList">
                 <li><a href = "index.html">home</a></li>
@@ -24,26 +24,8 @@
                 <li><a href = "application.html">application</a></li>
             </ul>
         </nav>
-        <img src = "img/menu.png" class = "menu-icon" onclick = "togglemenu()">
-    </div>
-    
-    <script>
-        var menuList = document.getElementById("menuList");
-
-        menuList.style.maxHeight = "0px";
-
-        function togglemenu(){
-
-            if(menuList.style.maxHeight == "0px")
-            {   
-                menuList.style.maxHeight = "130px";
-            }
-            else   
-            {
-                menuList.style.maxHeight = "0px";
-            }
-        }
-    </script>
+        <img src = "img/menu.png" class = "menu-icon" onclick = "togglemenu()" alt="menu logo, click to interact">
+    </div> 
 </body>
 </html>
 
