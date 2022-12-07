@@ -13,22 +13,12 @@
     <link rel="icon" href="img/logo.png" type="image/icon type">
     
     <title>intro page</title>
+
 </head>
 <body>
     <div class="container">
-        <div class="navbar">
-            <a href="index.html"><img src = "img/logo.png" class = "logo"></a>
-            <nav>
-                <ul id="menuList">
-                    <li><a href = "index.html">home</a></li>
-                    <li><a href = "selection.html">selection</a></li>
-                    <li><a href = "next.html">what's next</a></li>
-                    <li><a href = "application.html">application</a></li>
-                </ul>
-            </nav>
-            <img src = "img/menu.png" class = "menu-icon" onclick = "togglemenu()">
-        </div>
-
+        <script id="replace_with_navbar" src="nav.js"></script>
+        
         <div class="row">
             <div class="introCol1">
                 <h1>if you <span style = "color: #f8c13b">love</span> something, let it go.</h1>
@@ -44,22 +34,5 @@
         </div>
     </div>
 
-        <script>
-            var menuList = document.getElementById("menuList");
-
-            menuList.style.maxHeight = "0px";
-
-            function togglemenu(){
-
-                if(menuList.style.maxHeight == "0px")
-                {   
-                    menuList.style.maxHeight = "130px";
-                }
-                else   
-                {
-                    menuList.style.maxHeight = "0px";
-                }
-            }
-        </script>
 </body>
 </html>
