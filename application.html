@@ -9,24 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=Karla&family=Montserrat&family=Montserrat+Alternates&family=Philosopher&family=Roboto&display=swap" rel="stylesheet">
-    <link rel="icon" href="img/logo.png" type="image/icon type">
+    <link rel="icon" href="img/logo.png" type="image/icon">
 
     <title>what's next</title>
 </head>
 <body>
     <div class="container">
-        <div class="navbar">
-            <a href="index.html"><img src = "img/logo.png" class = "logo"></a>
-            <nav>
-                <ul id="menuList">
-                    <li><a href = "index.html">home</a></li>
-                    <li><a href = "selection.html">selection</a></li>
-                    <li><a href = "next.html">what's next</a></li>
-                    <li><a href = "application.html">application</a></li>
-                </ul>
-            </nav>
-            <img src = "img/menu.png" class = "menu-icon" onclick = "togglemenu()">
-        </div>
+        <script id="replace_with_navbar" src="nav.js"></script>
+
         <h3>what to join us in the stars?</h3>
         <p>apply and we will take your application under consideration.</p>
         <div class="row">
@@ -34,40 +24,21 @@
                 <h4>Apply Now!</h4>
                 
                 <div class="row-1">
-                    <input type="text" id="fname" name="firstname" placeholder="first name">
-                    <input type="text" id="lname" name="lastname" placeholder="last name">
+                    <input type="text" placeholder="first name">
+                    <input type="text" placeholder="last name">
                 </div>
 
                 <div class="row-2">
-                    <input type="text" id="fname" name="firstname" placeholder="email address">
+                    <input type="text" placeholder="email address">
                 </div>
 
                 <div class="row-3">
-                    <input type="text" id="fname" name="firstname" placeholder="phone number">
+                    <input type="text" placeholder="phone number">
                 </div>
                 
-                <button><h5>submit</h5></button>
-            </di>
+                <button>submit</button>
+            </div>
         </div>
-
-        <script>
-            var menuList = document.getElementById("menuList");
-
-            menuList.style.maxHeight = "0px";
-
-            function togglemenu(){
-
-                if(menuList.style.maxHeight == "0px")
-                {   
-                    menuList.style.maxHeight = "130px";
-                }
-                else   
-                {
-                    menuList.style.maxHeight = "0px";
-                }
-            }
-        </script>
-
     </div>
 </body>
 </html>

@@ -9,24 +9,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Esteban&family=Karla&family=Montserrat&family=Montserrat+Alternates&family=Philosopher&family=Roboto&display=swap" rel="stylesheet">
-    <link rel="icon" href="img/logo.png" type="image/icon type">
+    <link rel="icon" href="img/logo.png" type="image/icon">
 
     <title>selection process</title>
 </head>
 <body>
     <div class="container">
-        <div class="navbar">
-            <a href="index.html"><img src = "img/logo.png" class = "logo"></a>
-            <nav>
-                <ul id="menuList">
-                    <li><a href = "index.html">home</a></li>
-                    <li><a href = "selection.html">selection</a></li>
-                    <li><a href = "next.html">what's next</a></li>
-                    <li><a href = "application.html">application</a></li>
-                </ul>
-            </nav>
-            <img src = "img/menu.png" class = "menu-icon" onclick = "togglemenu()">
-        </div>
+        <script id="replace_with_navbar" src="nav.js"></script>
 
         <h3>selection process</h3>
         <p>Because the abduction process comes without any warning and can be quite jarring, we've found it important to help people understand how their loved ones were chosen to join us in space.
@@ -35,46 +24,27 @@
         
         <div class="row">
             <div class="thirdCol1">
-                <img src = "img/noticed.png" class = "col-img">
+                <img src="img/noticed.png" class="col-img" alt="person holding binoculars to their face">
                 <h4>Get Noticed</h4>
                 <p>The first step in the selection process is simple, the candidate simply has to get noticed. 
                     This can be either by submitting an application or by being noticed by one of our recruiters.
                 </p>
             </div>
             <div class="thirdCol2">
-                <img src = "img/stalker.png" class = "col-img">
+                <img src="img/stalker.png" class="col-img" alt="detective peaking out from behind wall">
                 <h4>shadow</h4>
                 <p>after a candidate is identified, we have a team of professional shadows follow their every move for the next year. 
                     This is to ensure that the candidate will be a good fit for the abduction program.
                 </p>
             </div>
             <div class="thirdCol3">
-                <img src = "img/alien.png" class = "col-img">
+                <img src="img/alien.png" class="col-img" alt="icon of an alien">
                 <h4>commitee vote</h4>
                 <p>after following the candidate for a year, the evidence gathered is presented in front of a commitee of experts.
                     they assess the candidate and make a decision on the candidate.
                 </p>
             </div>
         </div>
-
-        <script>
-            var menuList = document.getElementById("menuList");
-
-            menuList.style.maxHeight = "0px";
-
-            function togglemenu(){
-
-                if(menuList.style.maxHeight == "0px")
-                {   
-                    menuList.style.maxHeight = "130px";
-                }
-                else   
-                {
-                    menuList.style.maxHeight = "0px";
-                }
-            }
-        </script>
-
     </div>
 </body>
 </html>
