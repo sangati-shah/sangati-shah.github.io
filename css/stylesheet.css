@@ -222,6 +222,12 @@ input{
     h2{
         font-size: 0px;
     }
+    h3{
+        margin: 1rem;  
+    }
+    h4{
+        margin: 0;
+    }
     nav ul{
         width: 100%;
         position: absolute;
@@ -258,7 +264,7 @@ input{
     }
     p{
         position: relative;
-        margin: -3rem 0 2rem 1rem;
+        margin: -1rem 0;
         padding: 1rem;
         background: rgba(white, 0.8);
     }
