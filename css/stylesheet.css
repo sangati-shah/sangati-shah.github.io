@@ -115,7 +115,7 @@ nav{
 nav ul li{
     list-style: none;
     display: inline-block;
-    margin-right: 30px;
+    margin-right: 20px;
 }
 
 /* index page */
@@ -213,6 +213,13 @@ input{
     padding: 10px;
 }
 
+/* faq */
+.faq{
+    display: grid;
+    padding: 10px;
+    margin: 0 100px;
+}
+
 /* media queries */
 @media only screen and (max-width:700px){
     h1{
@@ -267,5 +274,8 @@ input{
         margin: -1rem 0;
         padding: 1rem;
         background: rgba(white, 0.8);
+    }
+    .faq{
+        margin: 0 0;
     }
 }
