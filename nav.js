@@ -1,3 +1,5 @@
+let menuList;
+
 fetch('nav.html')
 .then(res => res.text())
 .then(text => {
@@ -5,10 +7,9 @@ fetch('nav.html')
     let newelem = document.createElement("div");
     newelem.innerHTML = text;
     oldelem.parentNode.replaceChild(newelem,oldelem);
-    let menuList = this.getElementById("menuList");
+    menuList = document.getElementById("menuList");
+    menuList.style.maxHeight = "0px";
 })
-
-menuList.style.maxHeight = "0px";
 
 function togglemenu(){
 
