@@ -6,7 +6,7 @@
 }
 #canvas1{
     position: absolute;
-    width: 100%;
+    width: auto;
     height: auto;
 }
 h4{
