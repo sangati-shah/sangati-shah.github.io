@@ -88,8 +88,11 @@ class Flower {
 window.addEventListener('mousemove', function(e){
     // for loop makes 3 roots everytime
     if(drawing){
+        var rect = canvas.getBoundingClientRect();
+        x = (e.x - rect.left) / (rect.right - rect.left) * canvas.width
+        y = (e.y - rect.top) / (rect.bottom - rect.top) * canvas.height
         for(let i = 0; i < 3; i++){
-            const root = new Root(e.x, e.y);
+            const root = new Root(x, y);
             root.update();
         }
     }
@@ -97,8 +100,11 @@ window.addEventListener('mousemove', function(e){
 
 window.addEventListener('mousedown', function(e){
     drawing = true;
+    var rect = canvas.getBoundingClientRect();
+    x = (e.x - rect.left) / (rect.right - rect.left) * canvas.width
+    y = (e.y - rect.top) / (rect.bottom - rect.top) * canvas.height
     for(let i = 0; i < 30; i++){
-        const root = new Root(e.x, e.y);
+        const root = new Root(x, y);
         root.update();
     }
 });
