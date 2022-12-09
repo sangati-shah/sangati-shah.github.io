@@ -9,7 +9,7 @@ ctx.fillStyle = '#FFF5DE';
 ctx.shadowOffsetX = 0;
 ctx.shadowOffsetY = 10;
 ctx.shadowBlue = 10;
-ctx.shadowColor = 'rgba(0,0,0,0.5)';
+ctx.shadowColor = 'rgba(93,122,168,0.5)';
 ctx.globalCompositeOperation = 'destination-over'
 
 class Root {
@@ -47,14 +47,15 @@ class Root {
             ctx.fillRect(0 - this.size/2, 0 - this.size/2, this.size, this.size); 
             
             ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#3c5186';
+            // ctx.strokeStyle = '#3c5186';
+            ctx.strokeStyle = 'white';
             let double = this.size * 2
             ctx.strokeRect(0 - double/2, 0 - double/2, double, double);
             
-            ctx.lineWidth = 0.1;
+            /*ctx.lineWidth = 0.1;
             ctx.strokeStyle = 'white';
             let triple = this.size * 3
-            ctx.strokeRect(0 - triple/2, 0 - triple/2, triple, triple);
+            ctx.strokeRect(0 - triple/2, 0 - triple/2, triple, triple);*/
            
             requestAnimationFrame(this.update.bind(this)) // calls update over and over until the size > maxSize
             // .bind(this) passes in the original this 
@@ -66,7 +67,7 @@ class Root {
 window.addEventListener('mousemove', function(e){
     // for loop makes 3 roots everytime
     if(drawing){
-        for(let i = 0; i < 3; i++){
+        for(let i = 0; i < 1; i++){
             const root = new Root(e.x, e.y);
             root.update();
         }

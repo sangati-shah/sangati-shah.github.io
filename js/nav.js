@@ -12,10 +12,9 @@ fetch('nav.html')
 })
 
 function togglemenu(){
-
     if(menuList.style.maxHeight == "0px")
     {   
-        menuList.style.maxHeight = "130px";
+        menuList.style.maxHeight = "150px";
     }
     else   
     {
