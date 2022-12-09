@@ -80,7 +80,6 @@ class Flower {
             requestAnimationFrame(this.grow.bind(this));
         }
         // sx sy sw sh all refer to the size of the image we are using - cropping out other flowers
-        
     }
     
 }
