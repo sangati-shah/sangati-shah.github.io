@@ -6,6 +6,7 @@ canvas.height = window.innerHeight;
 
 let drawing = false;
 ctx.lineWidth = 0.2;
+ctx.fillStyle = 'rgba(133, 208, 198, 90%)';
 ctx.globalCompositeOperation = 'lighten';
 
 ctx.arc(65, 65, 3, 0, 2 * Math.PI);
@@ -24,6 +25,8 @@ class Root {
         this.angleY = Math.random() * 6.2 
         this.vax = Math.random() * 0.6 - 0.3; // velocity of angle
         this.vay = Math.random() * 0.6 - 0.3;
+        this.angle = 0;
+        this.va = Math.random() * 0.02 + 0.05;
         this.lightness = 10;
     }
     update(){
@@ -32,16 +35,29 @@ class Root {
         this.size += this.vs;
         this.angleX += this.vax;
         this.angleY += this.vay;
+        this.angle += this.va;
         if(this.lightness < 70) this.lightness += 0.25
 
         if (this.size < this.maxSize){
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-            ctx.fillStyle = 'hsl(160, 100%,' + this.lightness + '%)';
-            ctx.fill();
-            ctx.stroke();
+            ctx.save();
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.angle);
+            
+            ctx.fillRect(0 - this.size/2, 0 - this.size/2, this.size, this.size); 
+            
+            ctx.lineWidth = 0.3;
+            ctx.strokeStyle = '#85d0c6';
+            let double = this.size * 2
+            ctx.strokeRect(0 - double/2, 0 - double/2, double, double);
+            
+            ctx.lineWidth = 0.3;
+            ctx.strokeStyle = 'white';
+            let triple = this.size * 3
+            ctx.strokeRect(0 - triple/2, 0 - triple/2, triple, triple);
+           
             requestAnimationFrame(this.update.bind(this)) // calls update over and over until the size > maxSize
             // .bind(this) passes in the original this 
+            ctx.restore()
         } else {
             const flower = new Flower(this.x, this.y, this.size);
             flower.grow();
@@ -90,7 +106,7 @@ window.addEventListener('mousemove', function(e){
         var rect = canvas.getBoundingClientRect();
         x = (e.x - rect.left) / (rect.right - rect.left) * canvas.width
         y = (e.y - rect.top) / (rect.bottom - rect.top) * canvas.height
-        for(let i = 0; i < 3; i++){
+        for(let i = 0; i < 1; i++){
             const root = new Root(x, y);
             root.update();
         }
