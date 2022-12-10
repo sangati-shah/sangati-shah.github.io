@@ -226,7 +226,6 @@ input{
     width: 90%;
     height: 80%;
 }
-
 /* media queries */
 @media only screen and (max-width:700px){
     h1{
