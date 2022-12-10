@@ -5,9 +5,8 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let drawing = false;
-ctx.lineWidth = 0.2;
-ctx.fillStyle = 'rgba(133, 208, 198, 90%)';
-ctx.globalCompositeOperation = 'lighten';
+ctx.fillStyle = 'white';
+ctx.globalCompositeOperation = 'destination-over';
 
 ctx.arc(65, 65, 3, 0, 2 * Math.PI);
 
@@ -18,9 +17,9 @@ class Root {
         this.y = y; 
         this.speedX = Math.random() * 4 - 2; // sets the speed between -2 and +2
         this.speedY = Math.random() * 4 - 2;
-        this.maxSize = Math.random() * 7 + 5; // how big the roots will grow. between 5 and 12 px
+        this.maxSize = Math.random() * 7 + 2; // how big the roots will grow. between 5 and 12 px
         this.size = Math.random() * 1 + 2; // initial size before roots start growing, 2 and 3 px
-        this.vs = Math.random() * 0.2 + 0.05; // gives each root a different growth speed, velocity of speed
+        this.vs = Math.random() * 0.2 + 0.15; // gives each root a different growth speed, velocity of speed
         this.angleX = Math.random() * 6.2 // between 0 and 6.2, to make the lines more organic
         this.angleY = Math.random() * 6.2 
         this.vax = Math.random() * 0.6 - 0.3; // velocity of angle
@@ -45,15 +44,16 @@ class Root {
             
             ctx.fillRect(0 - this.size/2, 0 - this.size/2, this.size, this.size); 
             
-            ctx.lineWidth = 0.3;
-            ctx.strokeStyle = '#85d0c6';
+            ctx.lineWidth = 0.5;
+            // ctx.strokeStyle = '#3c5186';
+            ctx.strokeStyle = '#143766';
             let double = this.size * 2
             ctx.strokeRect(0 - double/2, 0 - double/2, double, double);
             
-            ctx.lineWidth = 0.3;
+            /*ctx.lineWidth = 0.1;
             ctx.strokeStyle = 'white';
             let triple = this.size * 3
-            ctx.strokeRect(0 - triple/2, 0 - triple/2, triple, triple);
+            ctx.strokeRect(0 - triple/2, 0 - triple/2, triple, triple);*/
            
             requestAnimationFrame(this.update.bind(this)) // calls update over and over until the size > maxSize
             // .bind(this) passes in the original this 
@@ -77,7 +77,7 @@ class Flower {
         this.frameSize = 100;
         this.frameX = Math.floor(Math.random() * 3);
         this.frameY = Math.floor(Math.random() * 3);
-        this.size > 10 ? this.willFlower = true : this.willFlower = false;
+        this.size > 7 ? this.willFlower = true : this.willFlower = false;
         this.angle = 0; // for the spin of flowers
         this.va = Math.random() * 0.05 - 0.025;
     }
