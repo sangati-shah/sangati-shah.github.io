@@ -230,16 +230,18 @@ input{
 /* media queries */
 @media only screen and (max-width:700px){
     h1{
-        font-size: 90px;
+        font-size: 40px;
         text-align: center;
     }
     h2{
         font-size: 0px;
     }
     h3{
+        font-size: 40px;
         margin: 1rem;  
     }
     h4{
+        font-size: 30px;
         margin: 0;
     }
     nav ul{
