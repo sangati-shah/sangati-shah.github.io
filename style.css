@@ -1,0 +1,93 @@
+html {
+  height: 100%;
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  color: #222;
+  transition: background 0s ease;
+}
+
+body {
+  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+  background-size: 400% 400%;
+  animation: gradient 2s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.25em;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 1.5em;
+}
+
+.bio {
+  max-width: 600px;
+  margin: 0 auto 2em;
+  line-height: 1.6;
+  color: #333;
+}
+
+nav {
+  margin-bottom: 2em;
+}
+
+nav a {
+  margin: 0 0.75em;
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border 0.2s;
+}
+
+nav a:hover {
+  border-color: currentColor;
+}
+
+section {
+  margin-bottom: 3em;
+  text-align: left;
+}
+
+section h2 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid #0003;
+  padding-bottom: 0.2em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1em;
+}
+
+.grid img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 3em;
+}
