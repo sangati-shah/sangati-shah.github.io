@@ -1,7 +1,7 @@
 // Update footer year
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// 🌈 Smooth gradient background animation
+// 🌈 Smooth ambient gradient background
 const colors = [
   "#ff9a9e",
   "#fad0c4",
@@ -24,7 +24,7 @@ function updateGradient() {
 }
 requestAnimationFrame(updateGradient);
 
-// 📝 Optional: dynamically load list of writing posts
+// 📝 Dynamically list Markdown posts from writing repo
 fetch("https://api.github.com/repos/sangati-shah/writing/contents/posts")
   .then(res => res.json())
   .then(files => {
@@ -38,4 +38,8 @@ fetch("https://api.github.com/repos/sangati-shah/writing/contents/posts")
         list.appendChild(li);
       });
   })
-  .catch(console.error);
+  .catch(err => {
+    console.error("Error loading posts:", err);
+    const list = document.getElementById("postList");
+    if (list) list.innerHTML = "<li>Could not load posts.</li>";
+  });
