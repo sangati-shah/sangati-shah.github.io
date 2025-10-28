@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing — Sangati Shah</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Markdown content styling */
+    #content {
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      max-width: 700px;
+      margin: 1.5rem auto;
+      line-height: 1.7;
+    }
+
+    #content h1, #content h2, #content h3 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #content p {
+      margin-bottom: 1rem;
+    }
+
+    #content a {
+      color: #0077cc;
+      text-decoration: underline;
+    }
+
+    #backLink {
+      display: block;
+      text-align: center;
+      margin: 2rem 0;
+      font-weight: 500;
+      text-decoration: none;
+      color: #222;
+    }
+
+    #backLink:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">Loading...</h1>
+    <nav><a href="index.html">← Back to Home</a></nav>
+    <article id="content"></article>
+    <a id="backLink" href="index.html#writing">← Back to Writing List</a>
+  </main>
+
+  <!-- Markdown parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="scripts/writing.js"></script>
+</body>
+</html>

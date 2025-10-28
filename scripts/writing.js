@@ -1,19 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Writing — Your Name</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <main>
-    <h1 id="title">Loading...</h1>
-    <nav><a href="index.html">← Back</a></nav>
-    <article id="content"></article>
-  </main>
+// Get ?file=filename.md from URL
+const params = new URLSearchParams(window.location.search);
+const file = params.get("file");
+const titleEl = document.getElementById("title");
+const contentEl = document.getElementById("content");
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="scripts/writing.js"></script>
-</body>
-</html>
+if (!file) {
+  titleEl.textContent = "Select a post to read";
+  contentEl.style.opacity = 1;
+} else {
+  titleEl.textContent = file.replace(".md", "");
+
+  fetch(`https://raw.githubusercontent.com/sangati-shah/writing/main/posts/${file}`)
+    .then(res => res.text())
+    .then(text => {
+      contentEl.innerHTML = marked.parse(text);
+
+      // Fade-in animation
+      requestAnimationFrame(() => {
+        contentEl.style.opacity = 1;
+      });
+    })
+    .catch(() => {
+      contentEl.textContent = "Error loading post.";
+      contentEl.style.opacity = 1;
+    });
+}
