@@ -1,38 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="./css/stylesheet.css">
-   
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Esteban&family=Karla&family=Montserrat&family=Montserrat+Alternates&family=Philosopher&family=Roboto&display=swap" rel="stylesheet">
-    <link rel="icon" href="img/logo.png" type="image/icon">
-    
-    <title>intro page</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sangati Shah</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <script id="replace_with_navbar" src="js/nav.js"></script>
-        
-        <div class="row">
-            <div class="introCol1">
-                <h1>if you <span style = "color: #f8c13b">love</span> something, let it go.</h1>
-            </div>
+  <main>
+    <h1>Your Name</h1>
+    <p class="tagline">Artist • Writer • Developer</p>
 
-            <div class="introCol2">
-                <ul>
-                    <li><a href = "selection.html"><h2>selection</h2></a></li>
-                    <li><a href = "next.html"><h2>what's next</h2></a></li>
-                    <li><a href = "application.html"><h2>application</h2></a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    <p class="bio">
+      I explore creativity through digital art, writing, and interactive projects.
+      This space collects my sketches, thoughts, and experiments.
+    </p>
 
+    <nav>
+      <a href="assets/resume.pdf" target="_blank">Resume</a>
+      <a href="#sketches">Sketches</a>
+      <a href="#writing">Writing</a>
+      <a href="#projects">Projects</a>
+      <a href="https://github.com/sangati-shah" target="_blank">GitHub</a>
+    </nav>
+
+    <section id="sketches">
+      <h2>Sketches</h2>
+      <div class="grid">
+        <img src="assets/art/sample1.png" alt="Sketch 1">
+        <img src="assets/art/sample2.png" alt="Sketch 2">
+        <img src="assets/art/sample3.png" alt="Sketch 3">
+      </div>
+    </section>
+
+    <section id="writing">
+      <h2>Writing</h2>
+      <ul id="postList"></ul>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <ul>
+        <li><a href="https://github.com/sangati-shah/flower-drawer/blob/main/index.html" target="_blank">Project One</a> — short description</li>
+        <li><a href="https://github.com/yourusername/project2" target="_blank">Project Two</a> — short description</li>
+      </ul>
+    </section>
+
+    <footer>© <span id="year"></span> Sangati Shah</footer>
+  </main>
+
+  <script src="scripts/main.js"></script>
 </body>
 </html>
