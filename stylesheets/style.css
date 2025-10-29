@@ -124,7 +124,7 @@ h1 {
 
 /* Journal - Bottom of S (trapezoid) */
 .journal {
-  background: rgb(248, 183, 36, 1);
+  background: rgba(248, 183, 36, 1);
   grid-column: 4 / 7;
   grid-row: 7 / 9;
   padding: clamp(1.5em, 3vh, 3em) clamp(2.2em, 4vw, 4.5em);
