@@ -16,7 +16,7 @@ h1 {
 
 .tagline {
   font-size: 1.1rem;
-  color: #444;
+  color: #E00173;
   margin-bottom: 1.5em;
 }
 
@@ -59,16 +59,16 @@ h1 {
 
 /* About - Top of S (trapezoid) */
 .about {
-  background: rgba(82, 1, 32, 0.9);
+  background: rgba(121, 41, 44, 0.9);
   grid-column: 6 / 9;
   grid-row: 2 / 4;
   padding: clamp(1.5em, 3vh, 3em) clamp(2.2em, 4vw, 4.5em);
-  clip-path: polygon(5% 0, 100% 0, 100% 100%, 45% 100%);
+  clip-path: polygon(0% 0, 100% 0, 100% 100%, 38% 100%);
 }
 
 /* Resume - Square at bottom right edge of About */
 .resume {
-  background: rgba(181, 114, 20, 0.9);
+  background: rgba(15, 51, 84, 0.9);
   grid-column: 8 / 9;
   grid-row: 4 / 5;
   width: clamp(55px, 5vw, 65px);
@@ -80,7 +80,7 @@ h1 {
 
 /* Projects - Parallelogram (longer vertically) */
 .projects {
-  background: rgba(112, 101, 19, 0.9);
+  background: rgba(224, 1, 115, 0.9);
   grid-column: 5 / 9;
   grid-row: 4 / 6;
   transform: rotate(50deg);
@@ -90,8 +90,8 @@ h1 {
 
 /* Sketches - Parallelogram (longer vertically) */
 .sketches {
-  background: rgba(181, 114, 20, 0.9);
-  grid-column: 4 / 8;
+  background: rgba(249, 117, 22, 0.9);
+  grid-column: 5 / 8;
   grid-row: 6 / 8;
   transform: rotate(50deg);
   padding: clamp(1em, 2.2vh, 2.5em) clamp(3em, 8vw, 6.5em);
@@ -100,9 +100,9 @@ h1 {
 
 /* LinkedIn - Square at top left edge of Journal */
 .linkedin {
-  background: rgba(82, 1, 32, 0.9);
-  grid-column: 3 / 4;
-  grid-row: 7 / 8;
+  background: rgba(168, 181, 69, 0.9);
+  grid-column: 4 / 5;
+  grid-row: 5 / 6;
   width: clamp(55px, 5vw, 65px);
   height: clamp(55px, 5vw, 65px);
   padding: 0;
@@ -112,9 +112,9 @@ h1 {
 
 /* GitHub - Square next to LinkedIn */
 .github {
-  background: rgba(123, 104, 35, 0.9);
+  background: rgba(64, 96, 45, 0.9);
   grid-column: 4 / 5;
-  grid-row: 7 / 8;
+  grid-row: 6 / 7;
   width: clamp(55px, 5vw, 65px);
   height: clamp(55px, 5vw, 65px);
   padding: 0;
@@ -124,9 +124,9 @@ h1 {
 
 /* Journal - Bottom of S (trapezoid) */
 .journal {
-  background: rgba(8, 64, 62, 0.9);
+  background: rgb(248, 183, 36, 1);
   grid-column: 4 / 7;
-  grid-row: 8 / 10;
+  grid-row: 7 / 9;
   padding: clamp(1.5em, 3vh, 3em) clamp(2.2em, 4vw, 4.5em);
   clip-path: polygon(0 0, 55% 0, 95% 100%, 0 100%);
 }
@@ -169,9 +169,14 @@ section h2 {
 }
 
 footer {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #444;
+  display: flex;
+  justify-content: center;   /* centers both items horizontally */
+  align-items: center;       /* vertically aligns them */
+  gap: 10px;                 /* space between date and name */
+  padding: 10px;
+  font-family: sans-serif;
+  color: #E00173;
+  font-size: 1rem;
   margin-top: 3em;
 }
 
