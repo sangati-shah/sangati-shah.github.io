@@ -1,0 +1,289 @@
+/* style for everything */
+*{
+    padding: 0;
+    font-family: Montserrat;
+}
+
+.container{
+    width: 100%;
+    min-height: 100vh;
+    padding-left: 5%;
+    padding-right: 5%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* default styling */
+a{
+    text-decoration: none;
+    color: #85d0c6;
+    font-size: 14px;
+}
+
+a:hover{
+    color: #143766;
+}
+
+a:active{
+    color: #f8c13b;
+}
+
+h1{
+    font-weight: 100;
+    font-size: 165px;
+    text-transform: lowercase;
+    color: #143766;
+}
+
+h2{
+    font-family: 'Montserrat Alternates';
+    font-weight: bolder;
+    font-size: 50px;
+}
+
+h3{
+    font-weight: 400;
+    font-size: 60px;
+    text-align: center;
+    text-transform: lowercase;
+    color: #f8c13b;
+}
+
+h4{
+    font-weight: 200;
+    font-size: 40px;
+    text-align: center;
+    text-transform: lowercase;
+    color: #85d0c6;
+    margin: 10px 0;
+}
+
+p{
+    color: #143766;
+    text-transform: lowercase;
+    text-align: center;
+    font-size: 17px;
+    margin: 5px 40px;
+}
+
+button {
+    font-family: 'Montserrat Alternates';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+
+    background-color: #85d0c6;
+    border: none;
+
+    padding: 15px 20px;
+}
+
+button:hover{
+    background-color: #143766;
+    color: white; 
+}
+
+button:active{
+    background-color: #f8c13b;
+}
+
+/* navbar */
+.navbar{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.logo{
+    width: 50px;
+    cursor: pointer;
+    margin: 30px 0;
+}
+
+.menu-icon{
+    width: 25px;
+    cursor: pointer;
+    display: none;
+}
+
+nav{
+    flex: 1;
+    text-align: right;
+    font-size: 20px;
+}
+
+nav ul li{
+    list-style: none;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+/* index page */
+.row{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px 0;
+}
+
+.introCol1{
+    flex-basis: 60%;
+    position: relative;
+    margin-left: 50px;
+}
+
+.introCol2{
+    flex-basis: 40%;
+    position: relative;
+    margin-left: 50px;
+}
+
+.introCol2 ul li{
+    list-style: none;
+    display: inline-block;
+    margin: 40px 40px;
+}
+
+/* selection page */  
+.thirdCol1{
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.thirdCol2{
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.thirdCol3{
+    flex-basis: 33%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.col-img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    width: 50%; 
+}
+
+/* what's next page */
+.side-by-side{
+    display: grid;
+    padding: 2rem;
+    grid-template-columns: 300px 1fr;
+    gap: 1rem;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    font: 500 100%/1.5 system-ui;
+}
+.ss-img{
+    max-width: 100%;
+    height: auto;
+}
+
+/* application page */
+.app{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #85d0c630;
+    padding: 40px 100px;
+}
+
+div[class*='row-']{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+input{
+    width: 100%;
+    color: #143766;
+    padding: 10px;
+}
+
+/* faq */
+.faq{
+    display: grid;
+    padding: 10px;
+    margin: 0 50px;
+}
+
+/* game */
+#canvas1{
+    position: absolute;
+    width: 90%;
+    height: 80%;
+}
+/* media queries */
+@media only screen and (max-width:700px){
+    h1{
+        font-size: 40px;
+        text-align: center;
+    }
+    h2{
+        font-size: 0px;
+    }
+    h3{
+        font-size: 40px;
+        margin: 1rem;  
+    }
+    h4{
+        font-size: 30px;
+        margin: 0;
+    }
+    nav ul{
+        width: 100%;
+        position: absolute;
+        top: 75px;
+        right: 0;
+        z-index: 2;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+    nav ul li{
+        display: block;
+    }   
+    .menu-icon{
+        display: block;
+    }
+    #menuList{
+        overflow:hidden;
+        transition: 0.5s;
+    }
+    .row{
+        flex-direction: column;
+        margin: 0px 0;
+    }
+    .introCol1{
+        flex-basis: 100%;
+        margin: 90px 0px;
+    }
+    .introCol2{
+        flex-basis: 100%;
+        margin-bottom: 50px;
+    }
+    .side-by-side{
+        display: block;
+        font-size: 80%;
+    }
+    p{
+        position: relative;
+        margin: -1rem 0;
+        padding: 1rem;
+        background: rgba(white, 0.8);
+    }
+    .faq{
+        margin: 0 0;
+    }
+}
