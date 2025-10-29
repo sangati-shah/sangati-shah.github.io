@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><!-- Insert post title here --></title>
+  <link rel="stylesheet" href="writing.css" />
+</head>
+<body>
+  <main class="post-wrapper">
+    <article class="post">
+      <header class="post-header">
+        <h1 class="post-title">A Warm Cup of Chai</h1>
+        <p class="post-meta">Author Name • <time datetime="2025-05-10">May 10, 2025</time></p>
+      </header>
+      <section class="post-content">
+        <!-- Markdown content converted to HTML goes here -->
+        <pre class="poem">
+            When your roommate makes you a morning cup of chai, 
+            and that simple gesture is all the proof you need that she loves you.
+
+            You grew up in an immigrant's home where love wasn’t spoken but served— 
+            fruit cut silently and placed while you study late, 
+            mom making what she thinks your favorite dessert is when you fight. 
+            
+            Those three words were never said out loud, 
+            only shown through walnuts and dates. 
+            
+            So when she hands you that chai, it feels like home. 
+            And then she actually says it—and somehow, 
+            that quiet love you grew up with finds a voice, 
+            
+            and it’s even sweeter than any cup of chai.
+        </pre>
+        <!-- etc -->
+      </section>
+      <footer class="post-footer">
+        <p>© <span id="year"></span> Sangati Shah</p>
+        <nav class="post-nav"><a href="../../index.html">← Back to writing list</a></nav>
+      </footer>
+    </article>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

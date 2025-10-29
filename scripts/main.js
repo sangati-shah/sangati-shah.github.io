@@ -23,23 +23,3 @@ function updateGradient() {
   requestAnimationFrame(updateGradient);
 }
 requestAnimationFrame(updateGradient);
-
-// 📝 Dynamically list Markdown posts from writing repo
-fetch("https://api.github.com/repos/sangati-shah/writing/contents/posts")
-  .then(res => res.json())
-  .then(files => {
-    const list = document.getElementById("postList");
-    if (!list) return;
-    files
-      .filter(f => f.name.endsWith(".md"))
-      .forEach(f => {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="writing.html?file=${f.name}">${f.name.replace(".md","")}</a>`;
-        list.appendChild(li);
-      });
-  })
-  .catch(err => {
-    console.error("Error loading posts:", err);
-    const list = document.getElementById("postList");
-    if (list) list.innerHTML = "<li>Could not load posts.</li>";
-  });

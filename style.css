@@ -91,3 +91,38 @@ footer {
   color: #444;
   margin-top: 3em;
 }
+
+#writing-section {
+  margin-top: 3rem;
+  padding: 0 1rem;
+}
+
+#writing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.writing-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.25rem;
+}
+
+.writing-entry a {
+  font-weight: 500;
+  text-decoration: none;
+  color: #0077cc;
+}
+
+.writing-entry a:hover {
+  text-decoration: underline;
+}
+
+.writing-date {
+  color: #777;
+  font-size: 0.9rem;
+}
+
