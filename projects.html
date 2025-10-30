@@ -4,21 +4,93 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sangati Shah</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="stylesheets/projects.css" />
 </head>
 <body>
-  <main>
+  <nav class="nav">
+        <div class="nav-content">
+            <a href="/"><div class="nav-logo">&lt;S /&gt;</div></a>
+        </div>
+      </nav>
+  
+      <main>
     <section id="projects">
       <h2>Projects</h2>
-      <ul>
-        <li><a href="assets/projects/gallery/gallery.html" target="_blank">Gallery</a> Walk through my physical artwork</li>
-        <li><a href="https://www.notion.so/alrite/Fishing-Game-26ac572e51ce8038a5d1d4fcfc30bde8" target="_blank">Fishing Game</a> Adventure Video Game with Open Exploration</li>
-        <li><a href="https://oceanestars.github.io/Super-Knockout/index.html" target="_blank">TL-DR </a> Google Chrome Extension and Data Analysis; take back control of your data</li>
-      </ul>
+      <div class="project-card">
+        <img src="assets/wip.jpg" alt="Gallery Project Thumbnail">
+        <div class="project-info wip">
+          <h3>Gallery</h3>
+          <p>Walk through my physical artwork in an interactive gallery that mirrors real-world exhibitions.</p>
+          <div class="tech-stack">
+            <span class="tech-pill">HTML</span>
+            <span class="tech-pill">CSS</span>
+            <span class="tech-pill">Reacy</span>
+            <span class="tech-pill">three.js</span>
+          </div>
+          <a class="view-btn">WIP stay tuned</a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <img src="assets/fishinGame.jpeg" alt="Fishing Game Thumbnail">
+        <div class="project-info">
+          <h3>Fishing Game</h3>
+          <p>Adventure video game with open exploration — discover hidden lakes, upgrade gear, and find rare fish.</p>
+          <div class="tech-stack">
+            <span class="tech-pill">Unity</span>
+            <span class="tech-pill">C#</span>
+            <span class="tech-pill">3D Art</span>
+          </div>
+          <a href="https://www.notion.so/alrite/Fishing-Game-26ac572e51ce8038a5d1d4fcfc30bde8" target="_blank" class="view-btn">View Project</a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <img src="assets/tl-dr.png" alt="TL-DR Extension Thumbnail">
+        <div class="project-info">
+          <h3>TL-DR</h3>
+          <p>Chrome extension and data dashboard helping users reclaim control of their online data and privacy.</p>
+          <div class="tech-stack">
+            <span class="tech-pill">HTML</span>
+            <span class="tech-pill">CSS</span>
+            <span class="tech-pill">JavaScript</span>
+            <span class="tech-pill">Chrome API</span>
+            <span class="tech-pill">Data Visualization</span>
+            <span class="tech-pill">Python</span>
+          </div>
+          <a href="https://oceanestars.github.io/Super-Knockout/index.html" target="_blank" class="view-btn">View Project</a>
+          <a href="https://github.com/Oceanestars/Super-Knockout/tree/main" target="_blank" class="view-btn">View Code</a>
+        </div>
+      </div>
     </section>
-    <footer>© <span id="year"></span> Sangati Shah</footer>
+
+    <footer>
+      <p id="currentDateDisplay"></p>
+      <p>•</p>
+      <p>Sangati Shah</p>
+    </footer>
   </main>
 
-  <script src="scripts/main.js"></script>
+  <script>
+    // Display current date
+    const dateDisplay = document.getElementById("currentDateDisplay");
+    const date = new Date();
+    dateDisplay.textContent = date.toLocaleDateString(undefined, {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+
+    // Scroll animation
+    const cards = document.querySelectorAll('.project-card');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    cards.forEach(card => observer.observe(card));
+  </script>
 </body>
 </html>
