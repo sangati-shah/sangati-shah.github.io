@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Color Flowing Background</title>
+  <title>Vibrant Multi-Gradient</title>
   <style>
     html, body {
       height: 100%;
@@ -17,87 +17,75 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #000; /* fallback */
+      background: #fff;
     }
 
     h1 {
       position: relative;
       z-index: 10;
-      color: #fff;
+      color: #333;
       font-size: 2rem;
       text-align: center;
-      text-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
 
-    .gradient-layer {
+    /* Gradient layers */
+    .gradient {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       opacity: 0.7;
-      mix-blend-mode: screen; /* allows colors to blend beautifully */
-      border-radius: 0;
+      mix-blend-mode: screen;
     }
 
-    /* First gradient layer */
-    .gradient-layer.layer1 {
-      background: linear-gradient(45deg,
-        hsl(340, 100%, 70%),
-        hsl(200, 100%, 70%),
-        hsl(60, 100%, 70%),
-        hsl(280, 100%, 70%));
-      background-size: 4000% 4000%;
-      animation: shiftLayer1 20s ease-in-out infinite;
+    /* Linear gradient */
+    .gradient.linear {
+      background: linear-gradient(45deg, hsl(330,90%,80%), hsl(180,90%,80%), hsl(60,90%,80%), hsl(300,90%,80%));
+      background-size: 2000% 2000%;
+      animation: moveLinear 20s ease infinite;
     }
 
-    /* Second gradient layer */
-    .gradient-layer.layer2 {
-      background: radial-gradient(circle,
-        hsl(120, 100%, 70%),
-        hsl(60, 100%, 70%),
-        hsl(300, 100%, 70%),
-        hsl(180, 100%, 70%));
-      background-size: 4000% 4000%;
-      animation: shiftLayer2 25s ease-in-out infinite;
+    /* Radial gradient */
+    .gradient.radial {
+      background: radial-gradient(circle at center, hsl(240,90%,80%), hsl(30,90%,80%), hsl(120,90%,80%), hsl(60,90%,80%));
+      background-size: 2000% 2000%;
+      animation: moveRadial 25s ease infinite;
     }
 
-    /* Third gradient layer */
-    .gradient-layer.layer3 {
-      background: linear-gradient(135deg,
-        hsl(0, 100%, 70%),
-        hsl(90, 100%, 70%),
-        hsl(180, 100%, 70%),
-        hsl(270, 100%, 70%));
-      background-size: 4000% 4000%;
-      animation: shiftLayer3 30s ease-in-out infinite;
+    /* Conic gradient */
+    .gradient.conic {
+      background: conic-gradient(hsl(0,90%,80%), hsl(60,90%,80%), hsl(120,90%,80%), hsl(180,90%,80%), hsl(240,90%,80%), hsl(300,90%,80%));
+      animation: rotateConic 30s linear infinite;
     }
 
-    /* Animations for smooth movement */
-    @keyframes shiftLayer1 {
+    /* Keyframes */
+    @keyframes moveLinear {
       0% { background-position: 0% 50%; }
+      25% { background-position: 50% 100%; }
       50% { background-position: 100% 50%; }
+      75% { background-position: 50% 0%; }
       100% { background-position: 0% 50%; }
     }
 
-    @keyframes shiftLayer2 {
+    @keyframes moveRadial {
       0% { background-position: 0% 0%; }
+      25% { background-position: 100% 0%; }
       50% { background-position: 100% 100%; }
+      75% { background-position: 0% 100%; }
       100% { background-position: 0% 0%; }
     }
 
-    @keyframes shiftLayer3 {
-      0% { background-position: 50% 0%; }
-      50% { background-position: 50% 100%; }
-      100% { background-position: 50% 0%; }
+    @keyframes rotateConic {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-
   </style>
 </head>
 <body>
-  <div class="gradient-layer layer1"></div>
-  <div class="gradient-layer layer2"></div>
-  <div class="gradient-layer layer3"></div>
-  <h1>shhhhhh</h1>
+  <div class="gradient linear"></div>
+  <div class="gradient radial"></div>
+  <div class="gradient conic"></div>
+  <h1> < / 3 </h1>
 </body>
 </html>
