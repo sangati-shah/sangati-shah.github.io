@@ -1,4 +1,37 @@
-<!DOCTYPE html>
+// generate-sketches.js
+const fs = require("fs");
+const path = require("path");
+
+const sketchesDir = path.resolve("assets/sketches");
+const outputFile = path.resolve("sketches.html");
+
+function getHtmlFiles(dir) {
+  const results = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...getHtmlFiles(fullPath));
+    } else if (entry.name.endsWith(".html")) {
+      results.push(fullPath);
+    }
+  }
+
+  return results;
+}
+
+const htmlFiles = getHtmlFiles(sketchesDir);
+
+const linksHtml = htmlFiles
+  .map(file => {
+    const relativePath = path.relative(process.cwd(), file).replace(/\\/g, "/");
+    const displayName = path.basename(file, ".html").replace(/-/g, " ");
+    return `<li><a href="${relativePath}" target="_blank">${displayName}</a></li>`;
+  })
+  .join("\n");
+
+const htmlTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -76,9 +109,11 @@
   <main>
     <h1>Sketches</h1>
     <ul>
-      <li><a href="assets/sketches/flower-sketcher/flowers.html" target="_blank">flowers</a></li>
-<li><a href="assets/sketches/gradients/gradients.html" target="_blank">gradients</a></li>
+      ${linksHtml}
     </ul>
   </main>
 </body>
-</html>
+</html>`;
+
+fs.writeFileSync(outputFile, htmlTemplate);
+console.log(`✅ Generated sketches.html with ${htmlFiles.length} sketches and navigation bar.`);
