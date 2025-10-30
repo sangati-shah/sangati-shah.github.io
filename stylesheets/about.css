@@ -127,6 +127,22 @@ section:nth-child(even) {
     background-size: 200% 200%;
 }
 
+.name-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between image and text */
+  justify-content: center; /* center both horizontally */
+}
+
+.profile-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.8); /* optional subtle border */
+  box-shadow: 0 0 10px rgba(0,0,0,0.2); /* optional shadow for depth */
+}
+
 @keyframes gradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
