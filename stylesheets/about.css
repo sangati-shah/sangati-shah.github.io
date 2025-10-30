@@ -446,7 +446,7 @@ animation: drawPath 2.5s ease-out forwards;
 .cta-button {
     display: inline-block;
     padding: 1rem 2.5rem;
-    background: linear-gradient(135deg, var(--orange), var(--magenta));
+    background: var(--magenta);
     color: #fff;
     text-decoration: none;
     border-radius: 30px;
