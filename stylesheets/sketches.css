@@ -1,0 +1,11 @@
+footer {
+  display: flex;
+  justify-content: center;   /* centers both items horizontally */
+  align-items: center;       /* vertically aligns them */
+  gap: 10px;                 /* space between date and name */
+  padding: 10px;
+  font-family: sans-serif;
+  color: #E00173;
+  font-size: 1rem;
+  margin-top: 3em;
+}

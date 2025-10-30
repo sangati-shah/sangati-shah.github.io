@@ -97,12 +97,23 @@ const htmlTemplate = `<!DOCTYPE html>
       transition: text-decoration 0.2s ease;
     }
     a:hover { text-decoration: underline; }
+    footer {
+      display: flex;
+      justify-content: center;   /* centers both items horizontally */
+      align-items: center;       /* vertically aligns them */
+      gap: 10px;                 /* space between date and name */
+      padding: 10px;
+      font-family: sans-serif;
+      color: #E00173;
+      font-size: 1rem;
+      margin-top: 3em;
+    }
   </style>
 </head>
 <body>
   <nav class="nav">
     <div class="nav-content">
-        <a href="/"><div class="nav-logo">&lt;S /&gt;</div></a>
+        <a href="/"><div class="nav-logo">&lt;s /&gt;</div></a>
     </div>
   </nav>
 
@@ -111,6 +122,12 @@ const htmlTemplate = `<!DOCTYPE html>
     <ul>
       ${linksHtml}
     </ul>
+  <footer>
+    <p id="currentDateDisplay"></p>
+    <p>•</p>
+    <p>Sangati Shah</p>
+  </footer>
+  <script src="scripts/main.js"></script>
   </main>
 </body>
 </html>`;
