@@ -1,7 +1,4 @@
 {
-  "name": "three-gallery",
-  "homepage": "./",
-  "private": true,
   "dependencies": {
     "lucide-react": "^0.552.0",
     "three": "^0.181.0"
