@@ -29,8 +29,11 @@ a {
     position: fixed;
     top: 0;
     width: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
     padding: 1rem 2rem;
     z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
 
 .nav-content {
@@ -52,6 +55,7 @@ a {
 
 h2 {
     text-align: center;
+    margin-top: 4rem;
     margin-bottom: 3rem;
     font-size: 2rem;
 }
