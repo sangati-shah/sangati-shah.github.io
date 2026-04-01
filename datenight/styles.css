@@ -307,15 +307,18 @@ body.lights-off {
 /* ── LIGHTS OFF / CAMPFIRE STATE ── */
 #lights-off {
   flex-direction: column;
+  justify-content: flex-end;
   gap: 0;
 }
 
 .campfire-scene {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
   position: relative;
+  width: 100%;
+  padding-bottom: 2rem;
 }
 
 /* ── CAMPFIRE ── */
@@ -443,12 +446,15 @@ body.lights-off {
 .jar-container {
   cursor: pointer;
   transition: transform 0.3s ease;
-  position: relative;
-  margin-bottom: 0.5rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
 }
 
 .jar-container:hover {
-  transform: scale(1.05);
+  transform: translate(-50%, -50%) scale(1.05);
 }
 
 .jar-container:hover .jar-label {
@@ -696,6 +702,196 @@ body.lights-off {
 
 .close-btn:hover {
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── PEOPLE ── */
+.person {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.person-left {
+  margin-right: -10px;
+  margin-bottom: 10px;
+}
+
+.person-right {
+  margin-left: -10px;
+  margin-bottom: 10px;
+}
+
+.person-head {
+  position: relative;
+  width: 36px;
+  height: 36px;
+}
+
+.face {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 28px;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.face-brown {
+  background: #c68642;
+}
+
+.face-dark {
+  background: #5c3a1e;
+}
+
+/* ── Indian girl: curly black hair ── */
+.hair-curly-black {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 30px;
+  z-index: 3;
+}
+
+.curl {
+  position: absolute;
+  border-radius: 50%;
+  background: #1a1a1a;
+}
+
+.curl-1 {
+  width: 14px;
+  height: 14px;
+  top: 0;
+  left: 4px;
+}
+
+.curl-2 {
+  width: 16px;
+  height: 14px;
+  top: -2px;
+  left: 12px;
+}
+
+.curl-3 {
+  width: 13px;
+  height: 13px;
+  top: 1px;
+  right: 2px;
+}
+
+.curl-4 {
+  width: 12px;
+  height: 14px;
+  top: 10px;
+  left: 0;
+}
+
+.curl-5 {
+  width: 12px;
+  height: 14px;
+  top: 10px;
+  right: 0;
+}
+
+.curl-6 {
+  width: 14px;
+  height: 12px;
+  top: 8px;
+  left: 12px;
+}
+
+/* ── Black man: afro with blond tips ── */
+.hair-afro {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42px;
+  height: 36px;
+  z-index: 3;
+}
+
+.afro-base {
+  position: absolute;
+  inset: 0;
+  border-radius: 50% 50% 45% 45%;
+  background: #1a1a1a;
+}
+
+.afro-tips {
+  position: absolute;
+  top: 0;
+  left: 2px;
+  right: 2px;
+  height: 14px;
+  border-radius: 50% 50% 40% 40%;
+  background: linear-gradient(to bottom, #d4a843, #c49a38, transparent);
+  opacity: 0.85;
+}
+
+/* ── Bodies ── */
+.person-body {
+  width: 30px;
+  height: 28px;
+  border-radius: 8px 8px 0 0;
+  margin-top: -2px;
+}
+
+.body-left {
+  background: #e85d75;
+}
+
+.body-right {
+  background: #4a7c9b;
+}
+
+/* ── Marshmallow sticks ── */
+.marshmallow-stick {
+  position: absolute;
+  bottom: 12px;
+  z-index: 4;
+}
+
+.stick-left {
+  right: -45px;
+  transform: rotate(30deg);
+  transform-origin: left center;
+}
+
+.stick-right {
+  left: -45px;
+  transform: rotate(-30deg);
+  transform-origin: right center;
+}
+
+.stick {
+  width: 55px;
+  height: 3px;
+  background: linear-gradient(to right, #8b7355, #a0896b);
+  border-radius: 2px;
+}
+
+.marshmallow {
+  position: absolute;
+  right: -6px;
+  top: -5px;
+  width: 12px;
+  height: 14px;
+  background: linear-gradient(135deg, #fff5e6, #f5e6d0);
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(255, 180, 80, 0.3);
+}
+
+.stick-right .marshmallow {
+  left: -6px;
+  right: auto;
 }
 
 /* ── AMBIENT BODY GLOW ── */
