@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>date night</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HOME SCREEN -->
+  <div id="home" class="screen active">
+    <div class="home-content">
+      <h1 class="home-title">date night</h1>
+      <p class="home-sub">a little corner of the internet, just for us</p>
+      <div class="home-buttons">
+        <button class="home-btn" onclick="navigateTo('question-jar')">
+          <span class="btn-icon">🫙</span>
+          <span class="btn-label">question jar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION JAR SCREEN -->
+  <div id="question-jar" class="screen">
+
+    <!-- LIGHTS ON STATE -->
+    <div id="lights-on" class="jar-state">
+      <button class="back-btn" onclick="navigateTo('home')">← back</button>
+      <div class="lights-on-content">
+        <p class="jar-prompt">let's turn off the lights<br/>and get deep</p>
+
+        <!-- Day/Night Toggle Switch -->
+        <label class="switch">
+          <input type="checkbox" id="lights-toggle" />
+          <span class="slider">
+            <span class="slider-knob">
+              <!-- Sun rays (visible when lights on) -->
+              <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+              <!-- Moon (visible when lights off) -->
+              <svg class="moon-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            </span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <!-- LIGHTS OFF STATE (campfire) -->
+    <div id="lights-off" class="jar-state">
+      <button class="back-btn back-btn-dark" onclick="goBackFromCampfire()">← back</button>
+
+      <!-- Fireflies -->
+      <div id="fireflies"></div>
+
+      <!-- Campfire -->
+      <div class="campfire-scene">
+        <div class="campfire">
+          <div class="flame-wrapper">
+            <div class="flame flame-1"></div>
+            <div class="flame flame-2"></div>
+            <div class="flame flame-3"></div>
+            <div class="flame flame-inner"></div>
+          </div>
+          <div class="logs">
+            <div class="log log-1"></div>
+            <div class="log log-2"></div>
+          </div>
+          <div class="fire-glow"></div>
+        </div>
+
+        <!-- The Jar -->
+        <div class="jar-container" onclick="drawQuestion()">
+          <div class="jar">
+            <div class="jar-lid"></div>
+            <div class="jar-body">
+              <div class="paper paper-1"></div>
+              <div class="paper paper-2"></div>
+              <div class="paper paper-3"></div>
+              <div class="paper paper-4"></div>
+              <div class="paper paper-5"></div>
+            </div>
+            <div class="jar-label">tap me</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Display (paper unfurl) -->
+      <div id="question-display" class="question-display">
+        <div class="paper-unfurl">
+          <div class="paper-scroll">
+            <p id="question-text" class="question-text"></p>
+          </div>
+        </div>
+        <button class="next-btn" onclick="drawQuestion()">draw another</button>
+        <button class="close-btn" onclick="closeQuestion()">put it back</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

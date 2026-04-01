@@ -1,0 +1,718 @@
+/* ── Reset & Base ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #faf8f5;
+  color: #2c2c2c;
+  overflow: hidden;
+  height: 100dvh;
+  width: 100vw;
+  transition: background 1.5s ease;
+}
+
+body.lights-off {
+  background: #0a0a12;
+}
+
+/* ── Screens ── */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── HOME SCREEN ── */
+.home-content {
+  text-align: center;
+}
+
+.home-title {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 600;
+  color: #2c2c2c;
+  margin-bottom: 0.3em;
+}
+
+.home-sub {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: #888;
+  font-weight: 300;
+  margin-bottom: 3em;
+  letter-spacing: 0.02em;
+}
+
+.home-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.home-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  background: white;
+  border: 1px solid #e8e4e0;
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+.home-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  border-color: #d4cfc9;
+}
+
+.btn-icon {
+  font-size: 2.2rem;
+}
+
+.btn-label {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  color: #555;
+}
+
+/* ── BACK BUTTON ── */
+.back-btn {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: none;
+  border: none;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  color: #999;
+  cursor: pointer;
+  z-index: 100;
+  transition: color 0.3s;
+}
+
+.back-btn:hover {
+  color: #555;
+}
+
+.back-btn-dark {
+  color: rgba(255,255,255,0.3);
+}
+
+.back-btn-dark:hover {
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── LIGHTS ON STATE ── */
+.jar-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+#lights-on {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#lights-off {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lights-on-content {
+  text-align: center;
+}
+
+.jar-prompt {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  color: #2c2c2c;
+  line-height: 1.4;
+  margin-bottom: 2.5rem;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* ── TOGGLE SWITCH ── */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 70px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #f0c86e;
+  border-radius: 36px;
+  transition: background 0.5s ease;
+  overflow: hidden;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #87ceeb 0%, #e0f0ff 100%);
+  border-radius: 36px;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+.switch input:checked + .slider::before {
+  opacity: 0;
+}
+
+.switch input:checked + .slider {
+  background: #1a1a3e;
+}
+
+.slider-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.5s cubic-bezier(0.68, -0.15, 0.27, 1.15),
+              background 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.switch input:checked + .slider .slider-knob {
+  transform: translateX(34px);
+  background: #e8e0d0;
+}
+
+.sun-icon, .moon-icon {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.sun-icon {
+  color: #f59e0b;
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.moon-icon {
+  color: #6366f1;
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+
+.switch input:checked + .slider .sun-icon {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.switch input:checked + .slider .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+/* Small stars on the slider when dark */
+.switch input:checked + .slider::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+  box-shadow:
+    8px 5px 0 0 rgba(255,255,255,0.6),
+    16px -2px 0 -1px rgba(255,255,255,0.4),
+    5px 12px 0 -1px rgba(255,255,255,0.5),
+    20px 10px 0 0 rgba(255,255,255,0.3);
+  z-index: 1;
+  animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* ── TRANSITION ANIMATIONS ── */
+.jar-prompt.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.switch.fade-out {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* ── LIGHTS OFF / CAMPFIRE STATE ── */
+#lights-off {
+  flex-direction: column;
+  gap: 0;
+}
+
+.campfire-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+}
+
+/* ── CAMPFIRE ── */
+.campfire {
+  position: relative;
+  width: 120px;
+  height: 100px;
+}
+
+.flame-wrapper {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 70px;
+}
+
+.flame {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: flicker 0.4s infinite alternate;
+}
+
+.flame-1 {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 55px;
+  background: linear-gradient(to top, #ff6b35, #ff9a56, #ffd700);
+  opacity: 0.9;
+  animation-duration: 0.3s;
+}
+
+.flame-2 {
+  left: 30%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 40px;
+  background: linear-gradient(to top, #ff4500, #ff6b35, #ffa500);
+  opacity: 0.7;
+  animation-duration: 0.5s;
+  animation-delay: 0.1s;
+}
+
+.flame-3 {
+  left: 70%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 35px;
+  background: linear-gradient(to top, #ff4500, #ff6b35, #ff8c00);
+  opacity: 0.7;
+  animation-duration: 0.45s;
+  animation-delay: 0.2s;
+}
+
+.flame-inner {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 30px;
+  background: linear-gradient(to top, #fff8dc, #ffd700, #ffa500);
+  opacity: 0.9;
+  animation-duration: 0.35s;
+}
+
+@keyframes flicker {
+  0% {
+    transform: translateX(-50%) scaleY(1) scaleX(1) rotate(-1deg);
+  }
+  50% {
+    transform: translateX(-50%) scaleY(1.05) scaleX(0.95) rotate(1deg);
+  }
+  100% {
+    transform: translateX(-50%) scaleY(0.95) scaleX(1.05) rotate(-0.5deg);
+  }
+}
+
+.logs {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.log {
+  position: absolute;
+  width: 60px;
+  height: 14px;
+  background: linear-gradient(to right, #5c3317, #8b4513, #5c3317);
+  border-radius: 7px;
+  bottom: 0;
+}
+
+.log-1 {
+  transform: rotate(-20deg);
+  left: -35px;
+}
+
+.log-2 {
+  transform: rotate(20deg);
+  left: -25px;
+}
+
+.fire-glow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(255, 140, 0, 0.15) 0%, rgba(255, 69, 0, 0.05) 40%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: glow-pulse 2s infinite alternate;
+}
+
+@keyframes glow-pulse {
+  0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+/* ── THE JAR ── */
+.jar-container {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+  margin-top: 1rem;
+}
+
+.jar-container:hover {
+  transform: scale(1.05);
+}
+
+.jar-container:hover .jar-label {
+  opacity: 1;
+}
+
+.jar {
+  position: relative;
+  width: 100px;
+  height: 130px;
+}
+
+.jar-lid {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 16px;
+  background: linear-gradient(to bottom, #b8860b, #8b6914);
+  border-radius: 4px 4px 0 0;
+  z-index: 3;
+}
+
+.jar-lid::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -5px;
+  right: -5px;
+  height: 6px;
+  background: linear-gradient(to bottom, #daa520, #b8860b);
+  border-radius: 2px;
+}
+
+.jar-body {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 105px;
+  background: rgba(200, 220, 240, 0.12);
+  border: 2px solid rgba(200, 220, 240, 0.2);
+  border-radius: 5px 5px 20px 20px;
+  overflow: hidden;
+  backdrop-filter: blur(2px);
+}
+
+/* Papers inside the jar */
+.paper {
+  position: absolute;
+  width: 28px;
+  border-radius: 2px;
+  transform-origin: bottom center;
+}
+
+.paper-1 {
+  height: 45px;
+  background: #ffecd2;
+  bottom: 10px;
+  left: 10px;
+  transform: rotate(-12deg);
+}
+
+.paper-2 {
+  height: 40px;
+  background: #ffe4c9;
+  bottom: 8px;
+  left: 28px;
+  transform: rotate(5deg);
+}
+
+.paper-3 {
+  height: 42px;
+  background: #fff3e0;
+  bottom: 12px;
+  right: 10px;
+  transform: rotate(15deg);
+}
+
+.paper-4 {
+  height: 38px;
+  background: #fce4d6;
+  bottom: 5px;
+  left: 18px;
+  transform: rotate(-5deg);
+}
+
+.paper-5 {
+  height: 35px;
+  background: #ffecd2;
+  bottom: 8px;
+  right: 18px;
+  transform: rotate(10deg);
+}
+
+.jar-label {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  color: rgba(255, 200, 100, 0.5);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* ── FIREFLIES ── */
+#fireflies {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.firefly {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffd700;
+  box-shadow: 0 0 8px 3px rgba(255, 215, 0, 0.4),
+              0 0 20px 6px rgba(255, 215, 0, 0.15);
+  animation: firefly-float linear infinite,
+             firefly-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes firefly-glow {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.3; transform: scale(0.6); }
+}
+
+/* ── QUESTION DISPLAY ── */
+.question-display {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  background: rgba(5, 5, 10, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 2rem;
+}
+
+.question-display.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.paper-unfurl {
+  position: relative;
+  max-width: 420px;
+  width: 90%;
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.question-display.visible .paper-unfurl {
+  transform: scaleY(1);
+}
+
+.paper-scroll {
+  background: linear-gradient(135deg, #ffecd2, #fff8ef, #ffecd2);
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  box-shadow:
+    0 4px 30px rgba(255, 180, 80, 0.15),
+    inset 0 0 30px rgba(200, 160, 100, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle paper texture lines */
+.paper-scroll::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 28px,
+    rgba(180, 150, 100, 0.08) 28px,
+    rgba(180, 150, 100, 0.08) 29px
+  );
+  pointer-events: none;
+}
+
+/* Fold crease */
+.paper-scroll::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: rgba(180, 150, 100, 0.12);
+  pointer-events: none;
+}
+
+.question-text {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  color: #5c4033;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.next-btn, .close-btn {
+  background: none;
+  border: none;
+  font-family: 'Caveat', cursive;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.next-btn {
+  margin-top: 2rem;
+  font-size: 1.3rem;
+  color: rgba(255, 200, 100, 0.7);
+  padding: 0.5em 1.5em;
+  border: 1px solid rgba(255, 200, 100, 0.2);
+  border-radius: 30px;
+}
+
+.next-btn:hover {
+  color: rgba(255, 200, 100, 1);
+  border-color: rgba(255, 200, 100, 0.5);
+}
+
+.close-btn {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.close-btn:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── AMBIENT BODY GLOW ── */
+body.lights-off::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 50%;
+  background: radial-gradient(ellipse at center bottom, rgba(255, 120, 30, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .jar {
+    width: 80px;
+    height: 110px;
+  }
+
+  .jar-lid {
+    width: 50px;
+    height: 14px;
+  }
+
+  .jar-body {
+    width: 65px;
+    height: 90px;
+  }
+
+  .campfire {
+    width: 100px;
+    height: 80px;
+  }
+
+  .paper-scroll {
+    padding: 2rem 1.5rem;
+  }
+}
