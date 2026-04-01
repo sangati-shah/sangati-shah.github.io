@@ -40,10 +40,14 @@ function turnLightsOff() {
   const prompt = document.querySelector('.jar-prompt');
   const tentSwitch = document.getElementById('tent-switch-container');
 
-  // Animate the tent flap and fade out text and switch
+  // Animate the tent flap
   tentSwitch.classList.add('checked');
-  prompt.classList.add('fade-out');
-  setTimeout(() => tentSwitch.classList.add('fade-out'), 200);
+
+  // Let the flap animation play, then fade out
+  setTimeout(() => {
+    prompt.classList.add('fade-out');
+    tentSwitch.classList.add('fade-out');
+  }, 600);
 
   // After fade, transition to dark
   setTimeout(() => {
@@ -59,7 +63,7 @@ function turnLightsOff() {
       const scaredCorner = document.getElementById('scared-corner');
       if (scaredCorner) scaredCorner.classList.add('visible');
     }, 600);
-  }, 800);
+  }, 1200);
 }
 
 // ── Lights Back On (scared toggle) ──
