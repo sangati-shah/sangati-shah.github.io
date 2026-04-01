@@ -68,7 +68,7 @@ if (lightsBackOn) {
   lightsBackOn.addEventListener('change', function () {
     if (this.checked) {
       // Navigate to home with scared param
-      window.location.href = './?scared=1';
+      window.location.href = '../?scared=1';
     }
   });
 }
