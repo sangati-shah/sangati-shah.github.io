@@ -16,7 +16,7 @@
       <p class="jar-prompt">let's turn off the lights<br/>and get deep</p>
 
       <!-- Tent Toggle Switch (from uiverse.io/m1her) -->
-      <div class="tent-switch" id="tent-switch-container">
+      <div class="tent-switch vertical" id="tent-switch-container">
         <div class="tent-switch-inner">
           <div class="tent-dot"></div>
           <label for="lights-toggle" class="tent-label">
@@ -37,7 +37,6 @@
 
   <!-- LIGHTS OFF STATE (campfire) -->
   <div id="lights-off" class="jar-state">
-    <button class="back-btn back-btn-dark" onclick="goBackFromCampfire()">← back</button>
 
     <!-- Fireflies -->
     <div id="fireflies"></div>
@@ -70,6 +69,27 @@
             <div class="paper paper-5"></div>
           </div>
           <div class="jar-label">tap me</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scared switch in bottom-right corner -->
+    <div class="scared-corner" id="scared-corner">
+      <p class="scared-text">i'm scared of the dark<br/>turn the lights back on</p>
+      <div class="tent-switch vertical small" id="tent-switch-dark">
+        <div class="tent-switch-inner">
+          <div class="tent-dot"></div>
+          <label for="lights-back-on" class="tent-label">
+            <input type="checkbox" id="lights-back-on" />
+            <div class="tent">
+              <div class="tent-top">
+                <div class="tent-top-inner"></div>
+              </div>
+              <div class="tent-left"></div>
+              <div class="tent-right"></div>
+            </div>
+          </label>
+          <div class="tent-line"></div>
         </div>
       </div>
     </div>

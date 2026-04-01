@@ -10,13 +10,23 @@
 <body>
   <div class="home-content">
     <h1 class="home-title">date night</h1>
-    <p class="home-sub">a little corner of the internet, just for us</p>
+    <p class="home-sub" id="home-sub">a little corner of the internet, just for us</p>
     <div class="home-buttons">
-      <a href="questions.html" class="home-btn">
+      <a href="questions.html" class="home-btn" id="question-jar-btn">
         <span class="btn-icon">🫙</span>
         <span class="btn-label">question jar</span>
       </a>
     </div>
   </div>
+
+  <script>
+    // Check if coming back scared from the dark
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('scared') === '1') {
+      document.getElementById('home-sub').textContent = 'phew that was scary, should we try something different?';
+      // Clean up the URL without reloading
+      history.replaceState(null, '', 'index.html');
+    }
+  </script>
 </body>
 </html>
