@@ -444,7 +444,7 @@ body.lights-off {
   cursor: pointer;
   transition: transform 0.3s ease;
   position: relative;
-  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .jar-container:hover {
