@@ -26,7 +26,7 @@ function getNextQuestion() {
   return questionPool[poolIndex++];
 }
 
-// ── Lights Toggle ──
+// ── Lights Toggle (turn off) ──
 const toggle = document.getElementById('lights-toggle');
 if (toggle) {
   toggle.addEventListener('change', function () {
@@ -44,9 +44,6 @@ function turnLightsOff() {
   prompt.classList.add('fade-out');
   setTimeout(() => tentSwitch.classList.add('fade-out'), 200);
 
-  // Mark switch as checked for bg color change
-  tentSwitch.classList.add('checked');
-
   // After fade, transition to dark
   setTimeout(() => {
     document.body.classList.add('lights-off');
@@ -55,30 +52,24 @@ function turnLightsOff() {
     document.getElementById('lights-off').classList.add('active');
 
     spawnFireflies();
+
+    // Show the scared corner after a moment
+    setTimeout(() => {
+      const scaredCorner = document.getElementById('scared-corner');
+      if (scaredCorner) scaredCorner.classList.add('visible');
+    }, 600);
   }, 800);
 }
 
-function goBackFromCampfire() {
-  // Reset everything and go back to home
-  document.body.classList.remove('lights-off');
-
-  const toggle = document.getElementById('lights-toggle');
-  if (toggle) toggle.checked = false;
-
-  const tentSwitch = document.getElementById('tent-switch-container');
-  if (tentSwitch) {
-    tentSwitch.classList.remove('checked');
-    tentSwitch.classList.remove('fade-out');
-  }
-
-  const prompt = document.querySelector('.jar-prompt');
-  if (prompt) prompt.classList.remove('fade-out');
-
-  document.getElementById('lights-off').classList.remove('active');
-  document.getElementById('lights-on').classList.add('active');
-
-  clearFireflies();
-  closeQuestion();
+// ── Lights Back On (scared toggle) ──
+const lightsBackOn = document.getElementById('lights-back-on');
+if (lightsBackOn) {
+  lightsBackOn.addEventListener('change', function () {
+    if (this.checked) {
+      // Navigate to home with scared param
+      window.location.href = 'index.html?scared=1';
+    }
+  });
 }
 
 // ── Fireflies ──
@@ -129,10 +120,6 @@ function spawnFireflies() {
     firefly.style.animationName = `${keyframeName}, firefly-glow`;
     container.appendChild(firefly);
   }
-}
-
-function clearFireflies() {
-  document.getElementById('fireflies').innerHTML = '';
 }
 
 // ── Question Drawing ──
