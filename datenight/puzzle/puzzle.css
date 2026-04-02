@@ -1,0 +1,658 @@
+/* ── Puzzle Shared Styles ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--dn-bg, #fef0f5);
+  color: var(--dn-text, #2c2c2c);
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 1.5s ease;
+  overflow-x: hidden;
+}
+
+/* ── Back Button ── */
+.back-btn {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: none;
+  border: none;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.2rem;
+  color: var(--dn-sub, #999);
+  cursor: pointer;
+  z-index: 100;
+  transition: color 0.3s;
+  text-decoration: none;
+}
+
+.back-btn:hover {
+  color: var(--dn-text, #555);
+}
+
+/* ── Points Display ── */
+.points-display {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.2rem;
+  color: var(--dn-sub, #999);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.points-display .pts-num {
+  color: var(--dn-accent, #e85d75);
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.points-display .pts-num.bump {
+  transform: scale(1.4);
+}
+
+/* ── Puzzle Hub ── */
+.puzzle-hub {
+  text-align: center;
+  padding: 2rem 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.puzzle-title {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 600;
+  color: var(--dn-text, #2c2c2c);
+  margin-bottom: 0.2em;
+  cursor: pointer;
+  transition: color 0.6s ease, font-family 0.3s ease;
+  user-select: none;
+}
+
+.puzzle-sub {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: var(--dn-sub, #888);
+  font-weight: 300;
+  margin-bottom: 2.5em;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+}
+
+/* ── Level Cards ── */
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.level-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: var(--dn-home-btn-bg, rgba(255,255,255,0.65));
+  border: 1.5px solid var(--dn-home-btn-border, #e0a0b0);
+  border-radius: var(--dn-btn-radius, 50px);
+  padding: 1.2rem 2rem;
+  width: 100%;
+  max-width: 360px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-card:hover:not(.locked) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border-color: var(--dn-accent, #e85d75);
+}
+
+.level-card.locked {
+  opacity: 0.45;
+  cursor: default;
+  filter: grayscale(0.3);
+}
+
+.level-card.completed {
+  border-color: #4caf50;
+}
+
+.level-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.level-info {
+  text-align: left;
+  flex: 1;
+}
+
+.level-name {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.4rem;
+  color: var(--dn-text, #2c2c2c);
+  margin-bottom: 0.15em;
+}
+
+.level-desc {
+  font-size: 0.85rem;
+  color: var(--dn-sub, #888);
+  font-weight: 300;
+}
+
+.level-status {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.level-pts {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.9rem;
+  color: #4caf50;
+  margin-top: 0.2em;
+}
+
+/* ── Puzzle Page Layout ── */
+.puzzle-page {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.puzzle-page-title {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 600;
+  color: var(--dn-text, #2c2c2c);
+  margin-bottom: 0.3em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.puzzle-page-sub {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: var(--dn-sub, #888);
+  font-weight: 300;
+  margin-bottom: 2em;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+}
+
+/* ── Play Button ── */
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.3rem;
+  background: var(--dn-btn-bg, rgba(255,255,255,0.65));
+  border: 1.5px solid var(--dn-btn-border, #e0a0b0);
+  border-radius: var(--dn-btn-radius, 50px);
+  padding: 0.6em 1.8em;
+  cursor: pointer;
+  color: var(--dn-btn-text, #2c2c2c);
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-color: var(--dn-accent, #e85d75);
+}
+
+.play-btn.playing {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.play-icon {
+  font-size: 1.5rem;
+}
+
+/* ── Sequence Slots ── */
+.sequence-label {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.1rem;
+  color: var(--dn-sub, #888);
+  margin-bottom: 0.8rem;
+}
+
+.sequence-slots {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.seq-slot {
+  width: 72px;
+  height: 82px;
+  border: 2.5px dashed var(--dn-btn-border, #e0a0b0);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  background: var(--dn-input-bg, rgba(255,255,255,0.5));
+}
+
+.seq-slot.highlight {
+  border-color: var(--dn-accent, #e85d75);
+  background: rgba(232, 93, 117, 0.08);
+  transform: scale(1.05);
+}
+
+.seq-slot.filled {
+  border-style: solid;
+  border-color: var(--dn-btn-border, #e0a0b0);
+}
+
+.seq-slot.correct {
+  border-color: #4caf50 !important;
+  background: rgba(76, 175, 80, 0.12) !important;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.25);
+}
+
+.seq-slot.close {
+  border-color: #f9a825 !important;
+  background: rgba(249, 168, 37, 0.12) !important;
+  box-shadow: 0 0 12px rgba(249, 168, 37, 0.25);
+}
+
+.seq-slot.wrong {
+  border-color: #ef5350 !important;
+  background: rgba(239, 83, 80, 0.08) !important;
+}
+
+.seq-slot .slot-num {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.8rem;
+  color: var(--dn-sub, #aaa);
+  position: absolute;
+  top: 4px;
+  left: 8px;
+}
+
+.seq-slot .slot-emoji {
+  font-size: 1.8rem;
+}
+
+.seq-slot .slot-name {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.75rem;
+  color: var(--dn-text, #2c2c2c);
+}
+
+.seq-slot.playing-now {
+  transform: scale(1.12);
+  box-shadow: 0 0 20px rgba(232, 93, 117, 0.3);
+  border-color: var(--dn-accent, #e85d75);
+}
+
+/* ── Instrument Palette ── */
+.palette-label {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.1rem;
+  color: var(--dn-sub, #888);
+  margin-bottom: 0.8rem;
+}
+
+.instrument-palette {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  min-height: 80px;
+}
+
+.inst-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.6rem 1rem;
+  background: var(--dn-home-btn-bg, rgba(255,255,255,0.65));
+  border: 1.5px solid var(--dn-home-btn-border, #e0a0b0);
+  border-radius: 14px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+  touch-action: none;
+}
+
+.inst-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+.inst-chip.selected {
+  border-color: var(--dn-accent, #e85d75);
+  background: rgba(232, 93, 117, 0.12);
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(232, 93, 117, 0.2);
+}
+
+.inst-chip.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.inst-chip .chip-emoji {
+  font-size: 1.6rem;
+}
+
+.inst-chip .chip-name {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.8rem;
+  color: var(--dn-text, #2c2c2c);
+}
+
+/* ── Partner Instruments ── */
+.partner-palette {
+  margin-bottom: 1.5rem;
+}
+
+.partner-label {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.9rem;
+  color: var(--dn-sub, #aaa);
+  margin-bottom: 0.5rem;
+}
+
+.partner-instruments {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.partner-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.4rem 0.7rem;
+  background: rgba(0,0,0,0.03);
+  border: 1px dashed var(--dn-btn-border, #e0a0b0);
+  border-radius: 10px;
+  opacity: 0.5;
+}
+
+.partner-chip .chip-emoji {
+  font-size: 1.2rem;
+}
+
+.partner-chip .chip-name {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.7rem;
+  color: var(--dn-sub, #aaa);
+}
+
+/* ── Action Buttons ── */
+.puzzle-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.submit-btn {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.3rem;
+  background: var(--dn-btn-bg, rgba(255,255,255,0.65));
+  border: 1.5px solid var(--dn-btn-border, #e0a0b0);
+  border-radius: var(--dn-btn-radius, 50px);
+  padding: 0.5em 2.5em;
+  cursor: pointer;
+  color: var(--dn-btn-text, #2c2c2c);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-color: var(--dn-accent, #e85d75);
+}
+
+.submit-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.skip-btn {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1rem;
+  background: none;
+  border: none;
+  color: var(--dn-sub, #aaa);
+  cursor: pointer;
+  padding: 0.4em 1em;
+  transition: color 0.3s;
+}
+
+.skip-btn:hover {
+  color: var(--dn-text, #555);
+}
+
+/* ── Status Message ── */
+.puzzle-status {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.2rem;
+  color: var(--dn-sub, #888);
+  min-height: 1.5em;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.puzzle-status.success {
+  color: #4caf50;
+}
+
+.puzzle-status.error {
+  color: #ef5350;
+}
+
+/* ── Victory Overlay ── */
+.victory-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.victory-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.victory-card {
+  text-align: center;
+  background: var(--dn-bg, #fef0f5);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  max-width: 360px;
+  width: 90%;
+  transform: scale(0.8);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.victory-overlay.visible .victory-card {
+  transform: scale(1);
+}
+
+.victory-emoji {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.victory-title {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 2rem;
+  color: var(--dn-text, #2c2c2c);
+  margin-bottom: 0.3em;
+}
+
+.victory-pts {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.4rem;
+  color: var(--dn-accent, #e85d75);
+  margin-bottom: 1.5rem;
+}
+
+.victory-btn {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.2rem;
+  background: var(--dn-btn-bg, rgba(255,255,255,0.65));
+  border: 1.5px solid var(--dn-btn-border, #e0a0b0);
+  border-radius: var(--dn-btn-radius, 50px);
+  padding: 0.5em 2em;
+  cursor: pointer;
+  color: var(--dn-btn-text, #2c2c2c);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.victory-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-color: var(--dn-accent, #e85d75);
+}
+
+/* ── Easter Egg Gem ── */
+.hidden-gem {
+  position: fixed;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0.08;
+  transition: all 0.3s ease;
+  z-index: 50;
+  user-select: none;
+}
+
+.hidden-gem:hover {
+  opacity: 0.4;
+  transform: scale(1.3);
+}
+
+.hidden-gem.found {
+  opacity: 1;
+  transform: scale(1.5);
+  animation: gem-sparkle 0.6s ease;
+}
+
+@keyframes gem-sparkle {
+  0% { transform: scale(1.5) rotate(0deg); }
+  25% { transform: scale(1.8) rotate(10deg); }
+  50% { transform: scale(1.3) rotate(-10deg); }
+  75% { transform: scale(1.7) rotate(5deg); }
+  100% { transform: scale(1.5) rotate(0deg); }
+}
+
+.gem-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.5rem;
+  color: var(--dn-accent, #e85d75);
+  background: var(--dn-bg, #fef0f5);
+  padding: 1rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  z-index: 9999;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+  opacity: 0;
+}
+
+.gem-toast.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* ── Waiting Screen ── */
+.waiting-screen {
+  text-align: center;
+  padding: 2rem;
+}
+
+.waiting-dots {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.waiting-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dn-accent, #e85d75);
+  animation: dot-pulse 1.4s ease-in-out infinite;
+}
+
+.waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+.waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dot-pulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .seq-slot {
+    width: 58px;
+    height: 68px;
+  }
+
+  .seq-slot .slot-emoji {
+    font-size: 1.4rem;
+  }
+
+  .inst-chip {
+    padding: 0.5rem 0.7rem;
+  }
+
+  .inst-chip .chip-emoji {
+    font-size: 1.3rem;
+  }
+
+  .level-card {
+    padding: 1rem 1.5rem;
+  }
+
+  .puzzle-page {
+    padding: 3.5rem 0.8rem 2rem;
+  }
+}
