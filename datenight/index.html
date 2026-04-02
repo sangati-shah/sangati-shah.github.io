@@ -382,65 +382,100 @@
     document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
       e.preventDefault();
 
-      // Elements to slide left
-      const slideEls = [
-        document.querySelector('.home-title'),
-        document.querySelector('.home-flavor'),
-        document.querySelector('.home-actions'),
-        document.querySelector('.home-sparkles'),
-        document.getElementById('waiting-banner'),
-        document.getElementById('room-info'),
-      ];
-
-      slideEls.forEach(el => {
-        if (!el) return;
-        el.style.transition = 'transform 0.7s ease-in, opacity 0.7s ease-in';
-        el.style.transform = 'translateX(-120vw)';
-        el.style.opacity = '0';
-      });
-
-      // Shrink character + add ground line
-      const charPreview = document.getElementById('home-char-preview');
       const homeContent = document.getElementById('home-content');
+      const charPreview = document.getElementById('home-char-preview');
+      const charEl = document.querySelector('.home-char');
+      const hasChar = charPreview && charPreview.style.display !== 'none' && charEl;
 
-      // Create the ground line
+      // Create transition overlay so it feels seamless
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position: fixed; inset: 0; z-index: 500;
+        background: var(--dn-bg, #fef0f5);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.4s ease;
+        pointer-events: none;
+      `;
+
+      // Build the "landing" scene: character on a line
+      const scene = document.createElement('div');
+      scene.style.cssText = `
+        position: relative; width: 100%; height: 100%;
+      `;
+
+      // The ground line
       const line = document.createElement('div');
       line.style.cssText = `
-        position: fixed; bottom: 40%; left: 0; right: 0;
+        position: absolute; bottom: 38%; left: 0; right: 0;
         height: 3px; background: var(--dn-accent, #e85d75);
-        opacity: 0; transition: opacity 0.5s ease 0.3s;
-        z-index: 10;
+        transform: scaleX(0); transition: transform 0.5s ease 0.3s;
+        transform-origin: left center;
       `;
-      document.body.appendChild(line);
-      requestAnimationFrame(() => line.style.opacity = '1');
+      scene.appendChild(line);
 
-      if (charPreview && charPreview.style.display !== 'none') {
-        const charEl = document.querySelector('.home-char');
-        const nameEl = document.querySelector('.home-char-name');
-        if (nameEl) {
-          nameEl.style.transition = 'opacity 0.4s ease';
-          nameEl.style.opacity = '0';
-        }
-        if (charEl) {
-          charEl.style.animation = 'none';
-          charEl.style.transition = 'transform 0.7s ease-in-out, bottom 0.7s ease-in-out';
-          charPreview.style.transition = 'transform 0.7s ease-in-out';
-          // Shrink and move to the line
-          charPreview.style.position = 'fixed';
-          charPreview.style.bottom = 'calc(40% + 3px)';
-          charPreview.style.left = '15%';
-          charPreview.style.top = 'auto';
-          charPreview.style.zIndex = '20';
-          charPreview.style.margin = '0';
-          charEl.style.transform = 'scale(0.45)';
-          charEl.style.transformOrigin = 'bottom center';
-        }
+      // Mini character on the line
+      if (hasChar) {
+        const miniChar = charEl.cloneNode(true);
+        miniChar.style.cssText = `
+          position: absolute; bottom: calc(38% + 3px); left: 12%;
+          width: 36px; height: 54px;
+          transform: scale(0); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.5s;
+          transform-origin: bottom center;
+        `;
+        // Scale down inner elements
+        miniChar.querySelectorAll('*').forEach(el => {
+          el.style.animation = 'none';
+        });
+        scene.appendChild(miniChar);
+        // Trigger pop-in
+        requestAnimationFrame(() => {
+          setTimeout(() => { miniChar.style.transform = 'scale(0.5)'; }, 20);
+        });
       }
 
-      // Navigate after animation
+      // A few simple boxes on the line (preview of world)
+      [18, 30, 45].forEach((pct, i) => {
+        const box = document.createElement('div');
+        const size = 16 + i * 4;
+        box.style.cssText = `
+          position: absolute; bottom: calc(38% + 3px); left: ${pct}%;
+          width: ${size}px; height: ${size}px;
+          background: var(--dn-accent, #e85d75); opacity: 0.5;
+          border-radius: 3px;
+          transform: translateY(20px); opacity: 0;
+          transition: transform 0.4s ease ${0.4 + i * 0.08}s, opacity 0.4s ease ${0.4 + i * 0.08}s;
+        `;
+        scene.appendChild(box);
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            box.style.transform = 'translateY(0)';
+            box.style.opacity = '0.5';
+          }, 20);
+        });
+      });
+
+      overlay.appendChild(scene);
+      document.body.appendChild(overlay);
+
+      // Step 1: Fade out home content
+      homeContent.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+      homeContent.style.opacity = '0';
+      homeContent.style.transform = 'translateX(-60px)';
+
+      // Step 2: Fade in the transition scene
+      setTimeout(() => {
+        overlay.style.opacity = '1';
+        overlay.style.pointerEvents = 'all';
+        // Animate the line in
+        requestAnimationFrame(() => {
+          line.style.transform = 'scaleX(1)';
+        });
+      }, 300);
+
+      // Step 3: Navigate
       setTimeout(() => {
         window.location.href = 'world/';
-      }, 900);
+      }, 1200);
     });
   </script>
 </body>

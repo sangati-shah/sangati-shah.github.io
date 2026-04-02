@@ -198,7 +198,7 @@
   </div>
 
   <div class="victory-flash" id="victory-flash"></div>
-  <div class="victory-msg" id="victory-msg">adventure begins!</div>
+  <div class="victory-msg" id="victory-msg">you've reached the first adventure</div>
 
   <div class="viewport">
     <div class="world" id="world">
@@ -238,7 +238,7 @@
     const SPRITE_W = 32;
     const SPRITE_H = 52;
     const GRAVITY = 0.55;
-    const JUMP_VEL = -11.5;
+    const JUMP_VEL = -9.5;
     const SPEED = 3.8;
 
     function groundY() { return window.innerHeight - LINE_BOTTOM - 3 - SPRITE_H; }
@@ -251,15 +251,15 @@
     }
 
     const OBSTACLE_DEFS = [
-      ob(400, 40, 45),
-      ob(650, 40, 45),
-      ob(950, 50, 50),
-      ob(1200, 40, 65),
-      ob(1450, 40, 45),
-      ob(1700, 60, 50),
-      ob(1950, 80, 45),
-      ob(2250, 40, 55),
-      ob(2550, 40, 50),
+      ob(400, 30, 30),
+      ob(620, 30, 30),
+      ob(900, 35, 35),
+      ob(1150, 30, 40),
+      ob(1400, 30, 30),
+      ob(1650, 40, 35),
+      ob(1900, 55, 30),
+      ob(2200, 30, 35),
+      ob(2500, 30, 30),
     ];
 
     const FINISH_X = 2850;
@@ -287,11 +287,11 @@
         container.appendChild(el);
       });
 
-      // Finish box
+      // Finish box — elevated so player must jump to reach it
       const fb = document.getElementById('finish-box');
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
       fb.style.left = FINISH_X + 'px';
-      fb.style.top = (lineY - FINISH_SIZE) + 'px';
+      fb.style.top = (lineY - FINISH_SIZE - 50) + 'px';
     }
 
     // ══════════════════════════════════════
@@ -382,7 +382,7 @@
     // ══════════════════════════════════════
     function checkFinish() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
-      const fbY = lineY - FINISH_SIZE;
+      const fbY = lineY - FINISH_SIZE - 50;
       const px = player.x, py = player.y;
 
       if (px + SPRITE_W > FINISH_X && px < FINISH_X + FINISH_SIZE &&
