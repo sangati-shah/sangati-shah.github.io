@@ -616,14 +616,28 @@
     // GAME LOOP
     // ══════════════════════════════════════
     let lastPeerSend = 0;
-    let introShown = true;
 
     function gameLoop() {
       if (entering) { requestAnimationFrame(gameLoop); return; }
 
-      if (introShown && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'] || keys['ArrowDown'])) {
-        document.getElementById('intro-text').classList.add('fade');
-        introShown = false;
+      // Track player movement for intro fade
+      if (!introPlayerMoved && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'] || keys['ArrowDown'])) {
+        introPlayerMoved = true;
+        fadeIntroIfReady();
+      }
+
+      // After passing first orb (music at x=2850), show second hint
+      if (!passedFirstOrb && !firstOrbDone && introPhase === 1 && player.x > 2900) {
+        passedFirstOrb = true;
+        // Reset and show second message
+        introEl.classList.remove('fade');
+        introEl.style.whiteSpace = '';
+        introEl.textContent = "this one's a little tall...";
+        introFaded = false;
+        introTimerDone = false;
+        introPlayerMoved = true; // already moving
+        setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 15000);
+        introPhase = 2;
       }
 
       // Ducking
@@ -766,12 +780,39 @@
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
-    // ── Intro text — show hint for the nearest upcoming adventure ──
+    // ── Intro text — contextual hints that fade after movement + time ──
     const completed = getCompleted();
-    const nextAdv = ADVENTURES.find(a => !completed.includes(a.id));
-    document.getElementById('intro-text').textContent = nextAdv
-      ? nextAdv.hint
-      : 'explore freely...';
+    const introEl = document.getElementById('intro-text');
+    const firstOrbDone = completed.includes('music');
+    const secondOrbDone = completed.includes('elements');
+
+    if (secondOrbDone) {
+      introEl.textContent = 'explore freely...';
+    } else if (firstOrbDone) {
+      introEl.textContent = "this one's a little tall...";
+    } else {
+      introEl.textContent = 'let the adventure begin\ngo find your first orb';
+      introEl.style.whiteSpace = 'pre-line';
+    }
+
+    // Fade logic: wait for BOTH player movement AND 15 seconds, whichever is later
+    let introTimerDone = false;
+    let introPlayerMoved = false;
+    let introFaded = false;
+    let introPhase = firstOrbDone ? 2 : (secondOrbDone ? 0 : 1); // 1 = first msg, 2 = second msg, 0 = done
+
+    function fadeIntroIfReady() {
+      if (introFaded) return;
+      if (introTimerDone && introPlayerMoved) {
+        introEl.classList.add('fade');
+        introFaded = true;
+      }
+    }
+
+    setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 15000);
+
+    // After passing the first orb, show the second hint
+    let passedFirstOrb = false;
 
     // ── Set world width ──
     worldEl.style.width = WORLD_W + 'px';
