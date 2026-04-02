@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>art guessing</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      height: 100dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 2rem;
+      box-sizing: border-box;
+      transition: background 1.5s ease;
+    }
+
+    .art-title {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      margin: 0 0 0.3rem;
+      text-align: center;
+    }
+    .art-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      margin: 0 0 1.2rem;
+      opacity: 0.6;
+    }
+
+    /* Artwork + frame */
+    .frame-container {
+      position: relative;
+      display: inline-block;
+      max-width: min(90vw, 500px);
+      margin-bottom: 1.2rem;
+    }
+    .artwork-frame {
+      padding: 18px;
+      border-radius: 4px;
+      box-shadow: 4px 4px 16px rgba(0,0,0,0.3), inset 0 0 8px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    .artwork-frame img {
+      display: block;
+      width: 100%;
+      max-height: 50vh;
+      object-fit: contain;
+      border-radius: 2px;
+    }
+
+    /* Frame styles */
+    .frame-baroque {
+      background: linear-gradient(145deg, #c9a84c, #8b6914, #c9a84c, #a07d2e);
+      padding: 22px;
+      border: 3px solid #6b4f1d;
+      box-shadow: 4px 4px 18px rgba(0,0,0,0.4), inset 0 0 12px rgba(0,0,0,0.2), inset 0 0 0 3px #d4af37;
+    }
+    .frame-ornate {
+      background: linear-gradient(135deg, #2c1810, #5a3825, #2c1810);
+      padding: 24px;
+      border: 4px double #8b6914;
+      box-shadow: 4px 4px 18px rgba(0,0,0,0.5), inset 0 0 0 2px #3d2415, inset 0 0 0 6px #c9a84c;
+    }
+    .frame-modern {
+      background: #1a1a1a;
+      padding: 12px;
+      border: none;
+      box-shadow: 2px 2px 12px rgba(0,0,0,0.3);
+    }
+    .frame-classic {
+      background: linear-gradient(145deg, #f5e6d3, #d4c4a8, #f5e6d3);
+      padding: 20px;
+      border: 2px solid #b8a88a;
+      box-shadow: 3px 3px 14px rgba(0,0,0,0.25), inset 0 0 0 4px #e8d5b7;
+    }
+    .frame-rustic {
+      background: linear-gradient(160deg, #5c4033, #8b7355, #5c4033);
+      padding: 16px;
+      border: 3px solid #3e2a1e;
+      box-shadow: 3px 3px 14px rgba(0,0,0,0.35), inset 0 0 6px rgba(0,0,0,0.3);
+    }
+    .frame-gallery {
+      background: #fff;
+      padding: 30px;
+      border: 1px solid #ddd;
+      box-shadow: 2px 2px 20px rgba(0,0,0,0.15);
+    }
+    .frame-velvet {
+      background: linear-gradient(145deg, #4a0e2e, #6b1d4a, #4a0e2e);
+      padding: 20px;
+      border: 3px solid #2a0a1a;
+      box-shadow: 3px 3px 16px rgba(0,0,0,0.4), inset 0 0 0 3px #8b3a62;
+    }
+    .frame-gilt {
+      background: linear-gradient(145deg, #daa520, #b8860b, #daa520, #cd950c);
+      padding: 26px;
+      border: 2px solid #8b6914;
+      border-radius: 6px;
+      box-shadow: 4px 4px 20px rgba(0,0,0,0.4), inset 0 0 0 4px #eec44a, inset 0 0 0 8px #8b6914;
+    }
+
+    /* Loading state */
+    .loading {
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+      opacity: 0.5;
+      animation: pulse 1.5s ease-in-out infinite;
+      margin: 3rem 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Guess form */
+    .guess-section {
+      width: min(90vw, 460px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .guess-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .guess-label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      min-width: 90px;
+      text-align: right;
+      opacity: 0.7;
+    }
+    .guess-input {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.7rem;
+      border: 1.5px solid rgba(128,128,128,0.3);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: inherit;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .guess-input:focus {
+      border-color: rgba(128,128,128,0.6);
+    }
+    .guess-input::placeholder {
+      opacity: 0.35;
+    }
+
+    /* Buttons */
+    .art-buttons {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.4rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .art-btn {
+      font-family: 'Caveat', cursive;
+      font-size: 1.15rem;
+      padding: 0.5rem 1.4rem;
+      border: 1.5px solid rgba(128,128,128,0.3);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      color: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .art-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Reveal card */
+    .reveal-card {
+      width: min(90vw, 460px);
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(128,128,128,0.2);
+      border-radius: 16px;
+      padding: 1.2rem 1.4rem;
+      margin-top: 0.4rem;
+      animation: fadeUp 0.5s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      align-items: baseline;
+    }
+    .reveal-label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      min-width: 80px;
+      text-align: right;
+      opacity: 0.5;
+    }
+    .reveal-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+    .reveal-match {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    /* Fade in for artwork */
+    .fade-in {
+      animation: fadeUp 0.6s ease;
+    }
+
+    .art-info-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      opacity: 0.35;
+      text-decoration: none;
+      color: inherit;
+      margin-top: 0.3rem;
+      transition: opacity 0.3s;
+    }
+    .art-info-link:hover {
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../" class="back-btn">← back</a>
+
+  <h1 class="art-title" id="art-title">art gallery</h1>
+  <p class="art-sub" id="art-sub">guess everything about this artwork</p>
+
+  <div id="loading" class="loading">finding a masterpiece...</div>
+
+  <div id="art-area" style="display:none;" class="fade-in">
+    <div class="frame-container">
+      <div class="artwork-frame" id="artwork-frame">
+        <img id="artwork-img" src="" alt="artwork" />
+      </div>
+    </div>
+  </div>
+
+  <div id="guess-section" class="guess-section" style="display:none;">
+    <div class="guess-row">
+      <span class="guess-label">artist</span>
+      <input class="guess-input" id="guess-artist" placeholder="who made this?" autocomplete="off" />
+    </div>
+    <div class="guess-row">
+      <span class="guess-label">title</span>
+      <input class="guess-input" id="guess-title" placeholder="what's it called?" autocomplete="off" />
+    </div>
+    <div class="guess-row">
+      <span class="guess-label">time period</span>
+      <input class="guess-input" id="guess-period" placeholder="when was it made?" autocomplete="off" />
+    </div>
+    <div class="guess-row">
+      <span class="guess-label">country</span>
+      <input class="guess-input" id="guess-country" placeholder="where's it from?" autocomplete="off" />
+    </div>
+    <div class="guess-row">
+      <span class="guess-label">meaning</span>
+      <input class="guess-input" id="guess-meaning" placeholder="what do you think it means?" autocomplete="off" />
+    </div>
+
+    <div class="art-buttons">
+      <button class="art-btn" id="reveal-btn" onclick="revealAnswers()">reveal answers</button>
+      <button class="art-btn" id="next-btn" onclick="loadNewArtwork()">next artwork</button>
+    </div>
+
+    <div id="reveal-card" class="reveal-card" style="display:none;"></div>
+    <a id="art-link" class="art-info-link" href="#" target="_blank">view on art institute of chicago →</a>
+  </div>
+
+  <script>
+    // Theme system
+    const themes = [
+      { bg: '#faf8f5', text: '#2c2c2c', sub: '#888' },
+      { bg: '#2c2c2c', text: '#ffd700', sub: '#ccc' },
+      { bg: '#1a1a2e', text: '#e94560', sub: '#a3a3c2' },
+      { bg: '#f0e6ef', text: '#6b2fa0', sub: '#9a7baa' },
+      { bg: '#e8f5e9', text: '#2e7d32', sub: '#6a9b6e' },
+      { bg: '#fff3e0', text: '#e65100', sub: '#b08060' },
+      { bg: '#fce4ec', text: '#2e7d32', sub: '#e091a8' },
+    ];
+    let themeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
+    const titleEl = document.getElementById('art-title');
+    const subEl = document.getElementById('art-sub');
+
+    function applyTheme(i) {
+      const t = themes[i];
+      document.body.style.background = t.bg;
+      titleEl.style.color = t.text;
+      subEl.style.color = t.sub;
+      document.querySelectorAll('.guess-label, .reveal-label').forEach(el => el.style.color = t.text);
+      document.querySelectorAll('.guess-input').forEach(el => el.style.color = t.text);
+      document.querySelectorAll('.art-btn').forEach(el => el.style.color = t.text);
+    }
+    applyTheme(themeIndex);
+
+    titleEl.addEventListener('click', () => {
+      themeIndex = (themeIndex + 1) % themes.length;
+      sessionStorage.setItem('datenight-theme', themeIndex);
+      applyTheme(themeIndex);
+    });
+
+    // Frame styles
+    const frameClasses = [
+      'frame-baroque', 'frame-ornate', 'frame-modern', 'frame-classic',
+      'frame-rustic', 'frame-gallery', 'frame-velvet', 'frame-gilt'
+    ];
+
+    // Current artwork data
+    let currentArtwork = null;
+
+    // Art Institute of Chicago API (no key needed)
+    const API_BASE = 'https://api.artic.edu/api/v1/artworks';
+    const FIELDS = 'id,title,artist_display,date_display,place_of_origin,image_id,thumbnail';
+    const TOTAL_PAGES = 12000; // safe upper bound for artworks with images
+
+    async function fetchRandomArtwork() {
+      const page = Math.floor(Math.random() * TOTAL_PAGES) + 1;
+      const url = `${API_BASE}?limit=12&page=${page}&fields=${FIELDS}`;
+      const res = await fetch(url);
+      const json = await res.json();
+
+      // Filter to artworks that have an image
+      const withImages = json.data.filter(a => a.image_id);
+      if (withImages.length === 0) return null;
+
+      // Pick a random one from the batch
+      const artwork = withImages[Math.floor(Math.random() * withImages.length)];
+      const iiifBase = json.config.iiif_url;
+      return {
+        id: artwork.id,
+        title: artwork.title || 'Unknown',
+        artist: artwork.artist_display || 'Unknown artist',
+        date: artwork.date_display || 'Unknown period',
+        origin: artwork.place_of_origin || 'Unknown',
+        imageUrl: `${iiifBase}/${artwork.image_id}/full/843,/0/default.jpg`,
+        description: artwork.thumbnail?.alt_text || '',
+      };
+    }
+
+    async function loadNewArtwork() {
+      const loading = document.getElementById('loading');
+      const artArea = document.getElementById('art-area');
+      const guessSection = document.getElementById('guess-section');
+      const revealCard = document.getElementById('reveal-card');
+
+      loading.style.display = '';
+      artArea.style.display = 'none';
+      guessSection.style.display = 'none';
+      revealCard.style.display = 'none';
+
+      // Clear inputs
+      document.querySelectorAll('.guess-input').forEach(el => el.value = '');
+
+      // Try fetching until we get one with an image
+      let artwork = null;
+      let attempts = 0;
+      while (!artwork && attempts < 5) {
+        try {
+          artwork = await fetchRandomArtwork();
+        } catch (e) {
+          console.error('Fetch failed:', e);
+        }
+        attempts++;
+      }
+
+      if (!artwork) {
+        loading.textContent = 'couldn\'t find art right now, try again?';
+        return;
+      }
+
+      currentArtwork = artwork;
+
+      // Set random frame
+      const frame = document.getElementById('artwork-frame');
+      frameClasses.forEach(c => frame.classList.remove(c));
+      frame.classList.add(frameClasses[Math.floor(Math.random() * frameClasses.length)]);
+
+      // Load image
+      const img = document.getElementById('artwork-img');
+      img.onload = () => {
+        loading.style.display = 'none';
+        artArea.style.display = '';
+        artArea.classList.remove('fade-in');
+        void artArea.offsetWidth; // force reflow
+        artArea.classList.add('fade-in');
+        guessSection.style.display = '';
+        applyTheme(themeIndex);
+      };
+      img.onerror = () => {
+        // If image fails, try another
+        loadNewArtwork();
+      };
+      img.src = artwork.imageUrl;
+
+      // Set info link
+      document.getElementById('art-link').href = `https://www.artic.edu/artworks/${artwork.id}`;
+    }
+
+    function revealAnswers() {
+      if (!currentArtwork) return;
+      const card = document.getElementById('reveal-card');
+      const guesses = {
+        artist: document.getElementById('guess-artist').value.trim(),
+        title: document.getElementById('guess-title').value.trim(),
+        period: document.getElementById('guess-period').value.trim(),
+        country: document.getElementById('guess-country').value.trim(),
+        meaning: document.getElementById('guess-meaning').value.trim(),
+      };
+
+      const rows = [
+        { label: 'artist', guess: guesses.artist, answer: currentArtwork.artist },
+        { label: 'title', guess: guesses.title, answer: currentArtwork.title },
+        { label: 'period', guess: guesses.period, answer: currentArtwork.date },
+        { label: 'country', guess: guesses.country, answer: currentArtwork.origin },
+      ];
+
+      let html = '';
+      for (const r of rows) {
+        const match = r.guess && r.answer.toLowerCase().includes(r.guess.toLowerCase());
+        html += `<div class="reveal-row">
+          <span class="reveal-label">${r.label}</span>
+          <span class="reveal-value ${match ? 'reveal-match' : ''}">${r.answer}</span>
+        </div>`;
+      }
+
+      // Add meaning/description if available
+      if (currentArtwork.description) {
+        html += `<div class="reveal-row" style="margin-top:0.6rem;">
+          <span class="reveal-label">about</span>
+          <span class="reveal-value" style="font-size:0.8rem;opacity:0.7;">${currentArtwork.description}</span>
+        </div>`;
+      }
+
+      if (guesses.meaning) {
+        html += `<div class="reveal-row" style="margin-top:0.4rem;">
+          <span class="reveal-label">your take</span>
+          <span class="reveal-value" style="font-style:italic;opacity:0.6;">"${guesses.meaning}"</span>
+        </div>`;
+      }
+
+      card.innerHTML = html;
+      card.style.display = '';
+      card.classList.remove('fadeUp');
+      void card.offsetWidth;
+    }
+
+    // Load first artwork on page load
+    loadNewArtwork();
+  </script>
+</body>
+</html>
