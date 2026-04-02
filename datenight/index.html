@@ -81,7 +81,7 @@
         <span class="ha-icon">&#x2728;</span>
         <span class="ha-label">create me</span>
       </a>
-      <a href="world/" class="home-action-btn home-action-go">
+      <a href="#" class="home-action-btn home-action-go" id="start-adventure-btn">
         <span class="ha-icon">&#x1F680;</span>
         <span class="ha-label">start adventure</span>
       </a>
@@ -377,6 +377,71 @@
       }
     }
     spawnSparkles();
+
+    // ── Start Adventure Transition ──
+    document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+
+      // Elements to slide left
+      const slideEls = [
+        document.querySelector('.home-title'),
+        document.querySelector('.home-flavor'),
+        document.querySelector('.home-actions'),
+        document.querySelector('.home-sparkles'),
+        document.getElementById('waiting-banner'),
+        document.getElementById('room-info'),
+      ];
+
+      slideEls.forEach(el => {
+        if (!el) return;
+        el.style.transition = 'transform 0.7s ease-in, opacity 0.7s ease-in';
+        el.style.transform = 'translateX(-120vw)';
+        el.style.opacity = '0';
+      });
+
+      // Shrink character + add ground line
+      const charPreview = document.getElementById('home-char-preview');
+      const homeContent = document.getElementById('home-content');
+
+      // Create the ground line
+      const line = document.createElement('div');
+      line.style.cssText = `
+        position: fixed; bottom: 40%; left: 0; right: 0;
+        height: 3px; background: var(--dn-accent, #e85d75);
+        opacity: 0; transition: opacity 0.5s ease 0.3s;
+        z-index: 10;
+      `;
+      document.body.appendChild(line);
+      requestAnimationFrame(() => line.style.opacity = '1');
+
+      if (charPreview && charPreview.style.display !== 'none') {
+        const charEl = document.querySelector('.home-char');
+        const nameEl = document.querySelector('.home-char-name');
+        if (nameEl) {
+          nameEl.style.transition = 'opacity 0.4s ease';
+          nameEl.style.opacity = '0';
+        }
+        if (charEl) {
+          charEl.style.animation = 'none';
+          charEl.style.transition = 'transform 0.7s ease-in-out, bottom 0.7s ease-in-out';
+          charPreview.style.transition = 'transform 0.7s ease-in-out';
+          // Shrink and move to the line
+          charPreview.style.position = 'fixed';
+          charPreview.style.bottom = 'calc(40% + 3px)';
+          charPreview.style.left = '15%';
+          charPreview.style.top = 'auto';
+          charPreview.style.zIndex = '20';
+          charPreview.style.margin = '0';
+          charEl.style.transform = 'scale(0.45)';
+          charEl.style.transformOrigin = 'bottom center';
+        }
+      }
+
+      // Navigate after animation
+      setTimeout(() => {
+        window.location.href = 'world/';
+      }, 900);
+    });
   </script>
 </body>
 </html>
