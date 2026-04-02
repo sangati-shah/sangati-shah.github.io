@@ -383,6 +383,14 @@
 
     showHomeChar();
 
+    // ── Click anywhere → particle burst ──
+    document.addEventListener('click', (e) => {
+      // Don't fire on interactive elements
+      if (e.target.closest('button, a, input, [data-dn-cycle]')) return;
+      const theme = DN_THEMES[dnThemeIndex];
+      dnSpawnParticles(e.clientX, e.clientY, theme);
+    });
+
     // ── Sparkles ──
     function spawnSparkles() {
       const container = document.getElementById('home-sparkles');
