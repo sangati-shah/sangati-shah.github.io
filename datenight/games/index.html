@@ -75,7 +75,7 @@
   </div>
 
   <script>
-    // Apply shared datenight color theme
+    // Shared datenight color themes with click-to-cycle
     (function() {
       const themes = [
         { bg: '#faf8f5', text: '#2c2c2c', sub: '#888' },
@@ -86,13 +86,23 @@
         { bg: '#fff3e0', text: '#e65100', sub: '#b08060' },
         { bg: '#fce4ec', text: '#2e7d32', sub: '#e091a8' },
       ];
-      const i = parseInt(sessionStorage.getItem('datenight-theme') || '0');
-      if (i !== 0) {
+      let themeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
+      const title = document.querySelector('.games-title');
+      const sub = document.querySelector('.games-sub');
+
+      function applyTheme(i) {
         const t = themes[i];
         document.body.style.background = t.bg;
-        document.querySelector('.games-title').style.color = t.text;
-        document.querySelector('.games-sub').style.color = t.sub;
+        title.style.color = t.text;
+        sub.style.color = t.sub;
       }
+      if (themeIndex !== 0) applyTheme(themeIndex);
+
+      title.addEventListener('click', () => {
+        themeIndex = (themeIndex + 1) % themes.length;
+        sessionStorage.setItem('datenight-theme', themeIndex);
+        applyTheme(themeIndex);
+      });
     })();
   </script>
   <script src="games.js"></script>
