@@ -6,6 +6,7 @@
   <title>game night</title>
   <link rel="stylesheet" href="games.css" />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
   <a href="../" class="back-btn">&larr; back</a>
@@ -17,6 +18,33 @@
     <div class="game-tabs">
       <button class="game-tab active" data-game="tictactoe">tic tac toe</button>
       <button class="game-tab" data-game="connect4">connect 4</button>
+    </div>
+
+    <!-- Multiplayer Lobby -->
+    <div class="mp-lobby" id="mp-lobby">
+      <div class="mp-mode-toggle">
+        <button class="mp-mode-btn active" id="mp-local-btn">same device</button>
+        <button class="mp-mode-btn" id="mp-online-btn">play online</button>
+      </div>
+      <div class="mp-online-panel" id="mp-online-panel">
+        <div id="mp-create-join">
+          <button class="mp-action-btn" id="mp-create-btn">create room</button>
+          <div class="mp-or">or</div>
+          <div class="mp-join-row">
+            <input type="text" class="mp-code-input" id="mp-code-input" placeholder="enter code" maxlength="4" autocomplete="off" spellcheck="false" />
+            <button class="mp-action-btn" id="mp-join-btn">join</button>
+          </div>
+        </div>
+        <div id="mp-waiting" class="mp-hidden">
+          <div class="mp-code-display">share this code: <span id="mp-room-code" class="mp-code"></span></div>
+          <div class="mp-waiting-text">waiting for player 2...</div>
+          <button class="mp-cancel-btn" id="mp-cancel-btn">cancel</button>
+        </div>
+        <div id="mp-connected" class="mp-hidden">
+          <div class="mp-connected-text">connected! you are <span id="mp-your-role" class="mp-role"></span></div>
+        </div>
+        <div id="mp-error" class="mp-hidden mp-error-text"></div>
+      </div>
     </div>
 
     <!-- Tic Tac Toe -->
