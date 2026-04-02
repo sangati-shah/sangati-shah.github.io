@@ -64,34 +64,30 @@
 
   <!-- Main Content (hidden until in a room) -->
   <div class="home-content" id="home-content" style="display:none;">
-    <p class="waiting-banner" id="waiting-banner" style="display:none;">waiting for your partner &middot; code: <span id="waiting-code"></span></p>
 
-    <div class="rpg-frame">
-      <h1 class="rpg-title" data-dn-cycle>date night</h1>
-      <p class="rpg-subtitle">every love story needs an adventure</p>
+    <h1 class="home-title" data-dn-cycle>date night</h1>
+    <p class="home-flavor" id="home-flavor">every love story needs an adventure</p>
 
-      <div class="rpg-chapter">chapter 1</div>
-
-      <div class="rpg-menu">
-        <a href="character/" class="rpg-option">
-          <span class="rpg-option-icon">&#x2728;</span>
-          <div class="rpg-option-text">
-            <span class="rpg-option-title">design your character</span>
-            <span class="rpg-option-desc">choose your look before the journey</span>
-          </div>
-          <span class="rpg-arrow">&rsaquo;</span>
-        </a>
-        <a href="world/" class="rpg-option">
-          <span class="rpg-option-icon">&#x1F5FA;&#xFE0F;</span>
-          <div class="rpg-option-text">
-            <span class="rpg-option-title">start your adventure</span>
-            <span class="rpg-option-desc">explore the world together</span>
-          </div>
-          <span class="rpg-arrow">&rsaquo;</span>
-        </a>
-      </div>
+    <!-- Character preview (shown once created) -->
+    <div class="home-char-preview" id="home-char-preview" style="display:none;">
+      <div class="home-char" id="home-char-sprite"></div>
+      <div class="home-char-name" id="home-char-name"></div>
     </div>
 
+    <p class="waiting-banner" id="waiting-banner" style="display:none;">waiting for partner &middot; <span id="waiting-code"></span></p>
+
+    <div class="home-actions">
+      <a href="character/" class="home-action-btn home-action-create">
+        <span class="ha-icon">&#x2728;</span>
+        <span class="ha-label">create me</span>
+      </a>
+      <a href="world/" class="home-action-btn home-action-go">
+        <span class="ha-icon">&#x1F680;</span>
+        <span class="ha-label">let's go!</span>
+      </a>
+    </div>
+
+    <div class="home-sparkles" id="home-sparkles"></div>
     <p class="room-info" id="room-info"></p>
   </div>
 
@@ -327,9 +323,60 @@
     if (params.get('scared') === '1') {
       gate.style.display = 'none';
       content.style.display = '';
-      document.getElementById('home-sub').textContent = 'phew that was scary, should we try something different?';
+      document.getElementById('home-flavor').textContent = 'phew that was scary, should we try something different?';
       history.replaceState(null, '', './');
     }
+
+    // ── Show character on home if saved ──
+    function showHomeChar() {
+      try {
+        const c = JSON.parse(sessionStorage.getItem('my-character'));
+        if (!c || !c.name) return;
+        const preview = document.getElementById('home-char-preview');
+        const sprite = document.getElementById('home-char-sprite');
+        const nameEl = document.getElementById('home-char-name');
+        sprite.innerHTML = `
+          <div class="hc-hair" style="background:${c.hair}"></div>
+          <div class="hc-face" style="background:${c.skin}"></div>
+          <div class="hc-eyes"><div class="hc-eye"></div><div class="hc-eye"></div></div>
+          <div class="hc-mouth"></div>
+          <div class="hc-body" style="background:${c.shirt}"></div>
+          <div class="hc-legs">
+            <div class="hc-leg" style="background:${c.pants || '#3a3a5c'}"></div>
+            <div class="hc-leg" style="background:${c.pants || '#3a3a5c'}"></div>
+          </div>`;
+        nameEl.textContent = c.name;
+        preview.style.display = '';
+        // Update flavor text
+        const greetings = [
+          'ready for an adventure, ' + c.name + '?',
+          'looking good, ' + c.name + '!',
+          'let\'s make some memories, ' + c.name,
+          c.name + '! our story awaits...',
+        ];
+        document.getElementById('home-flavor').textContent =
+          greetings[Math.floor(Math.random() * greetings.length)];
+      } catch {}
+    }
+
+    showHomeChar();
+
+    // ── Sparkles ──
+    function spawnSparkles() {
+      const container = document.getElementById('home-sparkles');
+      if (!container) return;
+      for (let i = 0; i < 12; i++) {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.textContent = ['✦', '·', '✧', '˚', '⊹'][Math.floor(Math.random() * 5)];
+        s.style.left = (10 + Math.random() * 80) + '%';
+        s.style.animationDelay = (Math.random() * 4) + 's';
+        s.style.animationDuration = (3 + Math.random() * 3) + 's';
+        s.style.fontSize = (0.5 + Math.random() * 0.8) + 'rem';
+        container.appendChild(s);
+      }
+    }
+    spawnSparkles();
   </script>
 </body>
 </html>

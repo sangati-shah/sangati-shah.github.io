@@ -201,7 +201,7 @@
       display: flex; gap: 3px;
     }
     .sprite .s-leg {
-      width: 7px; height: 14px; background: #3a3a5c;
+      width: 7px; height: 14px;
       border-radius: 3px 3px 4px 4px; transition: transform 0.15s;
     }
 
@@ -423,11 +423,11 @@
     // ══════════════════════════════════════
     // CHARACTER DATA
     // ══════════════════════════════════════
-    const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75' };
+    const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
     let myChar = { ...DEFAULT_CHAR };
     try { const s = JSON.parse(sessionStorage.getItem('my-character')); if (s) myChar = { ...myChar, ...s }; } catch {}
 
-    let partnerChar = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b' };
+    let partnerChar = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b', pants: '#1a1a2e' };
 
     function buildSprite(el, c) {
       el.innerHTML = `
@@ -437,7 +437,7 @@
           <div class="s-face" style="background:${c.skin}"></div>
           <div class="s-eyes"><div class="s-eye"></div><div class="s-eye"></div></div>
           <div class="s-body" style="background:${c.shirt}"></div>
-          <div class="s-legs"><div class="s-leg"></div><div class="s-leg"></div></div>
+          <div class="s-legs"><div class="s-leg" style="background:${c.pants || '#3a3a5c'}"></div><div class="s-leg" style="background:${c.pants || '#3a3a5c'}"></div></div>
         </div>`;
     }
 
