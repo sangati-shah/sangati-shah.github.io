@@ -196,9 +196,20 @@
     .ctrl-btn:active { background: color-mix(in srgb, var(--dn-accent, #e85d75) 30%, transparent); }
     .ctrl-btn.jump-btn { width: 58px; height: 58px; font-size: 0.75rem; font-family: 'Caveat', cursive; }
     @media (pointer: coarse) { .mobile-controls { display: flex; } }
+
+    .back-btn {
+      position: fixed; top: 1.2rem; left: 1.2rem;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.1rem; color: var(--dn-sub, #999);
+      text-decoration: none; z-index: 300;
+      transition: color 0.3s;
+    }
+    .back-btn:hover { color: var(--dn-text, #555); }
   </style>
 </head>
 <body>
+
+  <a href="../" class="back-btn">&larr; home</a>
 
   <div class="intro-text" id="intro-text">
     reach the glowing light to begin<br/>your first adventure together

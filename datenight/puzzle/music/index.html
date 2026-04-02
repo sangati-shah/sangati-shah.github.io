@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rhythm puzzle</title>
-  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <title>rhythm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../hud.css" />
   <script src="../../theme.js"></script>
   <script src="../../hud.js"></script>
@@ -15,256 +15,219 @@
     body {
       font-family: 'Inter', sans-serif;
       min-height: 100dvh;
-      background: #0d0d0d;
+      background: #0a0a0a;
       color: #f0e6d3;
-      overflow-x: hidden;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* ── Ambient Background ── */
+    /* ── Ambient ── */
     .bg-grain {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      opacity: 0.04;
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.03;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
-    .bg-glow {
-      position: fixed; top: -30%; left: 50%; transform: translateX(-50%);
-      width: 120vw; height: 60vh;
-      background: radial-gradient(ellipse, rgba(212,155,60,0.08) 0%, rgba(180,80,40,0.04) 40%, transparent 70%);
+    .bg-pulse {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 120vmax; height: 120vmax;
+      background: radial-gradient(ellipse, rgba(212,155,60,0.04) 0%, transparent 50%);
       pointer-events: none; z-index: 0;
+      animation: bg-breathe 4s ease-in-out infinite alternate;
     }
+    @keyframes bg-breathe { 0% { transform: translate(-50%,-50%) scale(1); } 100% { transform: translate(-50%,-50%) scale(1.15); } }
 
-    .bg-glow-bottom {
-      position: fixed; bottom: -20%; left: 50%; transform: translateX(-50%);
-      width: 100vw; height: 40vh;
-      background: radial-gradient(ellipse, rgba(60,140,120,0.06) 0%, transparent 60%);
-      pointer-events: none; z-index: 0;
+    /* ── Top bar ── */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 1.5rem; z-index: 100;
     }
-
-    /* ── Layout ── */
-    .music-page {
-      position: relative; z-index: 1;
-      max-width: 700px; margin: 0 auto;
-      padding: 4rem 1.5rem 3rem;
-      text-align: center;
-    }
-
     .back-link {
-      position: fixed; top: 1.5rem; left: 1.5rem;
       font-family: 'Caveat', cursive; font-size: 1.2rem;
-      color: rgba(240,230,211,0.3); text-decoration: none;
-      z-index: 100; transition: color 0.3s;
+      color: rgba(240,230,211,0.25); text-decoration: none; transition: color 0.3s;
     }
-    .back-link:hover { color: rgba(240,230,211,0.7); }
+    .back-link:hover { color: rgba(240,230,211,0.6); }
+    .pts-display {
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: rgba(240,230,211,0.25);
+    }
+    .pts-num { color: #d49b3c; font-weight: 600; transition: transform 0.3s; }
+    .pts-num.bump { transform: scale(1.4); display: inline-block; }
 
-    /* ── Header ── */
+    /* ── Main ── */
+    .music-app {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 500px;
+      padding: 1rem;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1.2rem;
+    }
+
     .page-title {
       font-family: 'Abril Fatface', serif;
-      font-size: clamp(2rem, 6vw, 3.2rem);
-      color: #d49b3c;
-      letter-spacing: 0.02em;
-      margin-bottom: 0.2em;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: #d49b3c; letter-spacing: 0.02em;
       cursor: pointer; user-select: none;
     }
-
     .page-sub {
       font-family: 'Caveat', cursive;
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      color: rgba(240,230,211,0.45);
-      margin-bottom: 2.5rem;
-      line-height: 1.5;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      color: rgba(240,230,211,0.3); text-align: center;
+      line-height: 1.4; margin-bottom: 0.5rem;
     }
 
-    /* ── Listen Section ── */
-    .listen-section {
-      margin-bottom: 2.5rem;
+    /* ── Beat Timeline ── */
+    .timeline {
+      width: 100%; height: 50px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      display: flex; align-items: center;
+      padding: 0 0.6rem; gap: 3px;
+      position: relative; overflow: hidden;
     }
 
-    .listen-btn {
-      display: inline-flex; align-items: center; gap: 0.8rem;
-      font-family: 'Caveat', cursive; font-size: 1.4rem;
-      background: rgba(212,155,60,0.12);
-      border: 1.5px solid rgba(212,155,60,0.3);
+    .beat-cell {
+      flex: 1; height: 34px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .beat-cell.active {
+      border-color: rgba(212,155,60,0.4);
+      background: rgba(212,155,60,0.08);
+    }
+    .beat-cell.playing {
+      background: rgba(212,155,60,0.25);
+      border-color: #d49b3c;
+      transform: scale(1.05);
+    }
+    .beat-cell.correct { border-color: #4caf50; background: rgba(76,175,80,0.15); }
+    .beat-cell.wrong { border-color: #ef5350; background: rgba(239,83,80,0.1); }
+
+    .beat-cell .cell-label {
+      font-family: 'Caveat', cursive; font-size: 0.6rem;
+      color: rgba(240,230,211,0.3);
+    }
+
+    /* ── Pad Grid ── */
+    .pad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      width: 100%; max-width: 380px;
+    }
+
+    .pad {
+      aspect-ratio: 1;
+      border-radius: 20px;
+      border: 2px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.3rem;
+      transition: all 0.1s ease;
+      position: relative; overflow: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .pad:active, .pad.hit {
+      transform: scale(0.94);
+    }
+    .pad .pad-emoji { font-size: clamp(1.8rem, 5vw, 2.4rem); pointer-events: none; }
+    .pad .pad-name {
+      font-family: 'Caveat', cursive; font-size: clamp(0.75rem, 2vw, 0.9rem);
+      pointer-events: none; opacity: 0.6;
+    }
+
+    /* Ripple on hit */
+    .pad .ripple {
+      position: absolute; border-radius: 50%;
+      transform: scale(0); opacity: 0.4;
+      animation: ripple-out 0.6s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes ripple-out {
+      to { transform: scale(3); opacity: 0; }
+    }
+
+    /* Pad colors */
+    .pad[data-inst="tabla"]   { --pad-color: #d49b3c; }
+    .pad[data-inst="sitar"]   { --pad-color: #c0392b; }
+    .pad[data-inst="bansuri"]  { --pad-color: #27ae60; }
+    .pad[data-inst="krar"]    { --pad-color: #8e44ad; }
+    .pad[data-inst="kebero"]  { --pad-color: #e67e22; }
+    .pad[data-inst="masinko"] { --pad-color: #2980b9; }
+
+    .pad:hover { border-color: var(--pad-color, #555); background: rgba(255,255,255,0.05); }
+    .pad.hit {
+      border-color: var(--pad-color, #d49b3c);
+      box-shadow: 0 0 30px color-mix(in srgb, var(--pad-color, #d49b3c) 30%, transparent),
+                  inset 0 0 20px color-mix(in srgb, var(--pad-color, #d49b3c) 10%, transparent);
+    }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex; gap: 0.6rem; align-items: center;
+      flex-wrap: wrap; justify-content: center;
+    }
+
+    .ctrl-btn {
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.1);
       border-radius: 50px;
-      padding: 0.7em 2em;
-      color: #d49b3c; cursor: pointer;
+      padding: 0.5em 1.6em;
+      color: rgba(240,230,211,0.6); cursor: pointer;
       transition: all 0.3s ease;
     }
-    .listen-btn:hover {
-      background: rgba(212,155,60,0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(212,155,60,0.15);
+    .ctrl-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+    .ctrl-btn.active {
+      border-color: #d49b3c; color: #d49b3c;
+      background: rgba(212,155,60,0.12);
     }
-    .listen-btn.playing { opacity: 0.5; pointer-events: none; }
-    .listen-icon { font-size: 1.6rem; }
+    .ctrl-btn.success {
+      border-color: #4caf50; color: #4caf50;
+      background: rgba(76,175,80,0.12);
+    }
+    .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
 
-    /* ── Sequence Board ── */
-    .board-label {
-      font-family: 'Caveat', cursive; font-size: 1.1rem;
-      color: rgba(240,230,211,0.35); margin-bottom: 1rem;
-      letter-spacing: 0.05em; text-transform: lowercase;
+    .ctrl-btn-small {
+      font-family: 'Caveat', cursive; font-size: 0.95rem;
+      background: none; border: none;
+      color: rgba(240,230,211,0.2); cursor: pointer;
+      padding: 0.3em 0.8em; transition: color 0.3s;
     }
-
-    .sequence-board {
-      display: flex; gap: 0.6rem;
-      justify-content: center; flex-wrap: wrap;
-      margin-bottom: 2.5rem;
-    }
-
-    .board-slot {
-      width: 80px; height: 90px;
-      border: 2px dashed rgba(212,155,60,0.2);
-      border-radius: 16px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 0.2rem;
-      cursor: pointer; transition: all 0.3s ease;
-      position: relative;
-      background: rgba(255,255,255,0.02);
-    }
-    .board-slot:hover { border-color: rgba(212,155,60,0.4); background: rgba(212,155,60,0.05); }
-
-    .board-slot.highlight {
-      border-color: #d49b3c;
-      background: rgba(212,155,60,0.1);
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(212,155,60,0.15);
-    }
-
-    .board-slot.filled {
-      border-style: solid; border-color: rgba(212,155,60,0.3);
-      background: rgba(212,155,60,0.06);
-    }
-
-    .board-slot.playing-now {
-      transform: scale(1.12);
-      box-shadow: 0 0 25px rgba(212,155,60,0.3);
-      border-color: #d49b3c;
-    }
-
-    .board-slot.correct { border-color: #4caf50 !important; background: rgba(76,175,80,0.1) !important; box-shadow: 0 0 15px rgba(76,175,80,0.2); }
-    .board-slot.close { border-color: #f9a825 !important; background: rgba(249,168,37,0.1) !important; box-shadow: 0 0 15px rgba(249,168,37,0.2); }
-    .board-slot.wrong { border-color: #ef5350 !important; background: rgba(239,83,80,0.06) !important; }
-
-    .slot-num {
-      font-family: 'Caveat', cursive; font-size: 0.7rem;
-      color: rgba(240,230,211,0.2);
-      position: absolute; top: 6px; left: 10px;
-    }
-    .slot-emoji { font-size: 2rem; }
-    .slot-name { font-family: 'Caveat', cursive; font-size: 0.75rem; color: rgba(240,230,211,0.5); }
-
-    /* ── Instruments Grid ── */
-    .instruments-section {
-      margin-bottom: 2rem;
-    }
-
-    .section-label {
-      font-family: 'Caveat', cursive; font-size: 1rem;
-      color: rgba(240,230,211,0.35); margin-bottom: 0.8rem;
-      letter-spacing: 0.03em;
-    }
-
-    .instrument-grid {
-      display: flex; gap: 0.7rem;
-      justify-content: center; flex-wrap: wrap;
-      margin-bottom: 1.5rem; min-height: 80px;
-    }
-
-    .inst-card {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 0.3rem;
-      padding: 0.8rem 1.2rem;
-      background: rgba(255,255,255,0.04);
-      border: 1.5px solid rgba(240,230,211,0.12);
-      border-radius: 16px;
-      cursor: pointer; transition: all 0.25s ease;
-      user-select: none;
-    }
-    .inst-card:hover {
-      transform: translateY(-3px);
-      background: rgba(255,255,255,0.08);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    }
-    .inst-card.selected {
-      border-color: #d49b3c;
-      background: rgba(212,155,60,0.15);
-      transform: scale(1.08);
-      box-shadow: 0 4px 20px rgba(212,155,60,0.25);
-    }
-    .inst-card .card-emoji { font-size: 2rem; }
-    .inst-card .card-name {
-      font-family: 'Caveat', cursive; font-size: 0.85rem;
-      color: rgba(240,230,211,0.7);
-    }
-
-    .partner-grid {
-      display: flex; gap: 0.5rem;
-      justify-content: center; flex-wrap: wrap;
-    }
-
-    .partner-card {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 0.15rem;
-      padding: 0.5rem 0.8rem;
-      border: 1px dashed rgba(240,230,211,0.1);
-      border-radius: 12px; opacity: 0.35;
-    }
-    .partner-card .card-emoji { font-size: 1.3rem; }
-    .partner-card .card-name {
-      font-family: 'Caveat', cursive; font-size: 0.7rem;
-      color: rgba(240,230,211,0.4);
-    }
+    .ctrl-btn-small:hover { color: rgba(240,230,211,0.5); }
 
     /* ── Status ── */
-    .status-msg {
-      font-family: 'Caveat', cursive; font-size: 1.2rem;
-      color: rgba(240,230,211,0.5); min-height: 1.5em;
-      margin-bottom: 1.5rem; transition: all 0.3s ease;
-    }
-    .status-msg.success { color: #4caf50; }
-    .status-msg.error { color: #ef5350; }
-
-    /* ── Action Buttons ── */
-    .actions {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 0.8rem;
-    }
-
-    .submit-btn {
-      font-family: 'Caveat', cursive; font-size: 1.3rem;
-      background: rgba(212,155,60,0.15);
-      border: 1.5px solid rgba(212,155,60,0.3);
-      border-radius: 50px;
-      padding: 0.55em 2.8em;
-      color: #d49b3c; cursor: pointer;
+    .status {
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: rgba(240,230,211,0.35);
+      min-height: 1.4em; text-align: center;
       transition: all 0.3s ease;
     }
-    .submit-btn:hover:not(:disabled) {
-      background: rgba(212,155,60,0.25);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(212,155,60,0.2);
-    }
-    .submit-btn:disabled { opacity: 0.3; cursor: default; }
-
-    .skip-btn {
-      font-family: 'Caveat', cursive; font-size: 1rem;
-      background: none; border: none;
-      color: rgba(240,230,211,0.25); cursor: pointer;
-      padding: 0.4em 1em; transition: color 0.3s;
-    }
-    .skip-btn:hover { color: rgba(240,230,211,0.5); }
+    .status.good { color: #4caf50; }
+    .status.bad { color: #ef5350; }
+    .status.gold { color: #d49b3c; }
 
     /* ── Victory ── */
     .victory-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
       display: flex; align-items: center; justify-content: center;
       z-index: 9000; opacity: 0; pointer-events: none;
       transition: opacity 0.5s ease;
     }
     .victory-overlay.visible { opacity: 1; pointer-events: all; }
-
     .victory-card {
       text-align: center;
       background: linear-gradient(135deg, #1a1408, #0d0d0d);
@@ -273,127 +236,74 @@
       padding: 3rem 2.5rem; max-width: 380px; width: 90%;
       transform: scale(0.8);
       transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
-      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(212,155,60,0.08);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
     }
     .victory-overlay.visible .victory-card { transform: scale(1); }
-
     .victory-emoji { font-size: 3.5rem; margin-bottom: 0.5rem; }
-    .victory-title {
-      font-family: 'Abril Fatface', serif; font-size: 2rem;
-      color: #d49b3c; margin-bottom: 0.3em;
-    }
-    .victory-pts {
-      font-family: 'Caveat', cursive; font-size: 1.4rem;
-      color: rgba(240,230,211,0.6); margin-bottom: 1.5rem;
-    }
+    .victory-title { font-family: 'Abril Fatface', serif; font-size: 2rem; color: #d49b3c; margin-bottom: 0.3em; }
+    .victory-pts { font-family: 'Caveat', cursive; font-size: 1.4rem; color: rgba(240,230,211,0.5); margin-bottom: 1.5rem; }
     .victory-btn {
       font-family: 'Caveat', cursive; font-size: 1.2rem;
-      background: rgba(212,155,60,0.15);
-      border: 1.5px solid rgba(212,155,60,0.3);
-      border-radius: 50px;
-      padding: 0.5em 2em; color: #d49b3c;
-      text-decoration: none; transition: all 0.3s ease;
+      background: rgba(212,155,60,0.15); border: 1.5px solid rgba(212,155,60,0.3);
+      border-radius: 50px; padding: 0.5em 2em; color: #d49b3c;
+      text-decoration: none; transition: all 0.3s; display: inline-block;
     }
-    .victory-btn:hover {
-      background: rgba(212,155,60,0.25);
-      transform: translateY(-2px);
-    }
+    .victory-btn:hover { background: rgba(212,155,60,0.25); transform: translateY(-2px); }
 
     /* ── Easter Eggs ── */
-    .hidden-gem {
-      position: fixed; font-size: 0.9rem;
-      cursor: pointer; opacity: 0.06;
-      transition: all 0.3s ease; z-index: 50; user-select: none;
-    }
+    .hidden-gem { position: fixed; font-size: 0.9rem; cursor: pointer; opacity: 0.05; transition: all 0.3s; z-index: 50; user-select: none; }
     .hidden-gem:hover { opacity: 0.35; transform: scale(1.3); }
-    .hidden-gem.found { opacity: 1; transform: scale(1.5); animation: gem-sparkle 0.6s ease; }
-
-    @keyframes gem-sparkle {
-      0% { transform: scale(1.5) rotate(0deg); }
-      50% { transform: scale(1.8) rotate(10deg); }
-      100% { transform: scale(1.5) rotate(0deg); }
-    }
-
+    .hidden-gem.found { opacity: 1; transform: scale(1.5); }
     .gem-toast {
       position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      font-family: 'Caveat', cursive; font-size: 1.5rem;
-      color: #d49b3c;
+      transform: translate(-50%,-50%) scale(0);
+      font-family: 'Caveat', cursive; font-size: 1.5rem; color: #d49b3c;
       background: #1a1408; border: 1px solid rgba(212,155,60,0.3);
       padding: 1rem 2rem; border-radius: 20px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       z-index: 9999; pointer-events: none;
-      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
       opacity: 0;
     }
-    .gem-toast.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-
-    /* ── Points ── */
-    .pts-display {
-      position: fixed; top: 1.5rem; right: 1.5rem;
-      font-family: 'Caveat', cursive; font-size: 1.2rem;
-      color: rgba(240,230,211,0.3); z-index: 100;
-      display: flex; align-items: center; gap: 0.3rem;
-    }
-    .pts-num {
-      color: #d49b3c; font-weight: 600;
-      transition: transform 0.3s ease;
-    }
-    .pts-num.bump { transform: scale(1.4); }
+    .gem-toast.show { transform: translate(-50%,-50%) scale(1); opacity: 1; }
 
     /* ── Responsive ── */
-    @media (max-width: 500px) {
-      .board-slot { width: 62px; height: 72px; }
-      .board-slot .slot-emoji { font-size: 1.5rem; }
-      .inst-card { padding: 0.6rem 0.9rem; }
-      .inst-card .card-emoji { font-size: 1.5rem; }
-      .music-page { padding: 3.5rem 1rem 2rem; }
+    @media (max-width: 420px) {
+      .pad-grid { gap: 0.5rem; max-width: 300px; }
+      .music-app { gap: 0.8rem; }
+    }
+    @media (min-height: 800px) {
+      .pad-grid { gap: 1rem; }
     }
   </style>
 </head>
 <body>
   <div class="bg-grain"></div>
-  <div class="bg-glow"></div>
-  <div class="bg-glow-bottom"></div>
+  <div class="bg-pulse"></div>
 
-  <a href="../" class="back-link">&larr; back</a>
-  <div class="pts-display"><span id="pts-num">0</span> pts</div>
+  <div class="top-bar">
+    <a href="../../world/" class="back-link">&larr; back to adventure</a>
+    <div class="pts-display"><span class="pts-num" id="pts-num">0</span> pts</div>
+  </div>
 
-  <div class="music-page" id="music-page">
-    <h1 class="page-title" data-dn-cycle>rhythm puzzle</h1>
-    <p class="page-sub">listen to the rhythm, then place the instruments in order<br/>tap an instrument, then tap a slot to place it</p>
+  <div class="music-app">
+    <h1 class="page-title" data-dn-cycle>rhythm</h1>
+    <p class="page-sub" id="page-sub">listen to the beat, then replay it on the pads</p>
 
-    <!-- Listen -->
-    <div class="listen-section">
-      <button class="listen-btn" id="play-btn">
-        <span class="listen-icon">&#x25B6;&#xFE0F;</span>
-        <span id="play-text">play the rhythm</span>
-      </button>
-    </div>
-
-    <!-- Board -->
-    <div class="board-label">recreate the rhythm</div>
-    <div class="sequence-board" id="sequence-board"></div>
+    <!-- Beat Timeline -->
+    <div class="timeline" id="timeline"></div>
 
     <!-- Status -->
-    <div class="status-msg" id="status-msg"></div>
+    <div class="status" id="status"></div>
 
-    <!-- Your instruments -->
-    <div class="instruments-section">
-      <div class="section-label" id="palette-label">your instruments</div>
-      <div class="instrument-grid" id="instrument-grid"></div>
-    </div>
+    <!-- Pad Grid -->
+    <div class="pad-grid" id="pad-grid"></div>
 
-    <!-- Partner instruments -->
-    <div class="instruments-section" id="partner-section">
-      <div class="section-label">partner's instruments</div>
-      <div class="partner-grid" id="partner-grid"></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="actions">
-      <button class="submit-btn" id="submit-btn" disabled>submit</button>
-      <button class="skip-btn" id="skip-btn">skip &rarr;</button>
+    <!-- Controls -->
+    <div class="controls" id="controls">
+      <button class="ctrl-btn" id="listen-btn">listen</button>
+      <button class="ctrl-btn" id="record-btn">tap the beat</button>
+      <button class="ctrl-btn-small" id="skip-btn">skip &rarr;</button>
     </div>
   </div>
 
@@ -401,36 +311,36 @@
   <div class="victory-overlay" id="victory-overlay">
     <div class="victory-card">
       <div class="victory-emoji">&#x1F3B6;</div>
-      <div class="victory-title" id="victory-title">perfect rhythm!</div>
+      <div class="victory-title">perfect rhythm!</div>
       <div class="victory-pts" id="victory-pts">+60 pts</div>
-      <a href="../" class="victory-btn" id="victory-btn">next puzzle &rarr;</a>
+      <a href="../" class="victory-btn">next puzzle &rarr;</a>
     </div>
   </div>
 
   <!-- Easter eggs -->
-  <div class="hidden-gem" id="gem-1" style="top: 12%; right: 8%;">&#x2B50;</div>
-  <div class="hidden-gem" id="gem-2" style="bottom: 15%; left: 5%;">&#x1F3B5;</div>
+  <div class="hidden-gem" id="gem-1" style="top: 14%; right: 6%;">&#x2B50;</div>
+  <div class="hidden-gem" id="gem-2" style="bottom: 8%; left: 4%;">&#x1F3B5;</div>
   <div class="gem-toast" id="gem-toast"></div>
 
   <script>
     // ══════════════════════════════════════
-    // INSTRUMENTS — Indian & Ethiopian inspired
+    // INSTRUMENTS
     // ══════════════════════════════════════
-    const INSTRUMENTS = {
-      tabla:    { emoji: '\u{1F941}', name: 'tabla',    color: '#d49b3c' },
-      sitar:    { emoji: '\u{1FA95}', name: 'sitar',    color: '#c0392b' },
-      bansuri:  { emoji: '\u{1FA88}', name: 'bansuri',  color: '#27ae60' },
-      krar:     { emoji: '\u{1F3BB}', name: 'krar',     color: '#8e44ad' },
-      kebero:   { emoji: '\u{1FA98}', name: 'kebero',   color: '#e67e22' },
-      masinko:  { emoji: '\u{1F3BB}', name: 'masinko',  color: '#2980b9' },
-    };
+    const INSTRUMENTS = [
+      { id: 'tabla',   emoji: '\u{1F941}', name: 'tabla',   color: '#d49b3c' },
+      { id: 'sitar',   emoji: '\u{1FA95}', name: 'sitar',   color: '#c0392b' },
+      { id: 'bansuri', emoji: '\u{1FA88}', name: 'bansuri', color: '#27ae60' },
+      { id: 'krar',    emoji: '\u{1F3BB}', name: 'krar',    color: '#8e44ad' },
+      { id: 'kebero',  emoji: '\u{1FA98}', name: 'kebero',  color: '#e67e22' },
+      { id: 'masinko', emoji: '\u{1F3BB}', name: 'masinko', color: '#2980b9' },
+    ];
 
-    const TARGET = ['tabla', 'sitar', 'bansuri', 'krar', 'kebero', 'masinko'];
-    const HOST_INSTRUMENTS = ['tabla', 'bansuri', 'krar'];
-    const GUEST_INSTRUMENTS = ['sitar', 'kebero', 'masinko'];
+    // The target beat pattern: 8 beats, each is an instrument id or null (rest)
+    const TARGET_BEAT = ['tabla', 'kebero', 'sitar', null, 'bansuri', 'krar', 'masinko', 'tabla'];
+    const BEAT_GAP = 0.45; // seconds between beats
 
     // ══════════════════════════════════════
-    // WEB AUDIO SYNTHESIS
+    // AUDIO SYNTHESIS
     // ══════════════════════════════════════
     let audioCtx = null;
     function getCtx() {
@@ -438,169 +348,135 @@
       return audioCtx;
     }
 
-    function playSound(name, startTime) {
+    function playSound(name) {
       const ctx = getCtx();
-      const t = startTime || ctx.currentTime;
-
-      // Master gain
+      const t = ctx.currentTime;
       const master = ctx.createGain();
-      master.gain.value = 0.6;
+      master.gain.value = 0.55;
       master.connect(ctx.destination);
 
       if (name === 'tabla') {
-        // Tabla: sharp attack, pitched membrane + noise
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(180, t);
-        osc.frequency.exponentialRampToValueAtTime(80, t + 0.15);
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.8, t);
-        g.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
-        osc.connect(g); g.connect(master);
-        osc.start(t); osc.stop(t + 0.3);
-
-        // Click noise
-        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
-        const d = buf.getChannelData(0);
-        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.008));
-        const src = ctx.createBufferSource(); src.buffer = buf;
-        const ng = ctx.createGain(); ng.gain.value = 0.4;
-        src.connect(ng); ng.connect(master);
-        src.start(t); src.stop(t + 0.05);
-        return 0.35;
-      }
-
-      if (name === 'sitar') {
-        // Sitar: plucked string with twang + sympathetic resonance
-        const freqs = [261.6, 523.25, 784.9];
-        freqs.forEach((f, i) => {
-          const osc = ctx.createOscillator();
-          osc.type = 'sawtooth';
-          osc.frequency.value = f;
-          const g = ctx.createGain();
-          const vol = i === 0 ? 0.35 : 0.08;
-          g.gain.setValueAtTime(vol, t);
-          g.gain.exponentialRampToValueAtTime(0.001, t + (i === 0 ? 0.8 : 0.5));
-          // Buzz / twang filter
-          const flt = ctx.createBiquadFilter();
-          flt.type = 'bandpass'; flt.frequency.value = f * 2; flt.Q.value = 8;
-          osc.connect(flt); flt.connect(g); g.connect(master);
-          osc.start(t); osc.stop(t + 1);
-        });
-        return 0.9;
-      }
-
-      if (name === 'bansuri') {
-        // Bansuri (Indian flute): breathy sine with vibrato
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = 587.33; // D5
-        // Vibrato
-        const vib = ctx.createOscillator();
-        const vibG = ctx.createGain();
-        vib.frequency.value = 5.5; vibG.gain.value = 8;
-        vib.connect(vibG); vibG.connect(osc.frequency);
-        vib.start(t); vib.stop(t + 1);
-
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.4, t + 0.08);
-        g.gain.setValueAtTime(0.35, t + 0.5);
-        g.gain.linearRampToValueAtTime(0, t + 0.9);
-
-        // Breathy noise layer
-        const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.9, ctx.sampleRate);
-        const nD = nBuf.getChannelData(0);
-        for (let i = 0; i < nD.length; i++) nD[i] = (Math.random() * 2 - 1) * 0.06;
-        const nSrc = ctx.createBufferSource(); nSrc.buffer = nBuf;
-        const nFlt = ctx.createBiquadFilter(); nFlt.type = 'bandpass'; nFlt.frequency.value = 600; nFlt.Q.value = 1;
-        nSrc.connect(nFlt); nFlt.connect(g);
-        nSrc.start(t); nSrc.stop(t + 0.9);
-
-        osc.connect(g); g.connect(master);
-        osc.start(t); osc.stop(t + 0.95);
-        return 0.95;
-      }
-
-      if (name === 'krar') {
-        // Krar (Ethiopian lyre): plucked, pentatonic double note
-        [392, 493.88].forEach((f, i) => {
-          const osc = ctx.createOscillator();
-          osc.type = 'triangle';
-          osc.frequency.value = f;
-          const g = ctx.createGain();
-          g.gain.setValueAtTime(0.3, t + i * 0.06);
-          g.gain.exponentialRampToValueAtTime(0.01, t + i * 0.06 + 0.6);
-          osc.connect(g); g.connect(master);
-          osc.start(t + i * 0.06); osc.stop(t + i * 0.06 + 0.65);
-        });
-        return 0.7;
-      }
-
-      if (name === 'kebero') {
-        // Kebero (Ethiopian drum): deep, resonant
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(100, t);
-        osc.frequency.exponentialRampToValueAtTime(50, t + 0.3);
+        const osc = ctx.createOscillator(); osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, t);
+        osc.frequency.exponentialRampToValueAtTime(80, t + 0.12);
         const g = ctx.createGain();
         g.gain.setValueAtTime(0.9, t);
-        g.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        g.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
         osc.connect(g); g.connect(master);
-        osc.start(t); osc.stop(t + 0.45);
-
-        // Body thump noise
-        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
-        const dd = buf.getChannelData(0);
-        for (let i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.015));
+        osc.start(t); osc.stop(t + 0.25);
+        // click
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.03, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.exp(-i/(ctx.sampleRate*0.006));
         const src = ctx.createBufferSource(); src.buffer = buf;
-        const flt = ctx.createBiquadFilter(); flt.type = 'lowpass'; flt.frequency.value = 200;
         const ng = ctx.createGain(); ng.gain.value = 0.5;
-        src.connect(flt); flt.connect(ng); ng.connect(master);
-        src.start(t); src.stop(t + 0.1);
-        return 0.5;
+        src.connect(ng); ng.connect(master); src.start(t); src.stop(t+0.04);
       }
-
-      if (name === 'masinko') {
-        // Masinko (Ethiopian bowed fiddle): nasal, bowed
-        const osc = ctx.createOscillator();
-        osc.type = 'sawtooth';
-        osc.frequency.value = 440;
-        // Vibrato
-        const vib = ctx.createOscillator();
-        const vibG = ctx.createGain();
-        vib.frequency.value = 6; vibG.gain.value = 5;
-        vib.connect(vibG); vibG.connect(osc.frequency);
-        vib.start(t); vib.stop(t + 1);
-
-        const flt = ctx.createBiquadFilter();
-        flt.type = 'bandpass'; flt.frequency.value = 900; flt.Q.value = 3;
+      else if (name === 'sitar') {
+        [261.6, 523.25, 784.9].forEach((f, i) => {
+          const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = f;
+          const g = ctx.createGain(); g.gain.setValueAtTime(i===0?0.35:0.08, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + (i===0?0.6:0.35));
+          const flt = ctx.createBiquadFilter(); flt.type='bandpass'; flt.frequency.value=f*2; flt.Q.value=8;
+          osc.connect(flt); flt.connect(g); g.connect(master);
+          osc.start(t); osc.stop(t+0.7);
+        });
+      }
+      else if (name === 'bansuri') {
+        const osc = ctx.createOscillator(); osc.type='sine'; osc.frequency.value=587.33;
+        const vib = ctx.createOscillator(); const vibG = ctx.createGain();
+        vib.frequency.value=5.5; vibG.gain.value=8;
+        vib.connect(vibG); vibG.connect(osc.frequency); vib.start(t); vib.stop(t+0.7);
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.3, t + 0.08);
-        g.gain.setValueAtTime(0.25, t + 0.6);
-        g.gain.linearRampToValueAtTime(0, t + 0.85);
-        osc.connect(flt); flt.connect(g); g.connect(master);
-        osc.start(t); osc.stop(t + 0.9);
-        return 0.9;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.4, t+0.06);
+        g.gain.setValueAtTime(0.35, t+0.35); g.gain.linearRampToValueAtTime(0, t+0.6);
+        osc.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.65);
       }
+      else if (name === 'krar') {
+        [392, 493.88].forEach((f, i) => {
+          const osc = ctx.createOscillator(); osc.type='triangle'; osc.frequency.value=f;
+          const g = ctx.createGain(); g.gain.setValueAtTime(0.3, t+i*0.05);
+          g.gain.exponentialRampToValueAtTime(0.01, t+i*0.05+0.45);
+          osc.connect(g); g.connect(master); osc.start(t+i*0.05); osc.stop(t+i*0.05+0.5);
+        });
+      }
+      else if (name === 'kebero') {
+        const osc = ctx.createOscillator(); osc.type='sine';
+        osc.frequency.setValueAtTime(110, t);
+        osc.frequency.exponentialRampToValueAtTime(45, t+0.25);
+        const g = ctx.createGain(); g.gain.setValueAtTime(1, t);
+        g.gain.exponentialRampToValueAtTime(0.01, t+0.35);
+        osc.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.4);
+        const buf = ctx.createBuffer(1, ctx.sampleRate*0.06, ctx.sampleRate);
+        const dd = buf.getChannelData(0);
+        for (let i=0; i<dd.length; i++) dd[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.012));
+        const src = ctx.createBufferSource(); src.buffer=buf;
+        const flt = ctx.createBiquadFilter(); flt.type='lowpass'; flt.frequency.value=180;
+        const ng = ctx.createGain(); ng.gain.value=0.6;
+        src.connect(flt); flt.connect(ng); ng.connect(master); src.start(t); src.stop(t+0.08);
+      }
+      else if (name === 'masinko') {
+        const osc = ctx.createOscillator(); osc.type='sawtooth'; osc.frequency.value=440;
+        const vib = ctx.createOscillator(); const vibG = ctx.createGain();
+        vib.frequency.value=6; vibG.gain.value=5;
+        vib.connect(vibG); vibG.connect(osc.frequency); vib.start(t); vib.stop(t+0.7);
+        const flt = ctx.createBiquadFilter(); flt.type='bandpass'; flt.frequency.value=900; flt.Q.value=3;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.3, t+0.06);
+        g.gain.setValueAtTime(0.25, t+0.4); g.gain.linearRampToValueAtTime(0, t+0.6);
+        osc.connect(flt); flt.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.65);
+      }
+    }
 
-      return 0.5;
+    function playSoundAt(name, time) {
+      const ctx = getCtx();
+      const t = time;
+      const master = ctx.createGain();
+      master.gain.value = 0.5;
+      master.connect(ctx.destination);
+
+      if (name === 'tabla') {
+        const osc = ctx.createOscillator(); osc.type='sine';
+        osc.frequency.setValueAtTime(200, t); osc.frequency.exponentialRampToValueAtTime(80, t+0.12);
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.01, t+0.2);
+        osc.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.25);
+      } else if (name === 'sitar') {
+        const osc = ctx.createOscillator(); osc.type='sawtooth'; osc.frequency.value=261.6;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.35, t); g.gain.exponentialRampToValueAtTime(0.001, t+0.5);
+        const flt = ctx.createBiquadFilter(); flt.type='bandpass'; flt.frequency.value=523; flt.Q.value=8;
+        osc.connect(flt); flt.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.6);
+      } else if (name === 'bansuri') {
+        const osc = ctx.createOscillator(); osc.type='sine'; osc.frequency.value=587.33;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.4, t+0.04);
+        g.gain.linearRampToValueAtTime(0, t+0.4);
+        osc.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.45);
+      } else if (name === 'krar') {
+        const osc = ctx.createOscillator(); osc.type='triangle'; osc.frequency.value=392;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.01, t+0.4);
+        osc.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.45);
+      } else if (name === 'kebero') {
+        const osc = ctx.createOscillator(); osc.type='sine';
+        osc.frequency.setValueAtTime(110, t); osc.frequency.exponentialRampToValueAtTime(45, t+0.25);
+        const g = ctx.createGain(); g.gain.setValueAtTime(1, t); g.gain.exponentialRampToValueAtTime(0.01, t+0.35);
+        osc.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.4);
+      } else if (name === 'masinko') {
+        const osc = ctx.createOscillator(); osc.type='sawtooth'; osc.frequency.value=440;
+        const flt = ctx.createBiquadFilter(); flt.type='bandpass'; flt.frequency.value=900; flt.Q.value=3;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.3, t+0.04);
+        g.gain.linearRampToValueAtTime(0, t+0.4);
+        osc.connect(flt); flt.connect(g); g.connect(master); osc.start(t); osc.stop(t+0.45);
+      }
     }
 
     // ══════════════════════════════════════
     // STATE
     // ══════════════════════════════════════
-    const isHost = sessionStorage.getItem('datenight-host') === '1';
-    const roomCode = sessionStorage.getItem('datenight-room');
-    const myInstruments = isHost ? [...HOST_INSTRUMENTS] : [...GUEST_INSTRUMENTS];
-    const partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
-
-    let board = Array(6).fill(null);
-    let selectedInstrument = null;
-    let submitted = false;
+    let mode = 'idle'; // idle, listening, recording, checking, jamming
+    let playerBeat = Array(8).fill(null);
+    let currentBeatIndex = 0;
+    let beatTimer = null;
     let solved = false;
-    let peer = null, conn = null;
+    let attempts = 0;
 
     // Points
     function getPoints() { return parseInt(sessionStorage.getItem('puzzle-points') || '0'); }
@@ -615,217 +491,178 @@
     document.getElementById('pts-num').textContent = getPoints();
 
     // ══════════════════════════════════════
-    // PLAY RECORDING
-    // ══════════════════════════════════════
-    function playRecording() {
-      const ctx = getCtx();
-      const btn = document.getElementById('play-btn');
-      btn.classList.add('playing');
-      document.getElementById('play-text').textContent = 'playing...';
-
-      let time = ctx.currentTime + 0.1;
-      const gap = 0.7;
-
-      TARGET.forEach((name, i) => {
-        const playAt = time;
-        const slotEl = document.querySelector(`.board-slot[data-index="${i}"]`);
-
-        setTimeout(() => {
-          if (slotEl) {
-            slotEl.classList.add('playing-now');
-            setTimeout(() => slotEl.classList.remove('playing-now'), 500);
-          }
-        }, (playAt - ctx.currentTime) * 1000);
-
-        playSound(name, playAt);
-        time += gap;
-      });
-
-      const totalTime = TARGET.length * gap + 0.5;
-      setTimeout(() => {
-        btn.classList.remove('playing');
-        document.getElementById('play-text').textContent = 'play again';
-      }, totalTime * 1000);
-    }
-
-    // ══════════════════════════════════════
     // BUILD UI
     // ══════════════════════════════════════
-    function buildBoard() {
-      const container = document.getElementById('sequence-board');
-      container.innerHTML = '';
-      for (let i = 0; i < 6; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'board-slot';
-        slot.dataset.index = i;
-        slot.innerHTML = `<span class="slot-num">${i + 1}</span>`;
-        slot.addEventListener('click', () => onSlotClick(i));
-        container.appendChild(slot);
+    function buildTimeline() {
+      const tl = document.getElementById('timeline');
+      tl.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'beat-cell';
+        cell.dataset.index = i;
+        cell.innerHTML = `<span class="cell-label">${i+1}</span>`;
+        tl.appendChild(cell);
       }
     }
 
-    function buildPalette() {
-      const container = document.getElementById('instrument-grid');
-      container.innerHTML = '';
-      const me = isHost ? 'host' : 'guest';
-      myInstruments.forEach(name => {
-        if (board.some(b => b && b.instrument === name && b.player === me)) return;
-        const inst = INSTRUMENTS[name];
-        const card = document.createElement('div');
-        card.className = 'inst-card';
-        card.dataset.instrument = name;
-        card.innerHTML = `<span class="card-emoji">${inst.emoji}</span><span class="card-name">${inst.name}</span>`;
-        card.addEventListener('click', () => onCardClick(name, card));
-        container.appendChild(card);
+    function buildPads() {
+      const grid = document.getElementById('pad-grid');
+      grid.innerHTML = '';
+      INSTRUMENTS.forEach(inst => {
+        const pad = document.createElement('div');
+        pad.className = 'pad';
+        pad.dataset.inst = inst.id;
+        pad.innerHTML = `<span class="pad-emoji">${inst.emoji}</span><span class="pad-name">${inst.name}</span>`;
+        pad.addEventListener('pointerdown', e => { e.preventDefault(); hitPad(inst.id, pad); });
+        grid.appendChild(pad);
       });
     }
 
-    function buildPartnerPalette() {
-      const container = document.getElementById('partner-grid');
-      container.innerHTML = '';
-      partnerInstruments.forEach(name => {
-        if (board.some(b => b && b.instrument === name)) return;
-        const inst = INSTRUMENTS[name];
-        const card = document.createElement('div');
-        card.className = 'partner-card';
-        card.innerHTML = `<span class="card-emoji">${inst.emoji}</span><span class="card-name">${inst.name}</span>`;
-        container.appendChild(card);
-      });
+    function hitPad(id, padEl) {
+      // Play sound
+      playSound(id);
+
+      // Visual hit
+      padEl.classList.add('hit');
+      setTimeout(() => padEl.classList.remove('hit'), 150);
+
+      // Ripple
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      const color = padEl.style.getPropertyValue('--pad-color') ||
+                    getComputedStyle(padEl).getPropertyValue('--pad-color') || '#d49b3c';
+      ripple.style.cssText = `width:100%;height:100%;top:0;left:0;background:${color};`;
+      padEl.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+
+      // Record beat
+      if (mode === 'recording' && currentBeatIndex < 8) {
+        playerBeat[currentBeatIndex] = id;
+        const cell = document.querySelector(`.beat-cell[data-index="${currentBeatIndex}"]`);
+        const inst = INSTRUMENTS.find(i => i.id === id);
+        cell.classList.add('active');
+        cell.innerHTML = `<span style="font-size:0.9rem">${inst.emoji}</span>`;
+        currentBeatIndex++;
+        if (currentBeatIndex >= 8) {
+          finishRecording();
+        }
+      }
+
+      // Send to partner
+      sendPeerData({ type: 'hit', instrument: id });
     }
 
-    function renderBoard() {
-      for (let i = 0; i < 6; i++) {
-        const slotEl = document.querySelector(`.board-slot[data-index="${i}"]`);
-        const entry = board[i];
-        const keepClasses = ['correct', 'close', 'wrong'].filter(c => slotEl.classList.contains(c));
+    // ══════════════════════════════════════
+    // LISTEN MODE — play the target beat
+    // ══════════════════════════════════════
+    function startListening() {
+      if (mode === 'listening') return;
+      mode = 'listening';
+      const listenBtn = document.getElementById('listen-btn');
+      listenBtn.classList.add('active');
+      listenBtn.textContent = 'playing...';
+      setStatus('listen carefully...', 'gold');
 
-        if (entry) {
-          const inst = INSTRUMENTS[entry.instrument];
-          slotEl.className = 'board-slot filled';
-          keepClasses.forEach(c => slotEl.classList.add(c));
-          slotEl.innerHTML = `<span class="slot-num">${i + 1}</span><span class="slot-emoji">${inst.emoji}</span><span class="slot-name">${inst.name}</span>`;
+      const ctx = getCtx();
+      let time = ctx.currentTime + 0.15;
+
+      TARGET_BEAT.forEach((inst, i) => {
+        const playAt = time;
+        setTimeout(() => {
+          const cell = document.querySelector(`.beat-cell[data-index="${i}"]`);
+          cell.classList.add('playing');
+          if (inst) {
+            const info = INSTRUMENTS.find(x => x.id === inst);
+            cell.innerHTML = `<span style="font-size:0.9rem">${info.emoji}</span>`;
+          }
+          setTimeout(() => {
+            cell.classList.remove('playing');
+            cell.innerHTML = `<span class="cell-label">${i+1}</span>`;
+          }, BEAT_GAP * 800);
+        }, (playAt - ctx.currentTime) * 1000);
+
+        if (inst) playSoundAt(inst, playAt);
+        time += BEAT_GAP;
+      });
+
+      const total = 8 * BEAT_GAP + 0.3;
+      setTimeout(() => {
+        mode = 'idle';
+        listenBtn.classList.remove('active');
+        listenBtn.textContent = 'listen again';
+        setStatus('now tap "start recording" and replay it!');
+      }, total * 1000);
+    }
+
+    // ══════════════════════════════════════
+    // RECORD MODE — player taps the pads
+    // ══════════════════════════════════════
+    function startRecording() {
+      if (mode === 'listening') return;
+      mode = 'recording';
+      playerBeat = Array(8).fill(null);
+      currentBeatIndex = 0;
+
+      // Clear timeline
+      document.querySelectorAll('.beat-cell').forEach((c, i) => {
+        c.className = 'beat-cell';
+        c.innerHTML = `<span class="cell-label">${i+1}</span>`;
+      });
+
+      document.getElementById('record-btn').classList.add('active');
+      document.getElementById('record-btn').textContent = 'recording...';
+      setStatus('tap the pads to recreate the beat! (8 beats)', 'gold');
+    }
+
+    function finishRecording() {
+      mode = 'checking';
+      attempts++;
+      document.getElementById('record-btn').classList.remove('active');
+      document.getElementById('record-btn').textContent = 'tap the beat';
+
+      // Check each beat
+      let correct = 0;
+      playerBeat.forEach((hit, i) => {
+        const cell = document.querySelector(`.beat-cell[data-index="${i}"]`);
+        const target = TARGET_BEAT[i];
+        if (hit === target) {
+          cell.classList.add('correct');
+          correct++;
         } else {
-          slotEl.className = 'board-slot';
-          keepClasses.forEach(c => slotEl.classList.add(c));
-          slotEl.innerHTML = `<span class="slot-num">${i + 1}</span>`;
+          cell.classList.add('wrong');
         }
-      }
-      buildPalette();
-      buildPartnerPalette();
-      updateSubmitBtn();
-    }
-
-    function updateSubmitBtn() {
-      document.getElementById('submit-btn').disabled = !board.every(b => b !== null) || submitted;
-    }
-
-    // ══════════════════════════════════════
-    // INTERACTION
-    // ══════════════════════════════════════
-    function onCardClick(name, cardEl) {
-      if (submitted || solved) return;
-      playSound(name);
-
-      if (selectedInstrument === name) {
-        selectedInstrument = null;
-        document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('highlight'));
-        return;
-      }
-
-      selectedInstrument = name;
-      document.querySelectorAll('.inst-card').forEach(c => c.classList.toggle('selected', c.dataset.instrument === name));
-      document.querySelectorAll('.board-slot').forEach(s => {
-        const idx = parseInt(s.dataset.index);
-        const me = isHost ? 'host' : 'guest';
-        const canPlace = !board[idx] || (board[idx] && board[idx].player === me);
-        s.classList.toggle('highlight', canPlace);
       });
-    }
 
-    function onSlotClick(index) {
-      if (submitted || solved) return;
-      const me = isHost ? 'host' : 'guest';
+      sendPeerData({ type: 'attempt', correct, total: 8 });
 
-      if (board[index] && board[index].player === me) {
-        board[index] = null;
-        sendPeerData({ type: 'remove', slot: index });
-        selectedInstrument = null;
-        document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('highlight'));
-        clearFeedback();
-        renderBoard();
-        return;
-      }
-
-      if (selectedInstrument) {
-        for (let i = 0; i < 6; i++) {
-          if (board[i] && board[i].instrument === selectedInstrument && board[i].player === me) board[i] = null;
-        }
-        if (board[index] && board[index].player !== me) {
-          setStatus("that slot has your partner's instrument", 'error');
-          return;
-        }
-        board[index] = { instrument: selectedInstrument, player: me };
-        sendPeerData({ type: 'place', slot: index, instrument: selectedInstrument, player: me });
-        playSound(selectedInstrument);
-        selectedInstrument = null;
-        document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('highlight'));
-        clearFeedback();
-        renderBoard();
-      }
-    }
-
-    // ══════════════════════════════════════
-    // SUBMIT
-    // ══════════════════════════════════════
-    function clearFeedback() {
-      submitted = false;
-      document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('correct', 'close', 'wrong'));
-      setStatus('');
-    }
-
-    document.getElementById('submit-btn').addEventListener('click', () => {
-      if (solved) return;
-      submitted = true;
-      let correctCount = 0, closeCount = 0;
-
-      for (let i = 0; i < 6; i++) {
-        const slotEl = document.querySelector(`.board-slot[data-index="${i}"]`);
-        const placed = board[i] ? board[i].instrument : null;
-        if (placed === TARGET[i]) { slotEl.classList.add('correct'); correctCount++; }
-        else if (placed && ((i > 0 && TARGET[i-1] === placed) || (i < 5 && TARGET[i+1] === placed))) { slotEl.classList.add('close'); closeCount++; }
-        else if (placed) { slotEl.classList.add('wrong'); }
-      }
-
-      sendPeerData({ type: 'feedback', correct: correctCount, close: closeCount });
-
-      if (correctCount === 6) {
+      if (correct === 8) {
+        // Perfect!
         solved = true;
-        addPoints(60);
+        const pts = attempts === 1 ? 80 : attempts === 2 ? 60 : 40;
+        addPoints(pts);
         markCompleted('music');
-        document.getElementById('victory-title').textContent = 'perfect rhythm!';
-        document.getElementById('victory-pts').textContent = '+60 pts';
-        setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 800);
+        setStatus('perfect rhythm!', 'good');
+        document.getElementById('victory-pts').textContent = '+' + pts + ' pts';
+        setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 1000);
+      } else if (correct >= 6) {
+        setStatus(correct + '/8 — so close! listen again and retry', 'gold');
+        const pts = correct * 3;
+        addPoints(pts);
+        setTimeout(() => { mode = 'idle'; }, 1500);
       } else {
-        const pts = correctCount * 10 + closeCount * 5;
-        if (pts > 0) addPoints(pts);
-        let msg = correctCount + '/6 correct';
-        if (closeCount > 0) msg += ', ' + closeCount + ' close';
-        msg += ' \u2014 try again!';
-        setStatus(msg, correctCount >= 4 ? 'success' : '');
-        setTimeout(() => { submitted = false; document.getElementById('submit-btn').disabled = false; }, 1500);
+        setStatus(correct + '/8 — listen again and try to match each beat');
+        setTimeout(() => { mode = 'idle'; }, 1500);
       }
-    });
+    }
 
     // ══════════════════════════════════════
-    // SKIP & HELPERS
+    // HELPERS
     // ══════════════════════════════════════
-    document.getElementById('skip-btn').addEventListener('click', () => {
-      markCompleted('music');
-      window.location.href = '../';
-    });
+    function setStatus(msg, cls) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status' + (cls ? ' ' + cls : '');
+    }
 
     function markCompleted(id) {
       let completed;
@@ -833,15 +670,13 @@
       if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
     }
 
-    function setStatus(msg, cls) {
-      const el = document.getElementById('status-msg');
-      el.textContent = msg;
-      el.className = 'status-msg' + (cls ? ' ' + cls : '');
-    }
-
     // ══════════════════════════════════════
     // PEERJS
     // ══════════════════════════════════════
+    const roomCode = sessionStorage.getItem('datenight-room');
+    const isHost = sessionStorage.getItem('datenight-host') === '1';
+    let peer = null, conn = null;
+
     function peerIdForPuzzle(code) { return 'shahhub-puzzle-music-' + code; }
     function sendPeerData(data) { if (conn && conn.open) conn.send(data); }
 
@@ -852,9 +687,8 @@
         peer.on('open', () => {
           peer.on('connection', c => {
             conn = c;
-            c.on('open', () => c.send({ type: 'board-sync', board }));
             c.on('data', handlePeerData);
-            c.on('close', () => { conn = null; setStatus('partner disconnected'); });
+            c.on('close', () => { conn = null; });
           });
         });
         peer.on('error', () => {});
@@ -866,29 +700,23 @@
     }
 
     function tryConnect(attempt) {
-      if (attempt > 15) { setStatus("couldn't connect to partner", 'error'); return; }
+      if (attempt > 15) return;
       const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
-      c.on('open', () => {
-        conn = c;
-        c.on('data', handlePeerData);
-        c.on('close', () => { conn = null; setStatus('partner disconnected'); });
-      });
+      c.on('open', () => { conn = c; c.on('data', handlePeerData); });
       c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
     }
 
     function handlePeerData(data) {
-      if (data.type === 'board-sync') { board = data.board; renderBoard(); }
-      else if (data.type === 'place') {
-        for (let i = 0; i < 6; i++) {
-          if (board[i] && board[i].instrument === data.instrument && board[i].player === data.player) board[i] = null;
-        }
-        board[data.slot] = { instrument: data.instrument, player: data.player };
-        clearFeedback(); renderBoard(); playSound(data.instrument);
-      } else if (data.type === 'remove') { board[data.slot] = null; clearFeedback(); renderBoard(); }
-      else if (data.type === 'feedback') {
-        if (data.correct === 6 && !solved) {
+      if (data.type === 'hit') {
+        // Partner hit a pad — play the sound and flash the pad
+        playSound(data.instrument);
+        const pad = document.querySelector(`.pad[data-inst="${data.instrument}"]`);
+        if (pad) { pad.classList.add('hit'); setTimeout(() => pad.classList.remove('hit'), 150); }
+      } else if (data.type === 'attempt') {
+        if (data.correct === 8 && !solved) {
           solved = true; addPoints(60); markCompleted('music');
-          setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 800);
+          setStatus('your partner got it!', 'good');
+          setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 1000);
         }
       }
     }
@@ -897,15 +725,14 @@
     // EASTER EGGS
     // ══════════════════════════════════════
     function setupEasterEggs() {
-      [{ id: 'gem-1', key: 'gem-music-1', msg: 'you found a hidden star!' },
-       { id: 'gem-2', key: 'gem-music-2', msg: 'secret note discovered!' }].forEach(g => {
+      [{ id: 'gem-1', key: 'gem-music-1', msg: 'hidden star!' },
+       { id: 'gem-2', key: 'gem-music-2', msg: 'secret note!' }].forEach(g => {
         const el = document.getElementById(g.id);
         if (!el) return;
         if (sessionStorage.getItem(g.key) === '1') { el.style.display = 'none'; return; }
         el.addEventListener('click', () => {
           if (sessionStorage.getItem(g.key) === '1') return;
-          sessionStorage.setItem(g.key, '1');
-          el.classList.add('found');
+          sessionStorage.setItem(g.key, '1'); el.classList.add('found');
           addPoints(15);
           const toast = document.getElementById('gem-toast');
           toast.textContent = '\u{1F48E} +15 pts! ' + g.msg;
@@ -914,50 +741,48 @@
         });
       });
 
-      let titleClicks = 0, titleTimer = null;
+      let tc = 0, tt = null;
       document.querySelector('.page-title').addEventListener('click', () => {
-        titleClicks++;
-        clearTimeout(titleTimer);
-        titleTimer = setTimeout(() => titleClicks = 0, 1500);
-        if (titleClicks >= 5 && sessionStorage.getItem('gem-music-title') !== '1') {
-          sessionStorage.setItem('gem-music-title', '1');
-          addPoints(25);
+        tc++; clearTimeout(tt); tt = setTimeout(() => tc = 0, 1500);
+        if (tc >= 5 && sessionStorage.getItem('gem-music-title') !== '1') {
+          sessionStorage.setItem('gem-music-title', '1'); addPoints(25);
           const toast = document.getElementById('gem-toast');
-          toast.textContent = '\u{1F389} +25 pts! you found the secret rhythm!';
+          toast.textContent = '\u{1F389} +25 pts! secret rhythm found!';
           toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 2500);
-          titleClicks = 0;
+          setTimeout(() => toast.classList.remove('show'), 2500); tc = 0;
         }
       });
     }
 
     // ══════════════════════════════════════
-    // SOLO MODE
+    // KEYBOARD SHORTCUTS
     // ══════════════════════════════════════
-    function isSoloMode() { return !roomCode; }
+    const KEY_MAP = { '1': 'tabla', '2': 'sitar', '3': 'bansuri', '4': 'krar', '5': 'kebero', '6': 'masinko',
+                      'q': 'tabla', 'w': 'sitar', 'e': 'bansuri', 'a': 'krar', 's': 'kebero', 'd': 'masinko' };
+    document.addEventListener('keydown', e => {
+      const inst = KEY_MAP[e.key.toLowerCase()];
+      if (inst) {
+        e.preventDefault();
+        const pad = document.querySelector(`.pad[data-inst="${inst}"]`);
+        if (pad) hitPad(inst, pad);
+      }
+    });
 
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
-    function init() {
-      buildBoard();
+    buildTimeline();
+    buildPads();
 
-      if (isSoloMode()) {
-        myInstruments.length = 0;
-        myInstruments.push(...Object.keys(INSTRUMENTS));
-        document.getElementById('palette-label').textContent = 'your instruments';
-        document.getElementById('partner-section').style.display = 'none';
-      }
+    document.getElementById('listen-btn').addEventListener('click', startListening);
+    document.getElementById('record-btn').addEventListener('click', startRecording);
+    document.getElementById('skip-btn').addEventListener('click', () => {
+      markCompleted('music');
+      window.location.href = '../';
+    });
 
-      buildPalette();
-      buildPartnerPalette();
-
-      document.getElementById('play-btn').addEventListener('click', playRecording);
-      if (!isSoloMode()) setupPeer();
-      setupEasterEggs();
-    }
-
-    init();
+    if (roomCode) setupPeer();
+    setupEasterEggs();
   </script>
 </body>
 </html>
