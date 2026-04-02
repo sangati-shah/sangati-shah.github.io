@@ -110,6 +110,7 @@
     });
 
     // Create room — use custom code if entered, otherwise random
+    // Enters immediately (no need to wait for partner)
     createBtn.addEventListener('click', () => {
       const custom = codeInput.value.trim().toUpperCase();
       const code = custom.length >= 2 ? custom : genCode();
@@ -124,16 +125,16 @@
 
       peer.on('open', () => {
         isHost = true;
-        codeInput.value = code;
-        showStatus('waiting for partner — share the code: ' + code);
+        // Enter room right away — don't wait for partner
+        enterRoom(code);
 
-        // Wait for partner to join
+        // Listen for partner to join later
         peer.on('connection', (c) => {
           conn = c;
           c.on('open', () => {
             c.send({ type: 'welcome' });
-            enterRoom(code);
             setupCursorSharing();
+            document.getElementById('room-info').textContent = 'room ' + code + ' (partner connected)';
           });
           c.on('data', handleData);
           c.on('close', onPartnerDisconnect);
