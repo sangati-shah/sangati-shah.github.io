@@ -6,20 +6,20 @@
 }
 
 :root {
-  --dn-bg: #fef0f5;
-  --dn-text: #2d6a4f;
-  --dn-sub: #c27a8e;
-  --dn-accent: #e85d75;
-  --dn-heading-font: 'Dancing Script', cursive;
-  --dn-btn-bg: rgba(255,255,255,0.65);
-  --dn-btn-border: #e0a0b0;
-  --dn-btn-radius: 50px;
-  --dn-btn-text: #2d6a4f;
-  --dn-input-bg: rgba(255,255,255,0.5);
-  --dn-input-border: #e0a0b0;
-  --dn-input-text: #2d6a4f;
-  --dn-home-btn-bg: rgba(255,255,255,0.65);
-  --dn-home-btn-border: #e0a0b0;
+  --dn-bg: #f7f2e7;
+  --dn-text: #3a5743;
+  --dn-sub: #9bb5a0;
+  --dn-accent: #c25b56;
+  --dn-heading-font: 'Quicksand', sans-serif;
+  --dn-btn-bg: rgba(255,252,245,0.7);
+  --dn-btn-border: #c2b8a3;
+  --dn-btn-radius: 14px;
+  --dn-btn-text: #3a5743;
+  --dn-input-bg: rgba(255,252,245,0.5);
+  --dn-input-border: #c2b8a3;
+  --dn-input-text: #3a5743;
+  --dn-home-btn-bg: rgba(255,252,245,0.7);
+  --dn-home-btn-border: #c2b8a3;
 }
 
 body {

@@ -4,21 +4,21 @@
 
 const DN_THEMES = [
   {
-    name: 'bloom',
-    bg: '#fef0f5',
-    text: '#2d6a4f',
-    sub: '#c27a8e',
-    accent: '#e85d75',
-    headingFont: "'Dancing Script', cursive",
-    btnBg: 'rgba(255,255,255,0.65)',
-    btnBorder: '#e0a0b0',
-    btnRadius: '50px',
-    btnText: '#2d6a4f',
-    inputBg: 'rgba(255,255,255,0.5)',
-    inputBorder: '#e0a0b0',
-    inputText: '#2d6a4f',
-    homeBtnBg: 'rgba(255,255,255,0.65)',
-    homeBtnBorder: '#e0a0b0',
+    name: 'ghibli',
+    bg: '#f7f2e7',
+    text: '#3a5743',
+    sub: '#9bb5a0',
+    accent: '#c25b56',
+    headingFont: "'Quicksand', sans-serif",
+    btnBg: 'rgba(255,252,245,0.7)',
+    btnBorder: '#c2b8a3',
+    btnRadius: '14px',
+    btnText: '#3a5743',
+    inputBg: 'rgba(255,252,245,0.5)',
+    inputBorder: '#c2b8a3',
+    inputText: '#3a5743',
+    homeBtnBg: 'rgba(255,252,245,0.7)',
+    homeBtnBorder: '#c2b8a3',
   },
   {
     name: 'poster',
@@ -145,8 +145,8 @@ function dnCycleTheme(e) {
   const flashBase = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99998;pointer-events:none;opacity:1;`;
 
   switch (next.name) {
-    case 'bloom':
-      flash.style.cssText = flashBase + `background:${next.accent};`;
+    case 'ghibli':
+      flash.style.cssText = flashBase + `background:${next.sub};`;
       break;
     case 'poster':
       flash.style.cssText = flashBase + `background:${next.accent};`;
@@ -188,7 +188,7 @@ function dnCycleTheme(e) {
 
 // ── Particle burst ──
 // Each theme gets a totally different burst effect:
-// bloom → expanding ring of dots that pop outward
+// ghibli → floating soot sprites that drift upward and fade
 // poster → text characters (!, *, #, ~) that scatter and spin
 // neon → electric lines/bolts that crackle from click point
 // earth → falling leaf shapes with gravity + wind drift
@@ -196,7 +196,7 @@ function dnCycleTheme(e) {
 
 function dnSpawnParticles(x, y, theme) {
   switch (theme.name) {
-    case 'bloom': return dnBurstRing(x, y, theme);
+    case 'ghibli': return dnBurstSootSprites(x, y, theme);
     case 'poster': return dnBurstChars(x, y, theme);
     case 'neon': return dnBurstBolts(x, y, theme);
     case 'earth': return dnBurstLeaves(x, y, theme);
@@ -205,7 +205,57 @@ function dnSpawnParticles(x, y, theme) {
   }
 }
 
-// bloom — expanding ring of soft dots
+// ghibli — floating soot sprites that drift upward like kodama
+function dnBurstSootSprites(x, y, theme) {
+  const count = 16;
+  for (let i = 0; i < count; i++) {
+    const sprite = document.createElement('div');
+    const size = 6 + Math.random() * 10;
+    const isLarge = Math.random() > 0.6;
+    const finalSize = isLarge ? size * 1.4 : size;
+    // Soot sprites are dark fuzzy circles with tiny white eyes
+    sprite.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:${finalSize}px; height:${finalSize}px;
+      background:radial-gradient(circle, #2a2a2a 40%, #1a1a1a 70%, transparent 100%);
+      border-radius:50%;
+      pointer-events:none; z-index:99999; opacity:0.85;
+      transform:translate(-50%,-50%) scale(0);
+      will-change:transform,opacity,left,top;
+    `;
+    // Add tiny white eyes to some sprites
+    if (isLarge) {
+      const eyeSize = Math.max(2, finalSize * 0.15);
+      const eyeGap = finalSize * 0.22;
+      sprite.innerHTML = `<div style="position:absolute;top:35%;left:50%;transform:translateX(-50%);display:flex;gap:${eyeGap}px">
+        <div style="width:${eyeSize}px;height:${eyeSize}px;background:#fff;border-radius:50%"></div>
+        <div style="width:${eyeSize}px;height:${eyeSize}px;background:#fff;border-radius:50%"></div>
+      </div>`;
+    }
+    document.body.appendChild(sprite);
+
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.8;
+    const spreadX = Math.cos(angle) * (40 + Math.random() * 60);
+    const driftY = -(60 + Math.random() * 100); // float upward
+    const wobble = (Math.random() - 0.5) * 40;
+    const dur = 700 + Math.random() * 500;
+    const delay = Math.random() * 120;
+
+    setTimeout(() => {
+      sprite.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, transform ${dur * 0.3}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur}ms ease-in`;
+      sprite.style.left = (x + spreadX + wobble) + 'px';
+      sprite.style.top = (y + driftY) + 'px';
+      sprite.style.transform = 'translate(-50%,-50%) scale(1)';
+    }, delay);
+    // Fade out in second half
+    setTimeout(() => {
+      sprite.style.opacity = '0';
+    }, delay + dur * 0.5);
+    setTimeout(() => sprite.remove(), delay + dur + 50);
+  }
+}
+
+// bloom — expanding ring of soft dots (used as default fallback)
 function dnBurstRing(x, y, theme) {
   const count = 20;
   for (let i = 0; i < count; i++) {
