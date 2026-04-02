@@ -13,11 +13,11 @@
   <div class="room-gate" id="room-gate">
     <div class="room-content">
       <h1 class="room-title">date night</h1>
-      <p class="room-hint">enter a 4-letter code to join a room<br/>or create one and share it</p>
+      <p class="room-hint">enter a code to join a room<br/>or type your own and create it</p>
 
       <div class="room-code-display" id="room-code-display">
         <input type="text" class="room-code-input" id="room-code-input"
-          maxlength="4" placeholder="----" autocomplete="off" spellcheck="false" autofocus />
+          maxlength="12" placeholder="----" autocomplete="off" spellcheck="false" autofocus />
       </div>
 
       <div class="room-buttons">
@@ -108,18 +108,20 @@
 
     // Auto-format code input
     codeInput.addEventListener('input', () => {
-      codeInput.value = codeInput.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4);
+      codeInput.value = codeInput.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 12);
     });
 
     codeInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && codeInput.value.length === 4) {
+      if (e.key === 'Enter' && codeInput.value.length >= 2) {
         joinBtn.click();
       }
     });
 
-    // Create room — become the host
+    // Create room — use custom code if entered, otherwise random
     createBtn.addEventListener('click', () => {
-      const code = genCode();
+      const custom = codeInput.value.trim().toUpperCase();
+      const code = custom.length >= 2 ? custom : genCode();
+      codeInput.value = code;
       const id = peerIdFromCode(code);
 
       createBtn.disabled = true;
@@ -173,8 +175,8 @@
     // Join room — connect to host
     joinBtn.addEventListener('click', () => {
       const code = codeInput.value.trim().toUpperCase();
-      if (code.length !== 4) {
-        showStatus('enter a 4-letter code', true);
+      if (code.length < 2) {
+        showStatus('enter at least 2 letters', true);
         return;
       }
 
@@ -268,7 +270,7 @@
     // Check URL for room code (shared link)
     const params = new URLSearchParams(window.location.search);
     const urlRoom = params.get('room');
-    if (urlRoom && urlRoom.length === 4) {
+    if (urlRoom && urlRoom.length >= 2) {
       codeInput.value = urlRoom;
       history.replaceState(null, '', './');
       // Auto-join after a tiny delay
