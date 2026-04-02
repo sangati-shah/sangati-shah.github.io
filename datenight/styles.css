@@ -314,8 +314,9 @@ body.lights-off {
 }
 
 .home-action-create {
-  background: var(--dn-home-btn-bg);
-  border: 2px dashed var(--dn-home-btn-border);
+  background: var(--dn-btn-bg);
+  border: 2px dashed var(--dn-btn-border);
+  color: var(--dn-btn-text);
 }
 
 .home-action-go {
