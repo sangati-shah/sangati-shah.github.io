@@ -3,257 +3,660 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>music puzzle</title>
-  <link rel="stylesheet" href="../puzzle.css" />
+  <title>rhythm puzzle</title>
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../hud.css" />
   <script src="../../theme.js"></script>
   <script src="../../hud.js"></script>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100dvh;
+      background: #0d0d0d;
+      color: #f0e6d3;
+      overflow-x: hidden;
+    }
+
+    /* ── Ambient Background ── */
+    .bg-grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .bg-glow {
+      position: fixed; top: -30%; left: 50%; transform: translateX(-50%);
+      width: 120vw; height: 60vh;
+      background: radial-gradient(ellipse, rgba(212,155,60,0.08) 0%, rgba(180,80,40,0.04) 40%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .bg-glow-bottom {
+      position: fixed; bottom: -20%; left: 50%; transform: translateX(-50%);
+      width: 100vw; height: 40vh;
+      background: radial-gradient(ellipse, rgba(60,140,120,0.06) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .music-page {
+      position: relative; z-index: 1;
+      max-width: 700px; margin: 0 auto;
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+    }
+
+    .back-link {
+      position: fixed; top: 1.5rem; left: 1.5rem;
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      color: rgba(240,230,211,0.3); text-decoration: none;
+      z-index: 100; transition: color 0.3s;
+    }
+    .back-link:hover { color: rgba(240,230,211,0.7); }
+
+    /* ── Header ── */
+    .page-title {
+      font-family: 'Abril Fatface', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: #d49b3c;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.2em;
+      cursor: pointer; user-select: none;
+    }
+
+    .page-sub {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: rgba(240,230,211,0.45);
+      margin-bottom: 2.5rem;
+      line-height: 1.5;
+    }
+
+    /* ── Listen Section ── */
+    .listen-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .listen-btn {
+      display: inline-flex; align-items: center; gap: 0.8rem;
+      font-family: 'Caveat', cursive; font-size: 1.4rem;
+      background: rgba(212,155,60,0.12);
+      border: 1.5px solid rgba(212,155,60,0.3);
+      border-radius: 50px;
+      padding: 0.7em 2em;
+      color: #d49b3c; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .listen-btn:hover {
+      background: rgba(212,155,60,0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(212,155,60,0.15);
+    }
+    .listen-btn.playing { opacity: 0.5; pointer-events: none; }
+    .listen-icon { font-size: 1.6rem; }
+
+    /* ── Sequence Board ── */
+    .board-label {
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: rgba(240,230,211,0.35); margin-bottom: 1rem;
+      letter-spacing: 0.05em; text-transform: lowercase;
+    }
+
+    .sequence-board {
+      display: flex; gap: 0.6rem;
+      justify-content: center; flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .board-slot {
+      width: 80px; height: 90px;
+      border: 2px dashed rgba(212,155,60,0.2);
+      border-radius: 16px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.2rem;
+      cursor: pointer; transition: all 0.3s ease;
+      position: relative;
+      background: rgba(255,255,255,0.02);
+    }
+    .board-slot:hover { border-color: rgba(212,155,60,0.4); background: rgba(212,155,60,0.05); }
+
+    .board-slot.highlight {
+      border-color: #d49b3c;
+      background: rgba(212,155,60,0.1);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(212,155,60,0.15);
+    }
+
+    .board-slot.filled {
+      border-style: solid; border-color: rgba(212,155,60,0.3);
+      background: rgba(212,155,60,0.06);
+    }
+
+    .board-slot.playing-now {
+      transform: scale(1.12);
+      box-shadow: 0 0 25px rgba(212,155,60,0.3);
+      border-color: #d49b3c;
+    }
+
+    .board-slot.correct { border-color: #4caf50 !important; background: rgba(76,175,80,0.1) !important; box-shadow: 0 0 15px rgba(76,175,80,0.2); }
+    .board-slot.close { border-color: #f9a825 !important; background: rgba(249,168,37,0.1) !important; box-shadow: 0 0 15px rgba(249,168,37,0.2); }
+    .board-slot.wrong { border-color: #ef5350 !important; background: rgba(239,83,80,0.06) !important; }
+
+    .slot-num {
+      font-family: 'Caveat', cursive; font-size: 0.7rem;
+      color: rgba(240,230,211,0.2);
+      position: absolute; top: 6px; left: 10px;
+    }
+    .slot-emoji { font-size: 2rem; }
+    .slot-name { font-family: 'Caveat', cursive; font-size: 0.75rem; color: rgba(240,230,211,0.5); }
+
+    /* ── Instruments Grid ── */
+    .instruments-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-label {
+      font-family: 'Caveat', cursive; font-size: 1rem;
+      color: rgba(240,230,211,0.35); margin-bottom: 0.8rem;
+      letter-spacing: 0.03em;
+    }
+
+    .instrument-grid {
+      display: flex; gap: 0.7rem;
+      justify-content: center; flex-wrap: wrap;
+      margin-bottom: 1.5rem; min-height: 80px;
+    }
+
+    .inst-card {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.3rem;
+      padding: 0.8rem 1.2rem;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(240,230,211,0.12);
+      border-radius: 16px;
+      cursor: pointer; transition: all 0.25s ease;
+      user-select: none;
+    }
+    .inst-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    .inst-card.selected {
+      border-color: #d49b3c;
+      background: rgba(212,155,60,0.15);
+      transform: scale(1.08);
+      box-shadow: 0 4px 20px rgba(212,155,60,0.25);
+    }
+    .inst-card .card-emoji { font-size: 2rem; }
+    .inst-card .card-name {
+      font-family: 'Caveat', cursive; font-size: 0.85rem;
+      color: rgba(240,230,211,0.7);
+    }
+
+    .partner-grid {
+      display: flex; gap: 0.5rem;
+      justify-content: center; flex-wrap: wrap;
+    }
+
+    .partner-card {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.15rem;
+      padding: 0.5rem 0.8rem;
+      border: 1px dashed rgba(240,230,211,0.1);
+      border-radius: 12px; opacity: 0.35;
+    }
+    .partner-card .card-emoji { font-size: 1.3rem; }
+    .partner-card .card-name {
+      font-family: 'Caveat', cursive; font-size: 0.7rem;
+      color: rgba(240,230,211,0.4);
+    }
+
+    /* ── Status ── */
+    .status-msg {
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      color: rgba(240,230,211,0.5); min-height: 1.5em;
+      margin-bottom: 1.5rem; transition: all 0.3s ease;
+    }
+    .status-msg.success { color: #4caf50; }
+    .status-msg.error { color: #ef5350; }
+
+    /* ── Action Buttons ── */
+    .actions {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.8rem;
+    }
+
+    .submit-btn {
+      font-family: 'Caveat', cursive; font-size: 1.3rem;
+      background: rgba(212,155,60,0.15);
+      border: 1.5px solid rgba(212,155,60,0.3);
+      border-radius: 50px;
+      padding: 0.55em 2.8em;
+      color: #d49b3c; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .submit-btn:hover:not(:disabled) {
+      background: rgba(212,155,60,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212,155,60,0.2);
+    }
+    .submit-btn:disabled { opacity: 0.3; cursor: default; }
+
+    .skip-btn {
+      font-family: 'Caveat', cursive; font-size: 1rem;
+      background: none; border: none;
+      color: rgba(240,230,211,0.25); cursor: pointer;
+      padding: 0.4em 1em; transition: color 0.3s;
+    }
+    .skip-btn:hover { color: rgba(240,230,211,0.5); }
+
+    /* ── Victory ── */
+    .victory-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9000; opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .victory-overlay.visible { opacity: 1; pointer-events: all; }
+
+    .victory-card {
+      text-align: center;
+      background: linear-gradient(135deg, #1a1408, #0d0d0d);
+      border: 1px solid rgba(212,155,60,0.3);
+      border-radius: 24px;
+      padding: 3rem 2.5rem; max-width: 380px; width: 90%;
+      transform: scale(0.8);
+      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(212,155,60,0.08);
+    }
+    .victory-overlay.visible .victory-card { transform: scale(1); }
+
+    .victory-emoji { font-size: 3.5rem; margin-bottom: 0.5rem; }
+    .victory-title {
+      font-family: 'Abril Fatface', serif; font-size: 2rem;
+      color: #d49b3c; margin-bottom: 0.3em;
+    }
+    .victory-pts {
+      font-family: 'Caveat', cursive; font-size: 1.4rem;
+      color: rgba(240,230,211,0.6); margin-bottom: 1.5rem;
+    }
+    .victory-btn {
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      background: rgba(212,155,60,0.15);
+      border: 1.5px solid rgba(212,155,60,0.3);
+      border-radius: 50px;
+      padding: 0.5em 2em; color: #d49b3c;
+      text-decoration: none; transition: all 0.3s ease;
+    }
+    .victory-btn:hover {
+      background: rgba(212,155,60,0.25);
+      transform: translateY(-2px);
+    }
+
+    /* ── Easter Eggs ── */
+    .hidden-gem {
+      position: fixed; font-size: 0.9rem;
+      cursor: pointer; opacity: 0.06;
+      transition: all 0.3s ease; z-index: 50; user-select: none;
+    }
+    .hidden-gem:hover { opacity: 0.35; transform: scale(1.3); }
+    .hidden-gem.found { opacity: 1; transform: scale(1.5); animation: gem-sparkle 0.6s ease; }
+
+    @keyframes gem-sparkle {
+      0% { transform: scale(1.5) rotate(0deg); }
+      50% { transform: scale(1.8) rotate(10deg); }
+      100% { transform: scale(1.5) rotate(0deg); }
+    }
+
+    .gem-toast {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-family: 'Caveat', cursive; font-size: 1.5rem;
+      color: #d49b3c;
+      background: #1a1408; border: 1px solid rgba(212,155,60,0.3);
+      padding: 1rem 2rem; border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      z-index: 9999; pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+      opacity: 0;
+    }
+    .gem-toast.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+
+    /* ── Points ── */
+    .pts-display {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      color: rgba(240,230,211,0.3); z-index: 100;
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .pts-num {
+      color: #d49b3c; font-weight: 600;
+      transition: transform 0.3s ease;
+    }
+    .pts-num.bump { transform: scale(1.4); }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .board-slot { width: 62px; height: 72px; }
+      .board-slot .slot-emoji { font-size: 1.5rem; }
+      .inst-card { padding: 0.6rem 0.9rem; }
+      .inst-card .card-emoji { font-size: 1.5rem; }
+      .music-page { padding: 3.5rem 1rem 2rem; }
+    }
+  </style>
 </head>
 <body>
-  <a href="../" class="back-btn">&larr; back</a>
+  <div class="bg-grain"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-glow-bottom"></div>
 
-  <div class="puzzle-page" id="puzzle-page">
-    <h1 class="puzzle-page-title" data-dn-cycle>music puzzle</h1>
-    <p class="puzzle-page-sub">listen to the recording, then work together<br/>to recreate it — you each have different instruments</p>
+  <a href="../" class="back-link">&larr; back</a>
+  <div class="pts-display"><span id="pts-num">0</span> pts</div>
 
-    <!-- Play recording -->
-    <button class="play-btn" id="play-btn">
-      <span class="play-icon">&#x25B6;&#xFE0F;</span>
-      <span id="play-text">play recording</span>
-    </button>
+  <div class="music-page" id="music-page">
+    <h1 class="page-title" data-dn-cycle>rhythm puzzle</h1>
+    <p class="page-sub">listen to the rhythm, then place the instruments in order<br/>tap an instrument, then tap a slot to place it</p>
 
-    <!-- Sequence slots -->
-    <div class="sequence-label">recreate the melody</div>
-    <div class="sequence-slots" id="sequence-slots">
-      <!-- 6 slots built by JS -->
+    <!-- Listen -->
+    <div class="listen-section">
+      <button class="listen-btn" id="play-btn">
+        <span class="listen-icon">&#x25B6;&#xFE0F;</span>
+        <span id="play-text">play the rhythm</span>
+      </button>
     </div>
+
+    <!-- Board -->
+    <div class="board-label">recreate the rhythm</div>
+    <div class="sequence-board" id="sequence-board"></div>
 
     <!-- Status -->
-    <div class="puzzle-status" id="puzzle-status"></div>
+    <div class="status-msg" id="status-msg"></div>
 
     <!-- Your instruments -->
-    <div class="palette-label" id="palette-label">your instruments</div>
-    <div class="instrument-palette" id="instrument-palette">
-      <!-- Chips built by JS -->
+    <div class="instruments-section">
+      <div class="section-label" id="palette-label">your instruments</div>
+      <div class="instrument-grid" id="instrument-grid"></div>
     </div>
 
-    <!-- Partner's instruments (shown faded) -->
-    <div class="partner-palette" id="partner-palette">
-      <div class="partner-label">partner's instruments</div>
-      <div class="partner-instruments" id="partner-instruments"></div>
+    <!-- Partner instruments -->
+    <div class="instruments-section" id="partner-section">
+      <div class="section-label">partner's instruments</div>
+      <div class="partner-grid" id="partner-grid"></div>
     </div>
 
     <!-- Actions -->
-    <div class="puzzle-actions">
+    <div class="actions">
       <button class="submit-btn" id="submit-btn" disabled>submit</button>
       <button class="skip-btn" id="skip-btn">skip &rarr;</button>
     </div>
   </div>
 
-  <!-- Victory overlay -->
+  <!-- Victory -->
   <div class="victory-overlay" id="victory-overlay">
     <div class="victory-card">
       <div class="victory-emoji">&#x1F3B6;</div>
-      <div class="victory-title" id="victory-title">perfect melody!</div>
+      <div class="victory-title" id="victory-title">perfect rhythm!</div>
       <div class="victory-pts" id="victory-pts">+60 pts</div>
       <a href="../" class="victory-btn" id="victory-btn">next puzzle &rarr;</a>
     </div>
   </div>
 
-  <!-- Hidden easter eggs -->
+  <!-- Easter eggs -->
   <div class="hidden-gem" id="gem-1" style="top: 12%; right: 8%;">&#x2B50;</div>
   <div class="hidden-gem" id="gem-2" style="bottom: 15%; left: 5%;">&#x1F3B5;</div>
   <div class="gem-toast" id="gem-toast"></div>
 
   <script>
     // ══════════════════════════════════════
-    // INSTRUMENTS & TARGET MELODY
+    // INSTRUMENTS — Indian & Ethiopian inspired
     // ══════════════════════════════════════
     const INSTRUMENTS = {
-      piano:   { emoji: '\u{1F3B9}', name: 'piano',   wave: 'sine',     freq: 523.25, attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.5 },
-      drums:   { emoji: '\u{1F941}', name: 'drums',   wave: 'noise',    freq: 0,      attack: 0.001, decay: 0.12, sustain: 0, release: 0.08 },
-      guitar:  { emoji: '\u{1F3B8}', name: 'guitar',  wave: 'triangle', freq: 392.00, attack: 0.005, decay: 0.25, sustain: 0.2, release: 0.3 },
-      flute:   { emoji: '\u{1FA88}', name: 'flute',   wave: 'sine',     freq: 659.25, attack: 0.06, decay: 0.1, sustain: 0.5, release: 0.3, vibrato: true },
-      violin:  { emoji: '\u{1F3BB}', name: 'violin',  wave: 'sawtooth', freq: 440.00, attack: 0.06, decay: 0.1, sustain: 0.4, release: 0.4, vibrato: true },
-      bass:    { emoji: '\u{1F3B8}', name: 'bass',    wave: 'sine',     freq: 130.81, attack: 0.01, decay: 0.2, sustain: 0.4, release: 0.3 },
+      tabla:    { emoji: '\u{1F941}', name: 'tabla',    color: '#d49b3c' },
+      sitar:    { emoji: '\u{1FA95}', name: 'sitar',    color: '#c0392b' },
+      bansuri:  { emoji: '\u{1FA88}', name: 'bansuri',  color: '#27ae60' },
+      krar:     { emoji: '\u{1F3BB}', name: 'krar',     color: '#8e44ad' },
+      kebero:   { emoji: '\u{1FA98}', name: 'kebero',   color: '#e67e22' },
+      masinko:  { emoji: '\u{1F3BB}', name: 'masinko',  color: '#2980b9' },
     };
 
-    // The target melody — order of instruments to recreate
-    const TARGET = ['piano', 'drums', 'guitar', 'flute', 'violin', 'bass'];
+    const TARGET = ['tabla', 'sitar', 'bansuri', 'krar', 'kebero', 'masinko'];
+    const HOST_INSTRUMENTS = ['tabla', 'bansuri', 'krar'];
+    const GUEST_INSTRUMENTS = ['sitar', 'kebero', 'masinko'];
 
-    // Host gets these instruments, guest gets the rest
-    const HOST_INSTRUMENTS = ['piano', 'guitar', 'violin'];
-    const GUEST_INSTRUMENTS = ['drums', 'flute', 'bass'];
+    // ══════════════════════════════════════
+    // WEB AUDIO SYNTHESIS
+    // ══════════════════════════════════════
+    let audioCtx = null;
+    function getCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    function playSound(name, startTime) {
+      const ctx = getCtx();
+      const t = startTime || ctx.currentTime;
+
+      // Master gain
+      const master = ctx.createGain();
+      master.gain.value = 0.6;
+      master.connect(ctx.destination);
+
+      if (name === 'tabla') {
+        // Tabla: sharp attack, pitched membrane + noise
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(180, t);
+        osc.frequency.exponentialRampToValueAtTime(80, t + 0.15);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.8, t);
+        g.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+        osc.connect(g); g.connect(master);
+        osc.start(t); osc.stop(t + 0.3);
+
+        // Click noise
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.008));
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const ng = ctx.createGain(); ng.gain.value = 0.4;
+        src.connect(ng); ng.connect(master);
+        src.start(t); src.stop(t + 0.05);
+        return 0.35;
+      }
+
+      if (name === 'sitar') {
+        // Sitar: plucked string with twang + sympathetic resonance
+        const freqs = [261.6, 523.25, 784.9];
+        freqs.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.value = f;
+          const g = ctx.createGain();
+          const vol = i === 0 ? 0.35 : 0.08;
+          g.gain.setValueAtTime(vol, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + (i === 0 ? 0.8 : 0.5));
+          // Buzz / twang filter
+          const flt = ctx.createBiquadFilter();
+          flt.type = 'bandpass'; flt.frequency.value = f * 2; flt.Q.value = 8;
+          osc.connect(flt); flt.connect(g); g.connect(master);
+          osc.start(t); osc.stop(t + 1);
+        });
+        return 0.9;
+      }
+
+      if (name === 'bansuri') {
+        // Bansuri (Indian flute): breathy sine with vibrato
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = 587.33; // D5
+        // Vibrato
+        const vib = ctx.createOscillator();
+        const vibG = ctx.createGain();
+        vib.frequency.value = 5.5; vibG.gain.value = 8;
+        vib.connect(vibG); vibG.connect(osc.frequency);
+        vib.start(t); vib.stop(t + 1);
+
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.4, t + 0.08);
+        g.gain.setValueAtTime(0.35, t + 0.5);
+        g.gain.linearRampToValueAtTime(0, t + 0.9);
+
+        // Breathy noise layer
+        const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.9, ctx.sampleRate);
+        const nD = nBuf.getChannelData(0);
+        for (let i = 0; i < nD.length; i++) nD[i] = (Math.random() * 2 - 1) * 0.06;
+        const nSrc = ctx.createBufferSource(); nSrc.buffer = nBuf;
+        const nFlt = ctx.createBiquadFilter(); nFlt.type = 'bandpass'; nFlt.frequency.value = 600; nFlt.Q.value = 1;
+        nSrc.connect(nFlt); nFlt.connect(g);
+        nSrc.start(t); nSrc.stop(t + 0.9);
+
+        osc.connect(g); g.connect(master);
+        osc.start(t); osc.stop(t + 0.95);
+        return 0.95;
+      }
+
+      if (name === 'krar') {
+        // Krar (Ethiopian lyre): plucked, pentatonic double note
+        [392, 493.88].forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = f;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.3, t + i * 0.06);
+          g.gain.exponentialRampToValueAtTime(0.01, t + i * 0.06 + 0.6);
+          osc.connect(g); g.connect(master);
+          osc.start(t + i * 0.06); osc.stop(t + i * 0.06 + 0.65);
+        });
+        return 0.7;
+      }
+
+      if (name === 'kebero') {
+        // Kebero (Ethiopian drum): deep, resonant
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(100, t);
+        osc.frequency.exponentialRampToValueAtTime(50, t + 0.3);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.9, t);
+        g.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        osc.connect(g); g.connect(master);
+        osc.start(t); osc.stop(t + 0.45);
+
+        // Body thump noise
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
+        const dd = buf.getChannelData(0);
+        for (let i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.015));
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const flt = ctx.createBiquadFilter(); flt.type = 'lowpass'; flt.frequency.value = 200;
+        const ng = ctx.createGain(); ng.gain.value = 0.5;
+        src.connect(flt); flt.connect(ng); ng.connect(master);
+        src.start(t); src.stop(t + 0.1);
+        return 0.5;
+      }
+
+      if (name === 'masinko') {
+        // Masinko (Ethiopian bowed fiddle): nasal, bowed
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.value = 440;
+        // Vibrato
+        const vib = ctx.createOscillator();
+        const vibG = ctx.createGain();
+        vib.frequency.value = 6; vibG.gain.value = 5;
+        vib.connect(vibG); vibG.connect(osc.frequency);
+        vib.start(t); vib.stop(t + 1);
+
+        const flt = ctx.createBiquadFilter();
+        flt.type = 'bandpass'; flt.frequency.value = 900; flt.Q.value = 3;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.3, t + 0.08);
+        g.gain.setValueAtTime(0.25, t + 0.6);
+        g.gain.linearRampToValueAtTime(0, t + 0.85);
+        osc.connect(flt); flt.connect(g); g.connect(master);
+        osc.start(t); osc.stop(t + 0.9);
+        return 0.9;
+      }
+
+      return 0.5;
+    }
 
     // ══════════════════════════════════════
     // STATE
     // ══════════════════════════════════════
     const isHost = sessionStorage.getItem('datenight-host') === '1';
     const roomCode = sessionStorage.getItem('datenight-room');
-    const myInstruments = isHost ? HOST_INSTRUMENTS : GUEST_INSTRUMENTS;
+    const myInstruments = isHost ? [...HOST_INSTRUMENTS] : [...GUEST_INSTRUMENTS];
     const partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
 
-    // Board state: 6 slots, each can hold { instrument, player }
     let board = Array(6).fill(null);
     let selectedInstrument = null;
     let submitted = false;
     let solved = false;
-    let audioCtx = null;
-
-    // PeerJS
-    let peer = null;
-    let conn = null;
+    let peer = null, conn = null;
 
     // Points
-    function getPoints() {
-      return parseInt(sessionStorage.getItem('puzzle-points') || '0');
-    }
+    function getPoints() { return parseInt(sessionStorage.getItem('puzzle-points') || '0'); }
     function addPoints(n) {
       const total = getPoints() + n;
       sessionStorage.setItem('puzzle-points', total);
       const el = document.getElementById('pts-num');
-      el.textContent = total;
-      el.classList.add('bump');
-      setTimeout(() => el.classList.remove('bump'), 300);
+      if (el) { el.textContent = total; el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 300); }
+      if (window.hudUpdatePoints) window.hudUpdatePoints();
       return total;
     }
     document.getElementById('pts-num').textContent = getPoints();
 
     // ══════════════════════════════════════
-    // WEB AUDIO — INSTRUMENT SYNTHESIS
+    // PLAY RECORDING
     // ══════════════════════════════════════
-    function getAudioCtx() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      return audioCtx;
-    }
-
-    function playSound(instrumentName, startTime) {
-      const ctx = getAudioCtx();
-      const inst = INSTRUMENTS[instrumentName];
-      if (!inst) return 0;
-
-      const t = startTime || ctx.currentTime;
-      const duration = inst.attack + inst.decay + 0.2 + inst.release;
-
-      if (inst.wave === 'noise') {
-        // Drums — noise burst
-        const bufferSize = ctx.sampleRate * 0.15;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.8, t + 0.001);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-
-        // Bandpass for snare-like tone
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1000;
-        filter.Q.value = 0.5;
-
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-        noise.start(t);
-        noise.stop(t + 0.2);
-        return 0.3;
-      }
-
-      // Tonal instruments
-      const osc = ctx.createOscillator();
-      osc.type = inst.wave;
-      osc.frequency.value = inst.freq;
-
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.5, t + inst.attack);
-      gain.gain.linearRampToValueAtTime(inst.sustain * 0.5, t + inst.attack + inst.decay);
-      gain.gain.setValueAtTime(inst.sustain * 0.5, t + inst.attack + inst.decay + 0.2);
-      gain.gain.linearRampToValueAtTime(0, t + duration);
-
-      // Vibrato for flute/violin
-      if (inst.vibrato) {
-        const vibOsc = ctx.createOscillator();
-        const vibGain = ctx.createGain();
-        vibOsc.frequency.value = 5.5;
-        vibGain.gain.value = inst.wave === 'sawtooth' ? 4 : 6;
-        vibOsc.connect(vibGain);
-        vibGain.connect(osc.frequency);
-        vibOsc.start(t);
-        vibOsc.stop(t + duration + 0.1);
-      }
-
-      // Sawtooth filter for violin (less harsh)
-      if (inst.wave === 'sawtooth') {
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 2000;
-        osc.connect(filter);
-        filter.connect(gain);
-      } else {
-        osc.connect(gain);
-      }
-
-      gain.connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + duration + 0.1);
-
-      return duration;
-    }
-
-    // Play the full target melody
     function playRecording() {
-      const ctx = getAudioCtx();
+      const ctx = getCtx();
       const btn = document.getElementById('play-btn');
       btn.classList.add('playing');
       document.getElementById('play-text').textContent = 'playing...';
 
       let time = ctx.currentTime + 0.1;
-      const gap = 0.55;
+      const gap = 0.7;
 
-      TARGET.forEach((instName, i) => {
-        const slotEl = document.querySelector(`.seq-slot[data-index="${i}"]`);
+      TARGET.forEach((name, i) => {
         const playAt = time;
+        const slotEl = document.querySelector(`.board-slot[data-index="${i}"]`);
 
-        // Schedule visual highlight
         setTimeout(() => {
-          slotEl.classList.add('playing-now');
-          setTimeout(() => slotEl.classList.remove('playing-now'), 400);
+          if (slotEl) {
+            slotEl.classList.add('playing-now');
+            setTimeout(() => slotEl.classList.remove('playing-now'), 500);
+          }
         }, (playAt - ctx.currentTime) * 1000);
 
-        playSound(instName, playAt);
+        playSound(name, playAt);
         time += gap;
       });
 
-      // Re-enable button after playback
-      const totalTime = TARGET.length * gap + 0.3;
+      const totalTime = TARGET.length * gap + 0.5;
       setTimeout(() => {
         btn.classList.remove('playing');
         document.getElementById('play-text').textContent = 'play again';
       }, totalTime * 1000);
     }
 
-    // Play a single instrument (for preview)
-    function previewInstrument(name) {
-      playSound(name);
-    }
-
     // ══════════════════════════════════════
     // BUILD UI
     // ══════════════════════════════════════
-    function buildSlots() {
-      const container = document.getElementById('sequence-slots');
+    function buildBoard() {
+      const container = document.getElementById('sequence-board');
       container.innerHTML = '';
       for (let i = 0; i < 6; i++) {
         const slot = document.createElement('div');
-        slot.className = 'seq-slot';
+        slot.className = 'board-slot';
         slot.dataset.index = i;
         slot.innerHTML = `<span class="slot-num">${i + 1}</span>`;
         slot.addEventListener('click', () => onSlotClick(i));
@@ -262,57 +665,47 @@
     }
 
     function buildPalette() {
-      const container = document.getElementById('instrument-palette');
+      const container = document.getElementById('instrument-grid');
       container.innerHTML = '';
+      const me = isHost ? 'host' : 'guest';
       myInstruments.forEach(name => {
-        // Only show if not already placed on board
-        if (board.some(b => b && b.instrument === name && b.player === (isHost ? 'host' : 'guest'))) return;
-        const chip = document.createElement('div');
-        chip.className = 'inst-chip';
-        chip.dataset.instrument = name;
-        chip.innerHTML = `
-          <span class="chip-emoji">${INSTRUMENTS[name].emoji}</span>
-          <span class="chip-name">${name}</span>
-        `;
-        chip.addEventListener('click', () => onChipClick(name, chip));
-        container.appendChild(chip);
+        if (board.some(b => b && b.instrument === name && b.player === me)) return;
+        const inst = INSTRUMENTS[name];
+        const card = document.createElement('div');
+        card.className = 'inst-card';
+        card.dataset.instrument = name;
+        card.innerHTML = `<span class="card-emoji">${inst.emoji}</span><span class="card-name">${inst.name}</span>`;
+        card.addEventListener('click', () => onCardClick(name, card));
+        container.appendChild(card);
       });
     }
 
     function buildPartnerPalette() {
-      const container = document.getElementById('partner-instruments');
+      const container = document.getElementById('partner-grid');
       container.innerHTML = '';
       partnerInstruments.forEach(name => {
-        // Only show if not placed
         if (board.some(b => b && b.instrument === name)) return;
-        const chip = document.createElement('div');
-        chip.className = 'partner-chip';
-        chip.innerHTML = `
-          <span class="chip-emoji">${INSTRUMENTS[name].emoji}</span>
-          <span class="chip-name">${name}</span>
-        `;
-        container.appendChild(chip);
+        const inst = INSTRUMENTS[name];
+        const card = document.createElement('div');
+        card.className = 'partner-card';
+        card.innerHTML = `<span class="card-emoji">${inst.emoji}</span><span class="card-name">${inst.name}</span>`;
+        container.appendChild(card);
       });
     }
 
     function renderBoard() {
       for (let i = 0; i < 6; i++) {
-        const slotEl = document.querySelector(`.seq-slot[data-index="${i}"]`);
+        const slotEl = document.querySelector(`.board-slot[data-index="${i}"]`);
         const entry = board[i];
-        // Preserve classes for feedback
         const keepClasses = ['correct', 'close', 'wrong'].filter(c => slotEl.classList.contains(c));
 
         if (entry) {
           const inst = INSTRUMENTS[entry.instrument];
-          slotEl.className = 'seq-slot filled';
+          slotEl.className = 'board-slot filled';
           keepClasses.forEach(c => slotEl.classList.add(c));
-          slotEl.innerHTML = `
-            <span class="slot-num">${i + 1}</span>
-            <span class="slot-emoji">${inst.emoji}</span>
-            <span class="slot-name">${inst.name}</span>
-          `;
+          slotEl.innerHTML = `<span class="slot-num">${i + 1}</span><span class="slot-emoji">${inst.emoji}</span><span class="slot-name">${inst.name}</span>`;
         } else {
-          slotEl.className = 'seq-slot';
+          slotEl.className = 'board-slot';
           keepClasses.forEach(c => slotEl.classList.add(c));
           slotEl.innerHTML = `<span class="slot-num">${i + 1}</span>`;
         }
@@ -323,35 +716,29 @@
     }
 
     function updateSubmitBtn() {
-      const allFilled = board.every(b => b !== null);
-      document.getElementById('submit-btn').disabled = !allFilled || submitted;
+      document.getElementById('submit-btn').disabled = !board.every(b => b !== null) || submitted;
     }
 
     // ══════════════════════════════════════
-    // INTERACTION — TAP TO SELECT & PLACE
+    // INTERACTION
     // ══════════════════════════════════════
-    function onChipClick(name, chipEl) {
+    function onCardClick(name, cardEl) {
       if (submitted || solved) return;
+      playSound(name);
 
-      // Preview the sound
-      previewInstrument(name);
-
-      // Toggle selection
       if (selectedInstrument === name) {
         selectedInstrument = null;
-        document.querySelectorAll('.inst-chip').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.seq-slot').forEach(s => s.classList.remove('highlight'));
+        document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('highlight'));
         return;
       }
 
       selectedInstrument = name;
-      document.querySelectorAll('.inst-chip').forEach(c => {
-        c.classList.toggle('selected', c.dataset.instrument === name);
-      });
-      // Highlight empty slots
-      document.querySelectorAll('.seq-slot').forEach(s => {
+      document.querySelectorAll('.inst-card').forEach(c => c.classList.toggle('selected', c.dataset.instrument === name));
+      document.querySelectorAll('.board-slot').forEach(s => {
         const idx = parseInt(s.dataset.index);
-        const canPlace = !board[idx] || (board[idx] && board[idx].player === (isHost ? 'host' : 'guest'));
+        const me = isHost ? 'host' : 'guest';
+        const canPlace = !board[idx] || (board[idx] && board[idx].player === me);
         s.classList.toggle('highlight', canPlace);
       });
     }
@@ -360,240 +747,148 @@
       if (submitted || solved) return;
       const me = isHost ? 'host' : 'guest';
 
-      // If slot has our instrument, remove it
       if (board[index] && board[index].player === me) {
-        const removed = board[index].instrument;
         board[index] = null;
         sendPeerData({ type: 'remove', slot: index });
         selectedInstrument = null;
-        document.querySelectorAll('.inst-chip').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.seq-slot').forEach(s => s.classList.remove('highlight'));
+        document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('highlight'));
         clearFeedback();
         renderBoard();
         return;
       }
 
-      // If we have a selected instrument, place it
       if (selectedInstrument) {
-        // Remove this instrument from any other slot first
         for (let i = 0; i < 6; i++) {
-          if (board[i] && board[i].instrument === selectedInstrument && board[i].player === me) {
-            board[i] = null;
-          }
+          if (board[i] && board[i].instrument === selectedInstrument && board[i].player === me) board[i] = null;
         }
-
-        // Don't overwrite partner's placement
         if (board[index] && board[index].player !== me) {
-          setStatus('that slot has your partner\'s instrument', 'error');
+          setStatus("that slot has your partner's instrument", 'error');
           return;
         }
-
         board[index] = { instrument: selectedInstrument, player: me };
         sendPeerData({ type: 'place', slot: index, instrument: selectedInstrument, player: me });
-
-        // Play the sound in the slot
-        previewInstrument(selectedInstrument);
-
+        playSound(selectedInstrument);
         selectedInstrument = null;
-        document.querySelectorAll('.inst-chip').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.seq-slot').forEach(s => s.classList.remove('highlight'));
+        document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('highlight'));
         clearFeedback();
         renderBoard();
       }
     }
 
     // ══════════════════════════════════════
-    // SUBMIT & FEEDBACK
+    // SUBMIT
     // ══════════════════════════════════════
     function clearFeedback() {
       submitted = false;
-      document.querySelectorAll('.seq-slot').forEach(s => {
-        s.classList.remove('correct', 'close', 'wrong');
-      });
+      document.querySelectorAll('.board-slot').forEach(s => s.classList.remove('correct', 'close', 'wrong'));
       setStatus('');
     }
 
     document.getElementById('submit-btn').addEventListener('click', () => {
       if (solved) return;
       submitted = true;
-
-      let correctCount = 0;
-      let closeCount = 0;
+      let correctCount = 0, closeCount = 0;
 
       for (let i = 0; i < 6; i++) {
-        const slotEl = document.querySelector(`.seq-slot[data-index="${i}"]`);
+        const slotEl = document.querySelector(`.board-slot[data-index="${i}"]`);
         const placed = board[i] ? board[i].instrument : null;
-
-        if (placed === TARGET[i]) {
-          slotEl.classList.add('correct');
-          correctCount++;
-        } else if (placed && (
-          (i > 0 && TARGET[i - 1] === placed) ||
-          (i < 5 && TARGET[i + 1] === placed)
-        )) {
-          slotEl.classList.add('close');
-          closeCount++;
-        } else if (placed) {
-          slotEl.classList.add('wrong');
-        }
+        if (placed === TARGET[i]) { slotEl.classList.add('correct'); correctCount++; }
+        else if (placed && ((i > 0 && TARGET[i-1] === placed) || (i < 5 && TARGET[i+1] === placed))) { slotEl.classList.add('close'); closeCount++; }
+        else if (placed) { slotEl.classList.add('wrong'); }
       }
 
-      // Send feedback to partner
       sendPeerData({ type: 'feedback', correct: correctCount, close: closeCount });
 
       if (correctCount === 6) {
-        // Perfect!
         solved = true;
-        const pts = 60;
-        addPoints(pts);
+        addPoints(60);
         markCompleted('music');
-
-        document.getElementById('victory-title').textContent = 'perfect melody!';
-        document.getElementById('victory-pts').textContent = '+' + pts + ' pts';
-
-        setTimeout(() => {
-          document.getElementById('victory-overlay').classList.add('visible');
-        }, 800);
+        document.getElementById('victory-title').textContent = 'perfect rhythm!';
+        document.getElementById('victory-pts').textContent = '+60 pts';
+        setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 800);
       } else {
         const pts = correctCount * 10 + closeCount * 5;
         if (pts > 0) addPoints(pts);
-
         let msg = correctCount + '/6 correct';
         if (closeCount > 0) msg += ', ' + closeCount + ' close';
-        msg += ' — try again!';
+        msg += ' \u2014 try again!';
         setStatus(msg, correctCount >= 4 ? 'success' : '');
-
-        // Allow re-submission after adjusting
-        setTimeout(() => {
-          submitted = false;
-          document.getElementById('submit-btn').disabled = false;
-        }, 1500);
+        setTimeout(() => { submitted = false; document.getElementById('submit-btn').disabled = false; }, 1500);
       }
     });
 
     // ══════════════════════════════════════
-    // SKIP
+    // SKIP & HELPERS
     // ══════════════════════════════════════
     document.getElementById('skip-btn').addEventListener('click', () => {
       markCompleted('music');
       window.location.href = '../';
     });
 
-    function markCompleted(levelId) {
+    function markCompleted(id) {
       let completed;
-      try {
-        completed = JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]');
-      } catch { completed = []; }
-      if (!completed.includes(levelId)) {
-        completed.push(levelId);
-        sessionStorage.setItem('puzzle-completed', JSON.stringify(completed));
-      }
+      try { completed = JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]'); } catch { completed = []; }
+      if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
     }
 
-    // ══════════════════════════════════════
-    // STATUS HELPER
-    // ══════════════════════════════════════
     function setStatus(msg, cls) {
-      const el = document.getElementById('puzzle-status');
+      const el = document.getElementById('status-msg');
       el.textContent = msg;
-      el.className = 'puzzle-status' + (cls ? ' ' + cls : '');
+      el.className = 'status-msg' + (cls ? ' ' + cls : '');
     }
 
     // ══════════════════════════════════════
-    // PEERJS — COLLABORATIVE SYNC
+    // PEERJS
     // ══════════════════════════════════════
-    function peerIdForPuzzle(code) {
-      return 'shahhub-puzzle-music-' + code;
-    }
+    function peerIdForPuzzle(code) { return 'shahhub-puzzle-music-' + code; }
+    function sendPeerData(data) { if (conn && conn.open) conn.send(data); }
 
     function setupPeer() {
-      if (!roomCode) {
-        setStatus('no room found — go back and join a room first', 'error');
-        return;
-      }
-
+      if (!roomCode) return;
       if (isHost) {
         peer = new Peer(peerIdForPuzzle(roomCode));
         peer.on('open', () => {
-          peer.on('connection', (c) => {
+          peer.on('connection', c => {
             conn = c;
-            c.on('open', () => {
-              // Sync current board state to guest
-              c.send({ type: 'board-sync', board: board });
-            });
+            c.on('open', () => c.send({ type: 'board-sync', board }));
             c.on('data', handlePeerData);
-            c.on('close', () => {
-              conn = null;
-              setStatus('partner disconnected');
-            });
+            c.on('close', () => { conn = null; setStatus('partner disconnected'); });
           });
         });
         peer.on('error', () => {});
       } else {
         peer = new Peer();
-        peer.on('open', () => {
-          tryConnect(0);
-        });
+        peer.on('open', () => tryConnect(0));
         peer.on('error', () => {});
       }
     }
 
     function tryConnect(attempt) {
-      if (attempt > 15) {
-        setStatus('couldn\'t connect to partner', 'error');
-        return;
-      }
+      if (attempt > 15) { setStatus("couldn't connect to partner", 'error'); return; }
       const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
       c.on('open', () => {
         conn = c;
         c.on('data', handlePeerData);
-        c.on('close', () => {
-          conn = null;
-          setStatus('partner disconnected');
-        });
+        c.on('close', () => { conn = null; setStatus('partner disconnected'); });
       });
-      c.on('error', () => {
-        setTimeout(() => tryConnect(attempt + 1), 1000);
-      });
-    }
-
-    function sendPeerData(data) {
-      if (conn && conn.open) {
-        conn.send(data);
-      }
+      c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
     }
 
     function handlePeerData(data) {
-      if (data.type === 'board-sync') {
-        board = data.board;
-        renderBoard();
-      } else if (data.type === 'place') {
-        // Remove their instrument from any other slot
+      if (data.type === 'board-sync') { board = data.board; renderBoard(); }
+      else if (data.type === 'place') {
         for (let i = 0; i < 6; i++) {
-          if (board[i] && board[i].instrument === data.instrument && board[i].player === data.player) {
-            board[i] = null;
-          }
+          if (board[i] && board[i].instrument === data.instrument && board[i].player === data.player) board[i] = null;
         }
         board[data.slot] = { instrument: data.instrument, player: data.player };
-        clearFeedback();
-        renderBoard();
-
-        // Play the sound they placed
-        previewInstrument(data.instrument);
-      } else if (data.type === 'remove') {
-        board[data.slot] = null;
-        clearFeedback();
-        renderBoard();
-      } else if (data.type === 'feedback') {
-        // Partner submitted — we see their feedback too
+        clearFeedback(); renderBoard(); playSound(data.instrument);
+      } else if (data.type === 'remove') { board[data.slot] = null; clearFeedback(); renderBoard(); }
+      else if (data.type === 'feedback') {
         if (data.correct === 6 && !solved) {
-          solved = true;
-          const pts = 60;
-          addPoints(pts);
-          markCompleted('music');
-          setTimeout(() => {
-            document.getElementById('victory-overlay').classList.add('visible');
-          }, 800);
+          solved = true; addPoints(60); markCompleted('music');
+          setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 800);
         }
       }
     }
@@ -602,59 +897,33 @@
     // EASTER EGGS
     // ══════════════════════════════════════
     function setupEasterEggs() {
-      const gems = [
-        { id: 'gem-1', key: 'gem-music-1', msg: 'you found a hidden star!' },
-        { id: 'gem-2', key: 'gem-music-2', msg: 'secret note discovered!' },
-      ];
-
-      gems.forEach(g => {
+      [{ id: 'gem-1', key: 'gem-music-1', msg: 'you found a hidden star!' },
+       { id: 'gem-2', key: 'gem-music-2', msg: 'secret note discovered!' }].forEach(g => {
         const el = document.getElementById(g.id);
         if (!el) return;
-        if (sessionStorage.getItem(g.key) === '1') {
-          el.style.display = 'none';
-          return;
-        }
+        if (sessionStorage.getItem(g.key) === '1') { el.style.display = 'none'; return; }
         el.addEventListener('click', () => {
           if (sessionStorage.getItem(g.key) === '1') return;
           sessionStorage.setItem(g.key, '1');
           el.classList.add('found');
-
-          const bonus = 15;
-          addPoints(bonus);
-
+          addPoints(15);
           const toast = document.getElementById('gem-toast');
-          toast.textContent = '\u{1F48E} +' + bonus + ' pts! ' + g.msg;
+          toast.textContent = '\u{1F48E} +15 pts! ' + g.msg;
           toast.classList.add('show');
-          setTimeout(() => {
-            toast.classList.remove('show');
-            el.style.display = 'none';
-          }, 2000);
+          setTimeout(() => { toast.classList.remove('show'); el.style.display = 'none'; }, 2000);
         });
       });
 
-      // Secret: click title 5 times fast for bonus
-      let titleClicks = 0;
-      let titleTimer = null;
-      const titleEl = document.querySelector('.puzzle-page-title');
-      const originalTitleHandler = titleEl.onclick;
-
-      titleEl.addEventListener('dblclick', (e) => {
-        e.preventDefault();
-      });
-
-      // We track rapid clicks separately from theme cycling
-      titleEl.addEventListener('click', () => {
+      let titleClicks = 0, titleTimer = null;
+      document.querySelector('.page-title').addEventListener('click', () => {
         titleClicks++;
         clearTimeout(titleTimer);
-        titleTimer = setTimeout(() => { titleClicks = 0; }, 1500);
-
+        titleTimer = setTimeout(() => titleClicks = 0, 1500);
         if (titleClicks >= 5 && sessionStorage.getItem('gem-music-title') !== '1') {
           sessionStorage.setItem('gem-music-title', '1');
-          const bonus = 25;
-          addPoints(bonus);
-
+          addPoints(25);
           const toast = document.getElementById('gem-toast');
-          toast.textContent = '\u{1F389} +' + bonus + ' pts! you found the secret rhythm!';
+          toast.textContent = '\u{1F389} +25 pts! you found the secret rhythm!';
           toast.classList.add('show');
           setTimeout(() => toast.classList.remove('show'), 2500);
           titleClicks = 0;
@@ -663,40 +932,28 @@
     }
 
     // ══════════════════════════════════════
-    // SOLO MODE — no room, play both sides
+    // SOLO MODE
     // ══════════════════════════════════════
-    function isSoloMode() {
-      return !roomCode;
-    }
-
-    // In solo mode, show ALL instruments to the single player
-    function setupSoloMode() {
-      document.getElementById('palette-label').textContent = 'your instruments';
-      document.getElementById('partner-palette').style.display = 'none';
-    }
+    function isSoloMode() { return !roomCode; }
 
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
     function init() {
-      buildSlots();
+      buildBoard();
 
       if (isSoloMode()) {
-        // Solo mode — player gets all instruments
         myInstruments.length = 0;
         myInstruments.push(...Object.keys(INSTRUMENTS));
-        setupSoloMode();
+        document.getElementById('palette-label').textContent = 'your instruments';
+        document.getElementById('partner-section').style.display = 'none';
       }
 
       buildPalette();
       buildPartnerPalette();
 
       document.getElementById('play-btn').addEventListener('click', playRecording);
-
-      if (!isSoloMode()) {
-        setupPeer();
-      }
-
+      if (!isSoloMode()) setupPeer();
       setupEasterEggs();
     }
 
