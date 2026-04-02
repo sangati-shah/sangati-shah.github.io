@@ -119,11 +119,9 @@ function dnCycleTheme() {
   dnApplyTheme(dnThemeIndex);
 }
 
-// Apply on load
-dnApplyTheme(dnThemeIndex);
-
-// Bind click-to-cycle on any element with data-dn-cycle attribute
+// Apply theme and bind click handlers once DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+  dnApplyTheme(dnThemeIndex);
   document.querySelectorAll('[data-dn-cycle]').forEach(el => {
     el.addEventListener('click', dnCycleTheme);
   });
