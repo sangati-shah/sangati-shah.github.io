@@ -7,12 +7,13 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #faf8f5;
-  color: #2c2c2c;
+  background: var(--dn-bg, #fef0f5);
+  color: var(--dn-text, #2c2c2c);
   min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 1.5s ease;
 }
 
 /* ── Back Button ── */
@@ -22,9 +23,9 @@ body {
   left: 1.5rem;
   background: none;
   border: none;
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: 1.2rem;
-  color: #999;
+  color: var(--dn-sub, #999);
   cursor: pointer;
   z-index: 100;
   transition: color 0.3s;
@@ -32,7 +33,7 @@ body {
 }
 
 .back-btn:hover {
-  color: #555;
+  color: var(--dn-text, #555);
 }
 
 /* ── Games Wrapper ── */
@@ -44,19 +45,19 @@ body {
 }
 
 .games-title {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: clamp(2.5rem, 7vw, 4rem);
   font-weight: 600;
-  color: #2c2c2c;
+  color: var(--dn-text, #2c2c2c);
   margin-bottom: 0.2em;
   cursor: pointer;
-  transition: color 0.6s ease;
+  transition: color 0.6s ease, font-family 0.3s ease;
   user-select: none;
 }
 
 .games-sub {
   font-size: clamp(0.85rem, 2vw, 1rem);
-  color: #888;
+  color: var(--dn-sub, #888);
   font-weight: 300;
   margin-bottom: 2em;
   letter-spacing: 0.02em;
@@ -71,26 +72,26 @@ body {
 }
 
 .game-tab {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: 1.2rem;
   background: none;
-  border: 1px solid #e8e4e0;
-  border-radius: 30px;
+  border: 1.5px solid var(--dn-btn-border, #e8e4e0);
+  border-radius: var(--dn-btn-radius, 30px);
   padding: 0.4em 1.4em;
   cursor: pointer;
-  color: #999;
+  color: var(--dn-sub, #999);
   transition: all 0.3s ease;
 }
 
 .game-tab:hover {
-  color: #555;
-  border-color: #d4cfc9;
+  color: var(--dn-text, #555);
+  border-color: var(--dn-accent, #d4cfc9);
 }
 
 .game-tab.active {
-  color: #2c2c2c;
-  background: white;
-  border-color: #d4cfc9;
+  color: var(--dn-btn-text, #2c2c2c);
+  background: var(--dn-btn-bg, white);
+  border-color: var(--dn-btn-border, #d4cfc9);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -105,9 +106,9 @@ body {
 
 /* ── Game Status ── */
 .game-status {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: 1.4rem;
-  color: #666;
+  color: var(--dn-sub, #666);
   margin-bottom: 1.5rem;
   min-height: 2em;
 }
@@ -134,21 +135,21 @@ body {
 
 /* ── Reset Button ── */
 .reset-btn {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: 1.15rem;
   background: none;
-  border: 1px solid #e8e4e0;
-  border-radius: 30px;
+  border: 1.5px solid var(--dn-btn-border, #e8e4e0);
+  border-radius: var(--dn-btn-radius, 30px);
   padding: 0.4em 1.8em;
   cursor: pointer;
-  color: #999;
+  color: var(--dn-sub, #999);
   margin-top: 1.5rem;
   transition: all 0.3s ease;
 }
 
 .reset-btn:hover {
-  color: #555;
-  border-color: #d4cfc9;
+  color: var(--dn-text, #555);
+  border-color: var(--dn-accent, #d4cfc9);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -165,14 +166,14 @@ body {
 
 .ttt-cell {
   aspect-ratio: 1;
-  background: white;
-  border: 2px solid #e8e4e0;
-  border-radius: 12px;
+  background: var(--dn-input-bg, white);
+  border: 2px solid var(--dn-btn-border, #e8e4e0);
+  border-radius: var(--dn-btn-radius, 12px);
   cursor: pointer;
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: 2.8rem;
   font-weight: 600;
-  color: #2c2c2c;
+  color: var(--dn-text, #2c2c2c);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -180,7 +181,7 @@ body {
 }
 
 .ttt-cell:hover:not(.taken) {
-  background: #f5f2ef;
+  background: var(--dn-home-btn-bg, #f5f2ef);
   transform: scale(1.03);
 }
 
@@ -219,7 +220,7 @@ body {
 
 .c4-cell {
   aspect-ratio: 1;
-  background: #faf8f5;
+  background: var(--dn-bg, #faf8f5);
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -228,7 +229,7 @@ body {
 }
 
 .c4-cell:hover:not(.taken) {
-  background: #f0ede8;
+  background: var(--dn-input-bg, #f0ede8);
 }
 
 .c4-cell.taken {
@@ -279,7 +280,6 @@ body {
 
   .ttt-cell {
     font-size: 2.2rem;
-    border-radius: 10px;
   }
 
   .c4-board {

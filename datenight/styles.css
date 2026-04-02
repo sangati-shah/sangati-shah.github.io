@@ -5,10 +5,27 @@
   box-sizing: border-box;
 }
 
+:root {
+  --dn-bg: #fef0f5;
+  --dn-text: #2d6a4f;
+  --dn-sub: #c27a8e;
+  --dn-accent: #e85d75;
+  --dn-heading-font: 'Dancing Script', cursive;
+  --dn-btn-bg: rgba(255,255,255,0.65);
+  --dn-btn-border: #e0a0b0;
+  --dn-btn-radius: 50px;
+  --dn-btn-text: #2d6a4f;
+  --dn-input-bg: rgba(255,255,255,0.5);
+  --dn-input-border: #e0a0b0;
+  --dn-input-text: #2d6a4f;
+  --dn-home-btn-bg: rgba(255,255,255,0.65);
+  --dn-home-btn-border: #e0a0b0;
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  background: #faf8f5;
-  color: #2c2c2c;
+  background: var(--dn-bg);
+  color: var(--dn-text);
   overflow: hidden;
   height: 100dvh;
   width: 100vw;
@@ -26,7 +43,7 @@ body.lights-off {
 .room-gate {
   position: fixed;
   inset: 0;
-  background: #faf8f5;
+  background: var(--dn-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,19 +62,19 @@ body.lights-off {
 }
 
 .room-title {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: clamp(2.5rem, 7vw, 4rem);
   font-weight: 600;
-  color: #2c2c2c;
+  color: var(--dn-text);
   margin-bottom: 0.3em;
   cursor: pointer;
-  transition: color 0.6s ease;
+  transition: color 0.6s ease, font-family 0.3s ease;
   user-select: none;
 }
 
 .room-hint {
   font-size: clamp(0.85rem, 2vw, 1rem);
-  color: #aaa;
+  color: var(--dn-sub);
   font-weight: 300;
   margin-bottom: 2em;
   letter-spacing: 0.02em;
@@ -69,22 +86,22 @@ body.lights-off {
 }
 
 .room-code-input {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 2.4rem;
   text-align: center;
   border: none;
-  border-bottom: 3px solid #e0dbd6;
+  border-bottom: 3px solid var(--dn-input-border);
   background: transparent;
   padding: 0.3em 0.5em;
   outline: none;
-  color: #2c2c2c;
+  color: var(--dn-input-text);
   width: 5em;
   letter-spacing: 0.4em;
   transition: border-color 0.3s ease;
 }
 
 .room-code-input:focus {
-  border-bottom-color: #c4a882;
+  border-bottom-color: var(--dn-accent);
 }
 
 .room-code-input::placeholder {
@@ -100,21 +117,21 @@ body.lights-off {
 }
 
 .room-btn {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 1.2rem;
-  background: white;
-  border: 1.5px solid #e0dbd6;
-  border-radius: 30px;
+  background: var(--dn-btn-bg);
+  border: 1.5px solid var(--dn-btn-border);
+  border-radius: var(--dn-btn-radius);
   padding: 0.5em 1.8em;
   cursor: pointer;
-  color: #2c2c2c;
+  color: var(--dn-btn-text);
   transition: all 0.3s ease;
 }
 
 .room-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  border-color: #c4a882;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-color: var(--dn-accent);
 }
 
 .room-btn:disabled {
@@ -124,7 +141,7 @@ body.lights-off {
 
 .room-btn-alt {
   background: transparent;
-  color: #999;
+  color: var(--dn-sub);
 }
 
 .room-btn-small {
@@ -133,9 +150,9 @@ body.lights-off {
 }
 
 .room-status {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 1.1rem;
-  color: #999;
+  color: var(--dn-sub);
   margin-top: 1.2rem;
   min-height: 1.5em;
 }
@@ -150,22 +167,22 @@ body.lights-off {
 
 .room-share-text {
   font-size: 0.9rem;
-  color: #aaa;
+  color: var(--dn-sub);
   margin-bottom: 0.5rem;
 }
 
 .room-share-code {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 3rem;
   font-weight: 600;
-  color: #e85d75;
+  color: var(--dn-accent);
   letter-spacing: 0.3em;
   margin-bottom: 0.8rem;
   user-select: all;
 }
 
 .room-copied {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 0.95rem;
   color: #4caf50;
   opacity: 0;
@@ -178,9 +195,9 @@ body.lights-off {
 }
 
 .room-info {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 0.95rem;
-  color: #bbb;
+  color: var(--dn-sub);
   margin-top: 2rem;
 }
 
@@ -194,9 +211,9 @@ body.lights-off {
 }
 
 .partner-label {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 0.8rem;
-  color: #e85d75;
+  color: var(--dn-accent);
   position: absolute;
   left: 18px;
   top: 14px;
@@ -218,19 +235,19 @@ body.lights-off {
 }
 
 .home-title {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 600;
-  color: #2c2c2c;
+  color: var(--dn-text);
   margin-bottom: 0.3em;
   cursor: pointer;
-  transition: color 0.6s ease;
+  transition: color 0.6s ease, font-family 0.3s ease;
   user-select: none;
 }
 
 .home-sub {
   font-size: clamp(0.9rem, 2vw, 1.1rem);
-  color: #888;
+  color: var(--dn-sub);
   font-weight: 300;
   margin-bottom: 3em;
   letter-spacing: 0.02em;
@@ -248,9 +265,9 @@ body.lights-off {
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
-  background: white;
-  border: 1px solid #e8e4e0;
-  border-radius: 16px;
+  background: var(--dn-home-btn-bg);
+  border: 1.5px solid var(--dn-home-btn-border);
+  border-radius: var(--dn-btn-radius);
   padding: 2rem 2.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -261,8 +278,8 @@ body.lights-off {
 
 .home-btn:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
-  border-color: #d4cfc9;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+  border-color: var(--dn-accent);
 }
 
 .btn-icon {
@@ -270,9 +287,9 @@ body.lights-off {
 }
 
 .btn-label {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 1.3rem;
-  color: #555;
+  color: var(--dn-sub);
 }
 
 /* ── BACK BUTTON ── */
@@ -282,9 +299,9 @@ body.lights-off {
   left: 1.5rem;
   background: none;
   border: none;
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: 1.2rem;
-  color: #999;
+  color: var(--dn-sub);
   cursor: pointer;
   z-index: 100;
   transition: color 0.3s;
@@ -292,7 +309,7 @@ body.lights-off {
 }
 
 .back-btn:hover {
-  color: #555;
+  color: var(--dn-text);
 }
 
 .back-btn-dark {
@@ -325,9 +342,9 @@ body.lights-off {
 }
 
 .jar-prompt {
-  font-family: 'Caveat', cursive;
+  font-family: var(--dn-heading-font);
   font-size: clamp(1.8rem, 5vw, 2.8rem);
-  color: #2c2c2c;
+  color: var(--dn-text);
   line-height: 1.4;
   margin-bottom: 2.5rem;
   transition: opacity 0.6s ease, transform 0.6s ease;
