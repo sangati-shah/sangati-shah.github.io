@@ -17,12 +17,12 @@
       overflow: hidden;
       height: 100dvh;
       width: 100vw;
-      background: #0a0a1a;
+      background: var(--dn-bg, #fef0f5);
       user-select: none;
       -webkit-user-select: none;
+      transition: background 1.5s ease;
     }
 
-    /* ── Viewport & World ── */
     .viewport { position: fixed; inset: 0; overflow: hidden; }
 
     .world {
@@ -31,96 +31,22 @@
       height: 100%;
     }
 
-    /* ── Sky ── */
-    .sky {
+    /* ── Ground Line ── */
+    .ground-line {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, #0a0a2e 0%, #1a1a4e 30%, #2d1b4e 60%, #4a2040 100%);
-    }
-
-    .star {
-      position: absolute;
-      width: 3px; height: 3px;
-      background: #fff;
-      border-radius: 50%;
-      opacity: 0.6;
-    }
-    .star.twinkle { animation: twinkle 2s ease-in-out infinite alternate; }
-    @keyframes twinkle {
-      0% { opacity: 0.3; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1.2); }
-    }
-
-    .moon {
-      position: absolute;
-      top: 8%; right: 20%;
-      width: 50px; height: 50px;
-      background: radial-gradient(circle at 35% 35%, #fffde7, #ffd54f);
-      border-radius: 50%;
-      box-shadow: 0 0 40px 10px rgba(255,213,79,0.15);
-    }
-
-    /* ── Ground ── */
-    .ground {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 80px;
-      background: linear-gradient(to bottom, #2d5a27, #1a3d16);
+      bottom: 80px; left: 0;
+      width: 100%; height: 3px;
+      background: var(--dn-accent, #e85d75);
       z-index: 10;
     }
-    .ground::before {
-      content: '';
-      position: absolute;
-      top: -6px; left: 0; width: 100%; height: 12px;
-      background: #3a7a30;
-      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    }
 
-    /* ── Obstacles ── */
+    /* ── Obstacles: simple boxes ── */
     .obstacle {
       position: absolute;
       z-index: 20;
-    }
-
-    .block {
-      background: linear-gradient(135deg, #5a4a3a, #7a6a5a, #5a4a3a);
-      border: 2px solid #4a3a2a;
+      background: var(--dn-accent, #e85d75);
       border-radius: 4px;
-      box-shadow: inset 0 2px 4px rgba(255,255,255,0.08), 0 2px 8px rgba(0,0,0,0.3);
-    }
-
-    /* Brick lines */
-    .block::before {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      background:
-        repeating-linear-gradient(
-          0deg,
-          transparent, transparent 10px,
-          rgba(0,0,0,0.15) 10px, rgba(0,0,0,0.15) 12px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          transparent, transparent 18px,
-          rgba(0,0,0,0.1) 18px, rgba(0,0,0,0.1) 20px
-        );
-      border-radius: 2px;
-    }
-
-    .beam {
-      background: linear-gradient(to bottom, #8b6914, #6d5210, #8b6914);
-      border: 2px solid #5c4310;
-      border-radius: 3px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-    }
-
-    .beam::after {
-      content: '';
-      position: absolute;
-      top: 2px; left: 4px; right: 4px; height: 3px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 2px;
+      opacity: 0.7;
     }
 
     /* ── Glowing Finish Box ── */
@@ -148,24 +74,6 @@
     @keyframes glow-box {
       0% { transform: scale(1); box-shadow: 0 0 20px var(--dn-accent, #e85d75), 0 0 40px rgba(232,93,117,0.3); }
       100% { transform: scale(1.08); box-shadow: 0 0 30px var(--dn-accent, #e85d75), 0 0 60px rgba(232,93,117,0.5), 0 0 100px rgba(232,93,117,0.2); }
-    }
-
-    /* ── Decorative Trees ── */
-    .tree { position: absolute; bottom: 74px; z-index: 8; }
-    .tree-trunk {
-      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 10px; height: 35px;
-      background: linear-gradient(to right, #5c3317, #8b4513, #5c3317);
-      border-radius: 3px;
-    }
-    .tree-top {
-      position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
-      width: 40px; height: 45px;
-      background: #1a4a1a; border-radius: 50% 50% 45% 45%;
-    }
-    .tree-top::after {
-      content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      width: 28px; height: 32px; background: #1f5a1f; border-radius: 50%;
     }
 
     /* ── Character Sprite ── */
@@ -216,7 +124,7 @@
     .sprite-name {
       position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
       font-family: 'Caveat', cursive; font-size: 0.65rem;
-      color: rgba(255,255,255,0.6); white-space: nowrap; pointer-events: none;
+      color: var(--dn-sub, #999); white-space: nowrap; pointer-events: none;
     }
 
     /* ── Intro Text ── */
@@ -226,7 +134,7 @@
       transform: translate(-50%, -50%);
       font-family: var(--dn-heading-font, 'Caveat', cursive);
       font-size: clamp(1.2rem, 3vw, 1.6rem);
-      color: rgba(255,255,255,0.7);
+      color: var(--dn-sub, #999);
       text-align: center;
       z-index: 100;
       line-height: 1.6;
@@ -271,30 +179,19 @@
     .ctrl-group { display: flex; gap: 0.4rem; pointer-events: auto; }
     .ctrl-btn {
       width: 50px; height: 50px; border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.6); font-size: 1.3rem;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 15%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 30%, transparent);
+      color: var(--dn-sub, #999); font-size: 1.3rem;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; backdrop-filter: blur(4px);
+      cursor: pointer;
       -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
-    .ctrl-btn:active { background: rgba(255,255,255,0.25); }
+    .ctrl-btn:active { background: color-mix(in srgb, var(--dn-accent, #e85d75) 30%, transparent); }
     .ctrl-btn.jump-btn { width: 58px; height: 58px; font-size: 0.75rem; font-family: 'Caveat', cursive; }
     @media (pointer: coarse) { .mobile-controls { display: flex; } }
-
-    /* ── hint arrows ── */
-    .hint {
-      position: absolute;
-      z-index: 30;
-      font-family: 'Caveat', cursive;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.35);
-      text-align: center;
-      pointer-events: none;
-    }
   </style>
 </head>
-<body class="dark-hud">
+<body>
 
   <div class="intro-text" id="intro-text">
     reach the glowing light to begin<br/>your first adventure together
@@ -305,20 +202,7 @@
 
   <div class="viewport">
     <div class="world" id="world">
-      <div class="sky" id="sky"></div>
-      <div class="moon"></div>
-      <div class="ground"></div>
-
-      <!-- Decorative trees (behind obstacles) -->
-      <div class="tree" style="left:80px;"><div class="tree-top"></div><div class="tree-trunk"></div></div>
-      <div class="tree" style="left:750px;"><div class="tree-top"></div><div class="tree-trunk"></div></div>
-      <div class="tree" style="left:1350px;"><div class="tree-top"></div><div class="tree-trunk"></div></div>
-      <div class="tree" style="left:2100px;"><div class="tree-top"></div><div class="tree-trunk"></div></div>
-      <div class="tree" style="left:2700px;"><div class="tree-top"></div><div class="tree-trunk"></div></div>
-
-      <!-- Hints -->
-      <div class="hint" id="hint-jump" style="left:340px; bottom:170px;">jump! &uarr;</div>
-      <div class="hint" id="hint-duck" style="left:870px; bottom:170px;">walk under &darr;</div>
+      <div class="ground-line"></div>
 
       <!-- Obstacles built by JS -->
       <div id="obstacles"></div>
@@ -349,57 +233,47 @@
     // CONFIG
     // ══════════════════════════════════════
     const WORLD_W = 3200;
-    const GROUND_H = 80;
+    const GROUND_H = 80;  // ground line is at bottom: 80px
+    const LINE_BOTTOM = 80;
     const SPRITE_W = 32;
     const SPRITE_H = 52;
     const GRAVITY = 0.55;
     const JUMP_VEL = -11.5;
     const SPEED = 3.8;
 
-    function groundY() { return window.innerHeight - GROUND_H - SPRITE_H; }
+    function groundY() { return window.innerHeight - LINE_BOTTOM - 3 - SPRITE_H; }
 
     // ══════════════════════════════════════
-    // OBSTACLES
+    // OBSTACLES — simple boxes on the line
     // ══════════════════════════════════════
-    // { x, y (from top of screen), w, h, type: 'block'|'beam' }
-    // y is computed relative to ground for convenience then converted
-    function ob(x, fromGround, w, h, type) {
-      return { x, fromGround, w, h, type };
+    function ob(x, w, h) {
+      return { x, w, h };
     }
 
     const OBSTACLE_DEFS = [
-      // Ground blocks to jump over
-      ob(400, 0, 55, 50, 'block'),
-      ob(650, 0, 55, 50, 'block'),
-      // Overhead beam — walk under
-      ob(880, 68, 220, 18, 'beam'),
-      // Taller block
-      ob(1200, 0, 55, 75, 'block'),
-      // Another block
-      ob(1450, 0, 55, 50, 'block'),
-      // Overhead beam
-      ob(1600, 65, 240, 18, 'beam'),
-      // Double wide block
-      ob(1950, 0, 100, 55, 'block'),
-      // Overhead beam
-      ob(2200, 68, 220, 18, 'beam'),
-      // Final block
-      ob(2550, 0, 55, 55, 'block'),
+      ob(400, 40, 45),
+      ob(650, 40, 45),
+      ob(950, 50, 50),
+      ob(1200, 40, 65),
+      ob(1450, 40, 45),
+      ob(1700, 60, 50),
+      ob(1950, 80, 45),
+      ob(2250, 40, 55),
+      ob(2550, 40, 50),
     ];
 
     const FINISH_X = 2850;
     const FINISH_SIZE = 60;
 
-    let obstacles = []; // computed with real y values
+    let obstacles = [];
 
     function computeObstacles() {
-      const gy = window.innerHeight - GROUND_H;
+      const lineY = window.innerHeight - LINE_BOTTOM - 3; // top of line
       obstacles = OBSTACLE_DEFS.map(o => ({
         x: o.x,
-        y: gy - o.fromGround - o.h,
+        y: lineY - o.h,
         w: o.w,
         h: o.h,
-        type: o.type,
       }));
     }
 
@@ -408,16 +282,16 @@
       container.innerHTML = '';
       obstacles.forEach(o => {
         const el = document.createElement('div');
-        el.className = 'obstacle ' + o.type;
+        el.className = 'obstacle';
         el.style.cssText = `left:${o.x}px; top:${o.y}px; width:${o.w}px; height:${o.h}px; position:absolute;`;
         container.appendChild(el);
       });
 
       // Finish box
       const fb = document.getElementById('finish-box');
-      const gy = window.innerHeight - GROUND_H;
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
       fb.style.left = FINISH_X + 'px';
-      fb.style.top = (gy - FINISH_SIZE) + 'px';
+      fb.style.top = (lineY - FINISH_SIZE) + 'px';
     }
 
     // ══════════════════════════════════════
@@ -439,22 +313,6 @@
           <div class="s-body" style="background:${c.shirt}"></div>
           <div class="s-legs"><div class="s-leg" style="background:${c.pants || '#3a3a5c'}"></div><div class="s-leg" style="background:${c.pants || '#3a3a5c'}"></div></div>
         </div>`;
-    }
-
-    // ══════════════════════════════════════
-    // STARS
-    // ══════════════════════════════════════
-    function generateStars() {
-      const sky = document.getElementById('sky');
-      for (let i = 0; i < 70; i++) {
-        const s = document.createElement('div');
-        s.className = 'star' + (Math.random() > 0.6 ? ' twinkle' : '');
-        s.style.left = Math.random() * WORLD_W + 'px';
-        s.style.top = Math.random() * 50 + '%';
-        s.style.width = s.style.height = (2 + Math.random() * 2) + 'px';
-        s.style.animationDelay = Math.random() * 3 + 's';
-        sky.appendChild(s);
-      }
     }
 
     // ══════════════════════════════════════
@@ -494,7 +352,6 @@
     function collide(px, py) {
       const pw = SPRITE_W, ph = SPRITE_H;
       for (const o of obstacles) {
-        // AABB overlap check
         if (px + pw <= o.x || px >= o.x + o.w || py + ph <= o.y || py >= o.y + o.h) continue;
 
         const overlapL = (px + pw) - o.x;
@@ -524,8 +381,8 @@
     // FINISH CHECK
     // ══════════════════════════════════════
     function checkFinish() {
-      const gy = window.innerHeight - GROUND_H;
-      const fbY = gy - FINISH_SIZE;
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
+      const fbY = lineY - FINISH_SIZE;
       const px = player.x, py = player.y;
 
       if (px + SPRITE_W > FINISH_X && px < FINISH_X + FINISH_SIZE &&
@@ -538,7 +395,6 @@
       if (finished) return;
       finished = true;
 
-      // Flash + message
       const flash = document.getElementById('victory-flash');
       const msg = document.getElementById('victory-msg');
       flash.classList.add('show');
@@ -560,13 +416,11 @@
     function gameLoop() {
       if (finished) { requestAnimationFrame(gameLoop); return; }
 
-      // Fade intro text after first move
       if (introShown && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'])) {
         document.getElementById('intro-text').classList.add('fade');
         introShown = false;
       }
 
-      // Input
       if (keys['ArrowLeft']) { player.vx = -SPEED; player.facing = 'left'; }
       else if (keys['ArrowRight']) { player.vx = SPEED; player.facing = 'right'; }
       else { player.vx = 0; }
@@ -576,12 +430,10 @@
         player.jumping = true;
       }
 
-      // Physics
       player.vy += GRAVITY;
       player.x += player.vx;
       player.y += player.vy;
 
-      // Ground
       const gy = groundY();
       if (player.y >= gy) {
         player.y = gy;
@@ -589,14 +441,11 @@
         player.jumping = false;
       }
 
-      // Bounds
       if (player.x < 0) player.x = 0;
       if (player.x > WORLD_W - SPRITE_W) player.x = WORLD_W - SPRITE_W;
 
-      // Obstacle collision
       collide(player.x, player.y);
 
-      // Sprite state
       const walking = Math.abs(player.vx) > 0 && !player.jumping;
       playerEl.classList.toggle('walking', walking);
       playerEl.classList.toggle('jumping', player.jumping);
@@ -604,16 +453,13 @@
       playerEl.style.left = player.x + 'px';
       playerEl.style.top = player.y + 'px';
 
-      // Camera
       const vpW = window.innerWidth;
       let camX = -(player.x - vpW / 2 + 16);
       camX = Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
       worldEl.style.transform = `translateX(${camX}px)`;
 
-      // Finish check
       checkFinish();
 
-      // Peer sync
       const now = Date.now();
       if (now - lastPeerSend > 50) {
         lastPeerSend = now;
@@ -688,7 +534,6 @@
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
-    generateStars();
     computeObstacles();
     renderObstacles();
 
@@ -703,7 +548,6 @@
     setupPeer();
     requestAnimationFrame(gameLoop);
 
-    // Recompute on resize
     window.addEventListener('resize', () => {
       computeObstacles();
       renderObstacles();
