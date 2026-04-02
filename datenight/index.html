@@ -13,11 +13,11 @@
   <div class="room-gate" id="room-gate">
     <div class="room-content">
       <h1 class="room-title">date night</h1>
-      <p class="room-hint">enter a 4-digit code to join a room<br/>or create one and share it</p>
+      <p class="room-hint">enter a 4-letter code to join a room<br/>or create one and share it</p>
 
       <div class="room-code-display" id="room-code-display">
         <input type="text" class="room-code-input" id="room-code-input"
-          maxlength="4" placeholder="----" autocomplete="off" spellcheck="false" inputmode="numeric" autofocus />
+          maxlength="4" placeholder="----" autocomplete="off" spellcheck="false" autofocus />
       </div>
 
       <div class="room-buttons">
@@ -84,7 +84,10 @@
     }
 
     function genCode() {
-      return String(Math.floor(1000 + Math.random() * 9000));
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let code = '';
+      for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
     }
 
     function showStatus(msg, isError) {
@@ -105,7 +108,7 @@
 
     // Auto-format code input
     codeInput.addEventListener('input', () => {
-      codeInput.value = codeInput.value.replace(/\D/g, '').slice(0, 4);
+      codeInput.value = codeInput.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4);
     });
 
     codeInput.addEventListener('keydown', (e) => {
@@ -169,9 +172,9 @@
 
     // Join room — connect to host
     joinBtn.addEventListener('click', () => {
-      const code = codeInput.value.trim();
+      const code = codeInput.value.trim().toUpperCase();
       if (code.length !== 4) {
-        showStatus('enter a 4-digit code', true);
+        showStatus('enter a 4-letter code', true);
         return;
       }
 
