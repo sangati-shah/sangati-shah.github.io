@@ -40,10 +40,7 @@ function turnLightsOff() {
   const prompt = document.querySelector('.jar-prompt');
   const tentSwitch = document.getElementById('tent-switch-container');
 
-  // Animate the tent flap
-  tentSwitch.classList.add('checked');
-
-  // Let the flap animation play, then fade out
+  // Let the CSS :has(:checked) flap animation play, then fade out
   setTimeout(() => {
     prompt.classList.add('fade-out');
     tentSwitch.classList.add('fade-out');
