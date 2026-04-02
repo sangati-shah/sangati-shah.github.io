@@ -62,6 +62,7 @@
 
   <!-- Main Content (hidden until in a room) -->
   <div class="home-content" id="home-content" style="display:none;">
+    <p class="waiting-banner" id="waiting-banner" style="display:none;">waiting for your partner to join &middot; share code: <span id="waiting-code"></span></p>
     <h1 class="home-title" data-dn-cycle>date night</h1>
     <p class="home-sub" id="home-sub">a little corner of the internet, just for us</p>
     <div class="home-buttons">
@@ -184,12 +185,18 @@
         isHost = true;
         enterRoom(code);
 
+        // Show waiting banner
+        const banner = document.getElementById('waiting-banner');
+        banner.style.display = '';
+        document.getElementById('waiting-code').textContent = code;
+
         // Listen for partner to join later
         peer.on('connection', (c) => {
           conn = c;
           c.on('open', () => {
             c.send({ type: 'welcome' });
             setupCursorSharing();
+            banner.style.display = 'none';
             document.getElementById('room-info').textContent = 'room ' + code + ' (partner connected)';
           });
           c.on('data', handleData);
