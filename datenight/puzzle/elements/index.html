@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>elements</title>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../hud.css" />
+  <script src="../../theme.js"></script>
+  <script src="../../hud.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #111;
+      color: #f0e6d3;
+      overflow: hidden;
+      height: 100dvh;
+      width: 100vw;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .back-link {
+      position: fixed; top: 1rem; left: 1rem;
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: rgba(240,230,211,0.3); text-decoration: none;
+      z-index: 500; transition: color 0.3s;
+    }
+    .back-link:hover { color: rgba(240,230,211,0.7); }
+
+    .status-bar {
+      position: fixed; top: 1rem; right: 1rem;
+      font-family: 'Caveat', cursive; font-size: 1rem;
+      color: rgba(240,230,211,0.3); z-index: 500;
+    }
+    .status-bar .pts-num { color: #d49b3c; font-weight: 600; }
+
+    /* ---- Level Container ---- */
+    #level {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .tile {
+      position: absolute;
+      image-rendering: pixelated;
+    }
+
+    /* Walls */
+    .tile-wall {
+      background: #2a2a2e;
+      border: 1px solid #1a1a1e;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+    }
+
+    /* Lava */
+    .tile-lava {
+      background: linear-gradient(180deg, #ff4500, #ff6a00, #ff4500);
+      background-size: 100% 200%;
+      animation: lava-flow 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 8px rgba(255,69,0,0.5), inset 0 0 6px rgba(255,200,0,0.3);
+      border-radius: 2px;
+    }
+    @keyframes lava-flow {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
+    }
+
+    /* Water */
+    .tile-water {
+      background: linear-gradient(180deg, #0077be, #00b4d8, #0077be);
+      background-size: 100% 200%;
+      animation: water-flow 1.5s ease-in-out infinite alternate;
+      box-shadow: 0 0 8px rgba(0,119,190,0.4), inset 0 0 6px rgba(0,200,255,0.3);
+      border-radius: 2px;
+    }
+    @keyframes water-flow {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
+    }
+
+    /* Green goo */
+    .tile-goo {
+      background: linear-gradient(180deg, #2d8a1e, #4caf50, #2d8a1e);
+      background-size: 100% 200%;
+      animation: goo-bubble 1s ease-in-out infinite alternate;
+      box-shadow: 0 0 8px rgba(76,175,80,0.5), inset 0 0 6px rgba(100,255,100,0.2);
+      border-radius: 2px;
+    }
+    @keyframes goo-bubble {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
+    }
+
+    /* Fire exit */
+    .tile-fire-exit {
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,120,30,0.6), rgba(255,60,0,0.2) 60%, transparent 80%);
+      border: 2px solid rgba(255,120,30,0.6);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 0 15px rgba(255,120,30,0.4), inset 0 0 10px rgba(255,120,30,0.2);
+      animation: exit-glow-fire 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes exit-glow-fire {
+      0% { box-shadow: 0 0 15px rgba(255,120,30,0.4), inset 0 0 10px rgba(255,120,30,0.2); }
+      100% { box-shadow: 0 0 25px rgba(255,120,30,0.7), inset 0 0 15px rgba(255,120,30,0.4); }
+    }
+
+    /* Water exit */
+    .tile-water-exit {
+      background: radial-gradient(ellipse at 50% 80%, rgba(30,120,255,0.6), rgba(0,60,255,0.2) 60%, transparent 80%);
+      border: 2px solid rgba(30,120,255,0.6);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 0 15px rgba(30,120,255,0.4), inset 0 0 10px rgba(30,120,255,0.2);
+      animation: exit-glow-water 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes exit-glow-water {
+      0% { box-shadow: 0 0 15px rgba(30,120,255,0.4), inset 0 0 10px rgba(30,120,255,0.2); }
+      100% { box-shadow: 0 0 25px rgba(30,120,255,0.7), inset 0 0 15px rgba(30,120,255,0.4); }
+    }
+
+    /* Pressure plates */
+    .tile-plate {
+      background: transparent;
+    }
+    .tile-plate::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 10%; right: 10%;
+      height: 4px;
+      border-radius: 2px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .tile-plate-a::after {
+      background: #ff9800;
+      box-shadow: 0 0 6px rgba(255,152,0,0.5);
+    }
+    .tile-plate-a.pressed::after {
+      background: #ffeb3b;
+      box-shadow: 0 0 12px rgba(255,235,59,0.8);
+    }
+    .tile-plate-b::after {
+      background: #2196f3;
+      box-shadow: 0 0 6px rgba(33,150,243,0.5);
+    }
+    .tile-plate-b.pressed::after {
+      background: #80d8ff;
+      box-shadow: 0 0 12px rgba(128,216,255,0.8);
+    }
+
+    /* Gates */
+    .tile-gate {
+      transition: opacity 0.3s, background 0.3s;
+    }
+    .tile-gate-a {
+      background: repeating-linear-gradient(45deg, #ff9800, #ff9800 3px, #e65100 3px, #e65100 6px);
+      opacity: 0.8;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+    }
+    .tile-gate-a.open {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .tile-gate-b {
+      background: repeating-linear-gradient(45deg, #2196f3, #2196f3 3px, #0d47a1 3px, #0d47a1 6px);
+      opacity: 0.8;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+    }
+    .tile-gate-b.open {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ---- Player Sprites ---- */
+    .player {
+      position: absolute;
+      z-index: 100;
+      transition: none;
+    }
+    .player-inner {
+      position: relative;
+      width: 24px; height: 40px;
+    }
+    .player .p-hair {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 18px; height: 10px; border-radius: 50% 50% 30% 30%; z-index: 3;
+    }
+    .player .p-face {
+      position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+      width: 14px; height: 16px; border-radius: 50%; z-index: 2;
+    }
+    .player .p-eyes {
+      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+      width: 8px; display: flex; justify-content: space-between; z-index: 4;
+    }
+    .player .p-eye { width: 2px; height: 2px; background: #1a1a1a; border-radius: 50%; }
+    .player .p-body {
+      position: absolute; top: 19px; left: 50%; transform: translateX(-50%);
+      width: 16px; height: 12px; border-radius: 4px 4px 2px 2px; z-index: 1;
+    }
+    .player .p-legs {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 2px;
+    }
+    .player .p-leg {
+      width: 5px; height: 10px; border-radius: 2px 2px 3px 3px;
+      transition: transform 0.12s;
+    }
+
+    .player.walking .p-leg:first-child { animation: pwalk-l 0.25s ease-in-out infinite alternate; }
+    .player.walking .p-leg:last-child { animation: pwalk-r 0.25s ease-in-out infinite alternate; }
+    @keyframes pwalk-l { 0% { transform: rotate(-20deg); } 100% { transform: rotate(20deg); } }
+    @keyframes pwalk-r { 0% { transform: rotate(20deg); } 100% { transform: rotate(-20deg); } }
+
+    .player.jumping .p-leg { animation: none !important; transform: rotate(0deg) !important; }
+    .player.facing-left .player-inner { transform: scaleX(-1); }
+
+    .player-fire {
+      filter: drop-shadow(0 0 8px rgba(255,120,30,0.5));
+    }
+    .player-water {
+      filter: drop-shadow(0 0 8px rgba(30,120,255,0.5));
+    }
+
+    .player-label {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      font-family: 'Caveat', cursive; font-size: 0.55rem;
+      white-space: nowrap; pointer-events: none; text-align: center;
+    }
+    .player-fire .player-label { color: rgba(255,180,100,0.7); }
+    .player-water .player-label { color: rgba(100,180,255,0.7); }
+
+    /* Death flash */
+    .player.dying {
+      animation: die-flash 0.4s ease;
+    }
+    @keyframes die-flash {
+      0% { opacity: 1; filter: brightness(3); }
+      25% { opacity: 0.3; }
+      50% { opacity: 1; filter: brightness(2); }
+      75% { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+
+    .player.respawning {
+      animation: respawn-in 0.3s ease forwards;
+    }
+    @keyframes respawn-in {
+      0% { opacity: 0; transform: scale(0.3); }
+      60% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ---- Victory Overlay ---- */
+    .victory-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9000;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .victory-overlay.visible {
+      opacity: 1; pointer-events: auto;
+    }
+    .victory-card {
+      text-align: center;
+      padding: 2rem 3rem;
+      background: rgba(20,20,20,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .victory-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+    .victory-title {
+      font-family: 'Abril Fatface', serif;
+      font-size: 1.8rem; color: #d49b3c;
+      margin-bottom: 0.3rem;
+    }
+    .victory-sub {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem; color: rgba(240,230,211,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .victory-pts {
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem; color: #d49b3c;
+      margin-bottom: 1.2rem;
+    }
+    .victory-btn {
+      display: inline-block;
+      font-family: 'Caveat', cursive; font-size: 1.2rem;
+      color: #111; background: #d49b3c;
+      padding: 0.6rem 2rem; border-radius: 20px;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .victory-btn:hover { background: #e8b04a; transform: scale(1.05); }
+
+    /* ---- Mobile Controls ---- */
+    .mobile-controls {
+      position: fixed; bottom: 0.8rem; left: 0; right: 0;
+      display: none; justify-content: space-between;
+      padding: 0 0.8rem; z-index: 400; pointer-events: none;
+    }
+    .ctrl-group { display: flex; gap: 0.35rem; pointer-events: auto; }
+    .ctrl-btn {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      color: rgba(240,230,211,0.6); font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    }
+    .ctrl-btn:active { background: rgba(255,255,255,0.2); }
+    .ctrl-btn.jump-btn { width: 56px; height: 56px; font-size: 0.7rem; font-family: 'Caveat', cursive; }
+    @media (pointer: coarse) { .mobile-controls { display: flex; } }
+
+    /* ---- Waiting overlay ---- */
+    .waiting-overlay {
+      position: fixed; inset: 0;
+      background: rgba(17,17,17,0.92);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 800; gap: 1rem;
+    }
+    .waiting-overlay.hidden { display: none; }
+    .waiting-title {
+      font-family: 'Abril Fatface', serif;
+      font-size: 1.4rem; color: #d49b3c;
+    }
+    .waiting-sub {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem; color: rgba(240,230,211,0.4);
+      text-align: center; line-height: 1.5;
+    }
+    .waiting-dots::after {
+      content: ''; animation: dots 1.5s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+    }
+
+    /* ---- Element labels on players ---- */
+    .element-icon {
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 0.7rem; pointer-events: none;
+    }
+  </style>
+</head>
+<body class="dark-hud">
+  <a href="../../world/" class="back-link">&larr; back to map</a>
+  <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
+
+  <div id="level"></div>
+
+  <!-- Players -->
+  <div class="player player-fire" id="player-fire">
+    <div class="player-label" id="fire-label">fire</div>
+    <div class="player-inner" id="fire-inner">
+      <div class="p-hair"></div>
+      <div class="p-face"></div>
+      <div class="p-eyes"><div class="p-eye"></div><div class="p-eye"></div></div>
+      <div class="p-body"></div>
+      <div class="p-legs"><div class="p-leg"></div><div class="p-leg"></div></div>
+    </div>
+  </div>
+
+  <div class="player player-water" id="player-water">
+    <div class="player-label" id="water-label">water</div>
+    <div class="player-inner" id="water-inner">
+      <div class="p-hair"></div>
+      <div class="p-face"></div>
+      <div class="p-eyes"><div class="p-eye"></div><div class="p-eye"></div></div>
+      <div class="p-body"></div>
+      <div class="p-legs"><div class="p-leg"></div><div class="p-leg"></div></div>
+    </div>
+  </div>
+
+  <!-- Victory -->
+  <div class="victory-overlay" id="victory-overlay">
+    <div class="victory-card">
+      <div class="victory-emoji">&#x1F525;&#x1F4A7;</div>
+      <div class="victory-title">elements conquered!</div>
+      <div class="victory-sub">fire and water, together</div>
+      <div class="victory-pts" id="victory-pts">+100 pts</div>
+      <a href="../../world/?after=elements" class="victory-btn">back to map &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Waiting for partner -->
+  <div class="waiting-overlay" id="waiting-overlay">
+    <div class="waiting-title">elements</div>
+    <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + water = unstoppable</div>
+  </div>
+
+  <!-- Mobile controls -->
+  <div class="mobile-controls" id="mobile-controls">
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btn-left">&larr;</button>
+      <button class="ctrl-btn" id="btn-right">&rarr;</button>
+    </div>
+    <div class="ctrl-group">
+      <button class="ctrl-btn jump-btn" id="btn-jump">jump</button>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+// ELEMENTS - Fireboy & Watergirl cooperative puzzle
+// ============================================================
+
+// ---- Tile types ----
+const AIR = 0, WALL = 1, LAVA = 2, WATER = 3, GOO = 4;
+const FIRE_EXIT = 5, WATER_EXIT = 6;
+const PLATE_A = 7, GATE_A = 8, PLATE_B = 9, GATE_B = 10;
+
+// ---- Level map (20 wide x 14 tall) ----
+// Cooperative design:
+// - Both start bottom-left
+// - Fire must press plate A (left-center) so water can pass gate A (over a lava section)
+// - Water must press plate B (right-center) so fire can pass gate B (over a water section)
+// - Lava pool blocks water's direct path, water pool blocks fire's direct path
+// - Green goo pit in the center bottom as a hazard for both
+// - Fire exit top-right, water exit top-right offset
+const LEVEL = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 0, 0, 0, 9, 1, 1, 1, 1, 7, 0, 0, 0, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 2, 2, 4, 4, 4, 3, 3, 0, 0, 0, 3, 3, 2, 2, 0, 1],
+  [1, 0, 0, 0, 2, 2, 4, 4, 4, 3, 3, 0, 0, 0, 3, 3, 2, 2, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+const COLS = LEVEL[0].length; // 20
+const ROWS = LEVEL.length;    // 14
+
+// ---- Identity ----
+const isHost = sessionStorage.getItem('datenight-host') === '1';
+const roomCode = sessionStorage.getItem('datenight-room');
+
+// Host is fire, guest is water
+const myRole = isHost ? 'fire' : 'water';
+const partnerRole = isHost ? 'water' : 'fire';
+
+// ---- Character data ----
+const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
+const DEFAULT_PARTNER = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b', pants: '#1a1a2e' };
+let myChar = DEFAULT_CHAR;
+let partnerChar = DEFAULT_PARTNER;
+try { const s = JSON.parse(sessionStorage.getItem('my-character')); if (s) myChar = { ...DEFAULT_CHAR, ...s }; } catch {}
+try { const s = JSON.parse(sessionStorage.getItem('partner-character')); if (s) partnerChar = { ...DEFAULT_PARTNER, ...s }; } catch {}
+
+// ---- Points ----
+function getPoints() { return parseInt(sessionStorage.getItem('puzzle-points') || '0'); }
+function addPoints(n) {
+  const total = getPoints() + n;
+  sessionStorage.setItem('puzzle-points', total);
+  const el = document.getElementById('pts-num');
+  if (el) el.textContent = total;
+  if (window.hudUpdatePoints) window.hudUpdatePoints();
+  return total;
+}
+
+function markCompleted(id) {
+  let completed = [];
+  try { completed = JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]'); } catch {}
+  if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
+}
+
+// ---- Display points ----
+document.getElementById('pts-num').textContent = getPoints();
+
+// ---- Tile size ----
+let tileW, tileH, levelLeft, levelTop;
+
+function calcTileSize() {
+  const pad = 60; // space for HUD and controls
+  const availW = window.innerWidth - 20;
+  const availH = window.innerHeight - pad;
+  tileW = Math.floor(availW / COLS);
+  tileH = Math.floor(availH / ROWS);
+  // Keep square-ish tiles
+  const ts = Math.min(tileW, tileH);
+  tileW = ts;
+  tileH = ts;
+  levelLeft = Math.floor((window.innerWidth - COLS * tileW) / 2);
+  levelTop = Math.floor((window.innerHeight - ROWS * tileH) / 2);
+}
+calcTileSize();
+
+// ---- Render level ----
+const levelEl = document.getElementById('level');
+const tileEls = []; // 2D array of tile elements
+let gateAEls = [];
+let gateBEls = [];
+let plateAEls = [];
+let plateBEls = [];
+
+function renderLevel() {
+  levelEl.innerHTML = '';
+  levelEl.style.width = COLS * tileW + 'px';
+  levelEl.style.height = ROWS * tileH + 'px';
+  levelEl.style.left = levelLeft + 'px';
+  levelEl.style.top = levelTop + 'px';
+  levelEl.style.transform = 'none';
+
+  tileEls.length = 0;
+  gateAEls = [];
+  gateBEls = [];
+  plateAEls = [];
+  plateBEls = [];
+
+  for (let r = 0; r < ROWS; r++) {
+    tileEls[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      const v = LEVEL[r][c];
+      if (v === AIR) { tileEls[r][c] = null; continue; }
+
+      const el = document.createElement('div');
+      el.className = 'tile';
+      el.style.left = c * tileW + 'px';
+      el.style.top = r * tileH + 'px';
+      el.style.width = tileW + 'px';
+      el.style.height = tileH + 'px';
+
+      switch (v) {
+        case WALL: el.classList.add('tile-wall'); break;
+        case LAVA: el.classList.add('tile-lava'); break;
+        case WATER: el.classList.add('tile-water'); break;
+        case GOO: el.classList.add('tile-goo'); break;
+        case FIRE_EXIT:
+          el.classList.add('tile-fire-exit');
+          el.style.height = tileH * 2 + 'px';
+          el.style.top = (r - 1) * tileH + 'px';
+          break;
+        case WATER_EXIT:
+          el.classList.add('tile-water-exit');
+          el.style.height = tileH * 2 + 'px';
+          el.style.top = (r - 1) * tileH + 'px';
+          break;
+        case PLATE_A:
+          el.classList.add('tile-plate', 'tile-plate-a');
+          plateAEls.push(el);
+          break;
+        case PLATE_B:
+          el.classList.add('tile-plate', 'tile-plate-b');
+          plateBEls.push(el);
+          break;
+        case GATE_A:
+          el.classList.add('tile-gate', 'tile-gate-a');
+          gateAEls.push(el);
+          break;
+        case GATE_B:
+          el.classList.add('tile-gate', 'tile-gate-b');
+          gateBEls.push(el);
+          break;
+      }
+
+      levelEl.appendChild(el);
+      tileEls[r][c] = el;
+    }
+  }
+}
+
+renderLevel();
+
+// ---- Apply character colors ----
+function applyCharColors() {
+  const fireChar = isHost ? myChar : partnerChar;
+  const waterChar = isHost ? partnerChar : myChar;
+
+  const fireInner = document.getElementById('fire-inner');
+  fireInner.querySelector('.p-hair').style.background = fireChar.hair;
+  fireInner.querySelector('.p-face').style.background = fireChar.skin;
+  fireInner.querySelector('.p-body').style.background = fireChar.shirt;
+  fireInner.querySelectorAll('.p-leg').forEach(l => l.style.background = fireChar.pants || '#3a3a5c');
+
+  const waterInner = document.getElementById('water-inner');
+  waterInner.querySelector('.p-hair').style.background = waterChar.hair;
+  waterInner.querySelector('.p-face').style.background = waterChar.skin;
+  waterInner.querySelector('.p-body').style.background = waterChar.shirt;
+  waterInner.querySelectorAll('.p-leg').forEach(l => l.style.background = waterChar.pants || '#3a3a5c');
+
+  document.getElementById('fire-label').textContent = fireChar.name || 'fire';
+  document.getElementById('water-label').textContent = waterChar.name || 'water';
+}
+applyCharColors();
+
+// ---- Player physics state ----
+const GRAVITY = 0.6;
+const JUMP_VEL = -10;
+const MOVE_SPEED = 4;
+const PLAYER_W = 20; // collision box width
+const PLAYER_H = 36; // collision box height
+
+// Spawn positions (pixel coords, bottom-left of level)
+const FIRE_SPAWN = { x: 1.5 * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
+const WATER_SPAWN = { x: 2.5 * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
+
+const players = {
+  fire: { x: FIRE_SPAWN.x, y: FIRE_SPAWN.y, vx: 0, vy: 0, onGround: false, alive: true, onExit: false, facing: 'right' },
+  water: { x: WATER_SPAWN.x, y: WATER_SPAWN.y, vx: 0, vy: 0, onGround: false, alive: true, onExit: false, facing: 'right' },
+};
+
+// ---- Gate state ----
+let gateAOpen = false;
+let gateBOpen = false;
+
+// ---- Input state ----
+const keys = { left: false, right: false, up: false };
+
+// ---- Attempts and victory ----
+let attempts = 0;
+let won = false;
+let partnerConnected = false;
+
+// ---- Tile collision helpers ----
+function worldToTile(px, py) {
+  const c = Math.floor((px - levelLeft) / tileW);
+  const r = Math.floor((py - levelTop) / tileH);
+  return { r, c };
+}
+
+function isSolid(r, c, role) {
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return true;
+  const v = LEVEL[r][c];
+  if (v === WALL) return true;
+  if (v === GATE_A && !gateAOpen) return true;
+  if (v === GATE_B && !gateBOpen) return true;
+  return false;
+}
+
+function isHazardFor(r, c, role) {
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return false;
+  const v = LEVEL[r][c];
+  if (v === GOO) return true;
+  if (role === 'fire' && v === WATER) return true;
+  if (role === 'water' && v === LAVA) return true;
+  return false;
+}
+
+function isExitFor(r, c, role) {
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return false;
+  const v = LEVEL[r][c];
+  if (role === 'fire' && v === FIRE_EXIT) return true;
+  if (role === 'water' && v === WATER_EXIT) return true;
+  return false;
+}
+
+function isOnPlate(px, py, pw, ph, plateType) {
+  // Check if player's feet overlap with a plate tile
+  const footY = py + ph;
+  const cx = px + pw / 2;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (LEVEL[r][c] !== plateType) continue;
+      const tx = c * tileW + levelLeft;
+      const ty = r * tileH + levelTop;
+      // Player standing on the plate tile (feet on top of it or inside it)
+      if (cx > tx && cx < tx + tileW &&
+          footY >= ty && footY <= ty + tileH + 2) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// ---- Physics update for one player ----
+function updatePlayer(p, role) {
+  if (!p.alive) return;
+
+  // Apply gravity
+  p.vy += GRAVITY;
+  if (p.vy > 14) p.vy = 14; // terminal velocity
+
+  // Horizontal movement
+  let nx = p.x + p.vx;
+  let ny = p.y + p.vy;
+
+  // Horizontal collision
+  if (p.vx !== 0) {
+    // Check left/right edges
+    const testX = p.vx > 0 ? nx + PLAYER_W : nx;
+    const topR = worldToTile(testX, p.y + 2);
+    const midR = worldToTile(testX, p.y + PLAYER_H / 2);
+    const botR = worldToTile(testX, p.y + PLAYER_H - 2);
+    if (isSolid(topR.r, topR.c, role) || isSolid(midR.r, midR.c, role) || isSolid(botR.r, botR.c, role)) {
+      // Snap to tile edge
+      if (p.vx > 0) {
+        nx = Math.floor((nx + PLAYER_W - levelLeft) / tileW) * tileW + levelLeft - PLAYER_W;
+      } else {
+        nx = Math.ceil((nx - levelLeft) / tileW) * tileW + levelLeft;
+      }
+      p.vx = 0;
+    }
+  }
+  p.x = nx;
+
+  // Vertical collision
+  p.onGround = false;
+  if (p.vy >= 0) {
+    // Falling - check below
+    const footY = ny + PLAYER_H;
+    const leftC = worldToTile(p.x + 2, footY);
+    const rightC = worldToTile(p.x + PLAYER_W - 2, footY);
+    if (isSolid(leftC.r, leftC.c, role) || isSolid(rightC.r, rightC.c, role)) {
+      const tileTop = Math.floor((footY - levelTop) / tileH) * tileH + levelTop;
+      ny = tileTop - PLAYER_H;
+      p.vy = 0;
+      p.onGround = true;
+    }
+  } else {
+    // Rising - check above
+    const headY = ny;
+    const leftC = worldToTile(p.x + 2, headY);
+    const rightC = worldToTile(p.x + PLAYER_W - 2, headY);
+    if (isSolid(leftC.r, leftC.c, role) || isSolid(rightC.r, rightC.c, role)) {
+      const tileBot = (Math.floor((headY - levelTop) / tileH) + 1) * tileH + levelTop;
+      ny = tileBot;
+      p.vy = 0;
+    }
+  }
+  p.y = ny;
+
+  // Hazard check - check center and feet
+  const cx = p.x + PLAYER_W / 2;
+  const fy = p.y + PLAYER_H;
+  const checks = [
+    worldToTile(cx, p.y + PLAYER_H - 4),
+    worldToTile(p.x + 2, p.y + PLAYER_H - 4),
+    worldToTile(p.x + PLAYER_W - 2, p.y + PLAYER_H - 4),
+    worldToTile(cx, p.y + PLAYER_H / 2),
+  ];
+  for (const ch of checks) {
+    if (isHazardFor(ch.r, ch.c, role)) {
+      killPlayer(role);
+      return;
+    }
+  }
+
+  // Exit check
+  const exitCheck = worldToTile(cx, p.y + PLAYER_H / 2);
+  p.onExit = isExitFor(exitCheck.r, exitCheck.c, role);
+
+  // Plate checks
+  if (isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_A)) {
+    p._onPlateA = true;
+  } else {
+    p._onPlateA = false;
+  }
+  if (isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_B)) {
+    p._onPlateB = true;
+  } else {
+    p._onPlateB = false;
+  }
+}
+
+function killPlayer(role) {
+  const p = players[role];
+  if (!p.alive) return;
+  p.alive = false;
+
+  const el = document.getElementById('player-' + role);
+  el.classList.add('dying');
+
+  setTimeout(() => {
+    el.classList.remove('dying');
+    // Respawn
+    const spawn = role === 'fire' ? FIRE_SPAWN : WATER_SPAWN;
+    p.x = spawn.x;
+    p.y = spawn.y;
+    p.vx = 0;
+    p.vy = 0;
+    p.onGround = false;
+    p.alive = true;
+    p.onExit = false;
+
+    el.classList.add('respawning');
+    setTimeout(() => el.classList.remove('respawning'), 300);
+
+    if (role === myRole) {
+      attempts++;
+    }
+  }, 450);
+}
+
+// ---- Render players ----
+function renderPlayers() {
+  ['fire', 'water'].forEach(role => {
+    const p = players[role];
+    const el = document.getElementById('player-' + role);
+    el.style.left = p.x + 'px';
+    el.style.top = p.y + 'px';
+    el.style.width = PLAYER_W + 'px';
+    el.style.height = PLAYER_H + 'px';
+
+    // Walking class
+    const isMoving = Math.abs(p.vx) > 0.5 && p.onGround;
+    el.classList.toggle('walking', isMoving);
+    el.classList.toggle('jumping', !p.onGround);
+
+    // Facing
+    if (p.vx > 0.5) { p.facing = 'right'; el.classList.remove('facing-left'); }
+    else if (p.vx < -0.5) { p.facing = 'left'; el.classList.add('facing-left'); }
+  });
+}
+
+// ---- Gate visuals ----
+function updateGates() {
+  const wasAOpen = gateAOpen;
+  const wasBOpen = gateBOpen;
+
+  gateAOpen = players.fire._onPlateA || players.water._onPlateA;
+  gateBOpen = players.fire._onPlateB || players.water._onPlateB;
+
+  gateAEls.forEach(el => el.classList.toggle('open', gateAOpen));
+  gateBEls.forEach(el => el.classList.toggle('open', gateBOpen));
+  plateAEls.forEach(el => el.classList.toggle('pressed', gateAOpen));
+  plateBEls.forEach(el => el.classList.toggle('pressed', gateBOpen));
+}
+
+// ---- Victory check ----
+function checkVictory() {
+  if (won) return;
+  if (players.fire.onExit && players.water.onExit) {
+    won = true;
+    let pts = 100;
+    if (attempts === 1) pts = 70;
+    else if (attempts >= 2) pts = 50;
+    addPoints(pts);
+    markCompleted('elements');
+
+    document.getElementById('victory-pts').textContent = '+' + pts + ' pts';
+    setTimeout(() => {
+      document.getElementById('victory-overlay').classList.add('visible');
+    }, 500);
+
+    sendPeerData({ type: 'victory', pts });
+  }
+}
+
+// ---- Main game loop ----
+function gameLoop() {
+  if (won) { renderPlayers(); requestAnimationFrame(gameLoop); return; }
+
+  // Apply input to my player
+  const me = players[myRole];
+  if (me.alive) {
+    me.vx = 0;
+    if (keys.left) me.vx = -MOVE_SPEED;
+    if (keys.right) me.vx = MOVE_SPEED;
+    if (keys.up && me.onGround) {
+      me.vy = JUMP_VEL;
+      me.onGround = false;
+    }
+  }
+
+  // Update both players physics
+  updatePlayer(players.fire, 'fire');
+  updatePlayer(players.water, 'water');
+
+  // Gates
+  updateGates();
+
+  // Render
+  renderPlayers();
+
+  // Victory
+  checkVictory();
+
+  // Send my position to partner
+  sendMyState();
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ---- Input handling ----
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keys.left = true; e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keys.right = true; e.preventDefault(); }
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') { keys.up = true; e.preventDefault(); }
+});
+document.addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') keys.up = false;
+});
+
+// ---- Mobile controls ----
+function setupMobile() {
+  const btnL = document.getElementById('btn-left');
+  const btnR = document.getElementById('btn-right');
+  const btnJ = document.getElementById('btn-jump');
+
+  function addTouch(btn, key) {
+    btn.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = true; }, { passive: false });
+    btn.addEventListener('touchend', e => { e.preventDefault(); keys[key] = false; }, { passive: false });
+    btn.addEventListener('touchcancel', () => { keys[key] = false; });
+    btn.addEventListener('mousedown', e => { e.preventDefault(); keys[key] = true; });
+    btn.addEventListener('mouseup', () => { keys[key] = false; });
+    btn.addEventListener('mouseleave', () => { keys[key] = false; });
+  }
+
+  addTouch(btnL, 'left');
+  addTouch(btnR, 'right');
+  addTouch(btnJ, 'up');
+}
+setupMobile();
+
+// ---- PeerJS ----
+let peer = null, conn = null;
+let sendThrottle = 0;
+
+function peerIdForPuzzle(code) { return 'shahhub-puzzle-elements-' + code; }
+function sendPeerData(data) { if (conn && conn.open) conn.send(data); }
+
+function sendMyState() {
+  sendThrottle++;
+  if (sendThrottle % 2 !== 0) return; // Send every other frame
+  const me = players[myRole];
+  sendPeerData({
+    type: 'state',
+    x: Math.round(me.x * 10) / 10,
+    y: Math.round(me.y * 10) / 10,
+    vx: Math.round(me.vx * 10) / 10,
+    vy: Math.round(me.vy * 10) / 10,
+    alive: me.alive,
+    onExit: me.onExit,
+    onGround: me.onGround,
+    _onPlateA: me._onPlateA,
+    _onPlateB: me._onPlateB,
+  });
+}
+
+function handlePeerData(data) {
+  if (data.type === 'state') {
+    const p = players[partnerRole];
+    p.x = data.x;
+    p.y = data.y;
+    p.vx = data.vx;
+    p.vy = data.vy;
+    p.alive = data.alive;
+    p.onExit = data.onExit;
+    p.onGround = data.onGround;
+    p._onPlateA = data._onPlateA;
+    p._onPlateB = data._onPlateB;
+  } else if (data.type === 'victory') {
+    if (!won) {
+      won = true;
+      addPoints(data.pts);
+      markCompleted('elements');
+      document.getElementById('victory-pts').textContent = '+' + data.pts + ' pts';
+      setTimeout(() => {
+        document.getElementById('victory-overlay').classList.add('visible');
+      }, 500);
+    }
+  } else if (data.type === 'character') {
+    partnerChar = { ...DEFAULT_PARTNER, ...data.char };
+    if (window.hudUpdatePartner) window.hudUpdatePartner(data.char);
+    applyCharColors();
+  }
+}
+
+function setupPeer() {
+  if (!roomCode) {
+    // No room code - play solo (control both characters for testing)
+    partnerConnected = true;
+    document.getElementById('waiting-overlay').classList.add('hidden');
+    return;
+  }
+
+  if (isHost) {
+    peer = new Peer(peerIdForPuzzle(roomCode));
+    peer.on('open', () => {
+      peer.on('connection', c => {
+        conn = c;
+        partnerConnected = true;
+        document.getElementById('waiting-overlay').classList.add('hidden');
+        c.on('data', handlePeerData);
+        c.on('close', () => { conn = null; });
+        // Send our character
+        sendPeerData({ type: 'character', char: myChar });
+      });
+    });
+    peer.on('error', () => {});
+  } else {
+    peer = new Peer();
+    peer.on('open', () => tryConnect(0));
+    peer.on('error', () => {});
+  }
+}
+
+function tryConnect(attempt) {
+  if (attempt > 20) return;
+  const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
+  c.on('open', () => {
+    conn = c;
+    partnerConnected = true;
+    document.getElementById('waiting-overlay').classList.add('hidden');
+    c.on('data', handlePeerData);
+    // Send our character
+    sendPeerData({ type: 'character', char: myChar });
+  });
+  c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
+}
+
+// ---- Resize handler ----
+window.addEventListener('resize', () => {
+  calcTileSize();
+  // Recalculate spawn positions
+  FIRE_SPAWN.x = 1.5 * tileW + levelLeft;
+  FIRE_SPAWN.y = (ROWS - 2) * tileH + levelTop - PLAYER_H;
+  WATER_SPAWN.x = 2.5 * tileW + levelLeft;
+  WATER_SPAWN.y = (ROWS - 2) * tileH + levelTop - PLAYER_H;
+  renderLevel();
+});
+
+// ---- Init ----
+setupPeer();
+
+// If no room code, hide waiting and start immediately
+if (!roomCode) {
+  document.getElementById('waiting-overlay').classList.add('hidden');
+}
+
+requestAnimationFrame(gameLoop);
+
+</script>
+</body>
+</html>
