@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>date night</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="theme.js"></script>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
   <!-- Room Gate -->
   <div class="room-gate" id="room-gate">
     <div class="room-content">
-      <h1 class="room-title">date night</h1>
+      <h1 class="room-title" data-dn-cycle>date night</h1>
       <p class="room-hint">enter a code to join a room<br/>or type your own and create it</p>
 
       <div class="room-code-display" id="room-code-display">
@@ -37,7 +38,7 @@
 
   <!-- Main Content (hidden until in a room) -->
   <div class="home-content" id="home-content" style="display:none;">
-    <h1 class="home-title">date night</h1>
+    <h1 class="home-title" data-dn-cycle>date night</h1>
     <p class="home-sub" id="home-sub">a little corner of the internet, just for us</p>
     <div class="home-buttons">
       <a href="intrusive/" class="home-btn" id="question-jar-btn">
@@ -285,43 +286,7 @@
       history.replaceState(null, '', './');
     }
 
-    // Color theme toggle on title click (works on both gate and home)
-    const themes = [
-      { bg: '#faf8f5', text: '#2c2c2c', sub: '#888' },
-      { bg: '#2c2c2c', text: '#ffd700', sub: '#ccc' },
-      { bg: '#1a1a2e', text: '#e94560', sub: '#a3a3c2' },
-      { bg: '#f0e6ef', text: '#6b2fa0', sub: '#9a7baa' },
-      { bg: '#e8f5e9', text: '#2e7d32', sub: '#6a9b6e' },
-      { bg: '#fff3e0', text: '#e65100', sub: '#b08060' },
-      { bg: '#fce4ec', text: '#2e7d32', sub: '#e091a8' },
-    ];
-    let themeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
-    const roomTitle = document.querySelector('.room-title');
-    const roomHint = document.querySelector('.room-hint');
-    const title = document.querySelector('.home-title');
-    const sub = document.getElementById('home-sub');
-
-    function applyTheme(i) {
-      const t = themes[i];
-      document.body.style.background = t.bg;
-      // Gate elements
-      if (roomTitle) roomTitle.style.color = t.text;
-      if (roomHint) roomHint.style.color = t.sub;
-      gate.style.background = t.bg;
-      // Home elements
-      title.style.color = t.text;
-      sub.style.color = t.sub;
-    }
-    if (themeIndex !== 0) applyTheme(themeIndex);
-
-    function cycleTheme() {
-      themeIndex = (themeIndex + 1) % themes.length;
-      sessionStorage.setItem('datenight-theme', themeIndex);
-      applyTheme(themeIndex);
-    }
-
-    roomTitle.addEventListener('click', cycleTheme);
-    title.addEventListener('click', cycleTheme);
+    // Theme is handled by theme.js (loaded in <head>)
   </script>
 </body>
 </html>
