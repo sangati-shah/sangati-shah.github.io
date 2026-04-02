@@ -331,6 +331,17 @@
       showHomeChar();
     }
 
+    // Coming back from map — skip gate, show home
+    if (params.get('from') === 'map' && sessionStorage.getItem('datenight-room')) {
+      gate.style.display = 'none';
+      content.style.display = '';
+      roomCode = sessionStorage.getItem('datenight-room');
+      isHost = sessionStorage.getItem('datenight-host') === '1';
+      document.getElementById('room-info').textContent = 'room ' + roomCode;
+      history.replaceState(null, '', './');
+      showHomeChar();
+    }
+
     if (params.get('scared') === '1') {
       gate.style.display = 'none';
       content.style.display = '';
