@@ -41,29 +41,84 @@
     <!-- Fireflies -->
     <div id="fireflies"></div>
 
-    <!-- Deck Picker -->
-    <div class="deck-picker">
-      <button class="deck-pill active" data-deck="deep" onclick="selectDeck('deep')">deep</button>
-      <button class="deck-pill" data-deck="dreams" onclick="selectDeck('dreams')">dreams</button>
-      <button class="deck-pill" data-deck="memories" onclick="selectDeck('memories')">memories</button>
-      <button class="deck-pill" data-deck="vulnerable" onclick="selectDeck('vulnerable')">vulnerable</button>
-      <button class="deck-pill" data-deck="gratitude" onclick="selectDeck('gratitude')">gratitude</button>
-      <button class="deck-pill" data-deck="spicy" onclick="selectDeck('spicy')">spicy</button>
-      <button class="deck-pill" data-deck="silly" onclick="selectDeck('silly')">silly</button>
-    </div>
-
-    <!-- Jar (centered) -->
-    <div class="jar-container" onclick="drawQuestion()">
-      <div class="jar">
-        <div class="jar-lid"></div>
-        <div class="jar-body">
-          <div class="paper paper-1"></div>
-          <div class="paper paper-2"></div>
-          <div class="paper paper-3"></div>
-          <div class="paper paper-4"></div>
-          <div class="paper paper-5"></div>
+    <!-- Jar Grid (one jar per category) -->
+    <div class="jar-grid">
+      <div class="deck-jar active" data-deck="deep" onclick="selectDeckAndDraw('deep')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
         </div>
-        <div class="jar-label">tap me</div>
+        <div class="tape-label">deep</div>
+      </div>
+      <div class="deck-jar" data-deck="dreams" onclick="selectDeckAndDraw('dreams')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">dreams</div>
+      </div>
+      <div class="deck-jar" data-deck="memories" onclick="selectDeckAndDraw('memories')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">memories</div>
+      </div>
+      <div class="deck-jar" data-deck="vulnerable" onclick="selectDeckAndDraw('vulnerable')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">vulnerable</div>
+      </div>
+      <div class="deck-jar" data-deck="gratitude" onclick="selectDeckAndDraw('gratitude')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">gratitude</div>
+      </div>
+      <div class="deck-jar" data-deck="spicy" onclick="selectDeckAndDraw('spicy')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">spicy</div>
+      </div>
+      <div class="deck-jar" data-deck="silly" onclick="selectDeckAndDraw('silly')">
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">silly</div>
       </div>
     </div>
 
