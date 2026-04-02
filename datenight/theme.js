@@ -131,64 +131,109 @@ function dnCycleTheme(e) {
   const x = e.clientX;
   const y = e.clientY;
 
-  // Calculate the max radius needed to cover the entire viewport from click point
-  const maxX = Math.max(x, window.innerWidth - x);
-  const maxY = Math.max(y, window.innerHeight - y);
-  const maxRadius = Math.sqrt(maxX * maxX + maxY * maxY);
-
-  // Create the ink blot overlay
-  const blot = document.createElement('div');
-  blot.style.cssText = `
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    z-index: 99998; pointer-events: none;
-    background: ${next.bg};
-    clip-path: circle(0px at ${x}px ${y}px);
-    will-change: clip-path;
-  `;
-
-  // For the neon theme, add a glow halo around the expanding edge
-  if (next.name === 'neon') {
-    blot.style.boxShadow = `inset 0 0 80px ${next.accent}44, inset 0 0 200px ${next.accent}22`;
-  }
-
-  document.body.appendChild(blot);
+  // Bounce the title
+  const titleEl = e.currentTarget;
+  titleEl.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  titleEl.style.transform = 'scale(1.12) rotate(-2deg)';
+  setTimeout(() => {
+    titleEl.style.transform = 'scale(1.05) rotate(1deg)';
+    setTimeout(() => { titleEl.style.transform = ''; }, 150);
+  }, 180);
 
   // Burst particles from the click point
   dnSpawnParticles(x, y, next);
 
-  // Bounce the title
-  const titleEl = e.currentTarget;
-  titleEl.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-  titleEl.style.transform = 'scale(1.12) rotate(-2deg)';
-  setTimeout(() => {
-    titleEl.style.transform = 'scale(1.05) rotate(1deg)';
-    setTimeout(() => {
-      titleEl.style.transform = '';
-    }, 200);
-  }, 250);
+  // Per-theme transition style
+  const blot = document.createElement('div');
+  const base = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99998;pointer-events:none;background:${next.bg};will-change:transform,clip-path,opacity;`;
 
-  // Animate the blot expansion
-  requestAnimationFrame(() => {
-    blot.style.transition = 'clip-path 0.7s cubic-bezier(0.4, 0, 0.15, 1)';
-    blot.style.clipPath = `circle(${maxRadius}px at ${x}px ${y}px)`;
-  });
+  switch (next.name) {
+    case 'bloom':
+      // Soft radial bloom from click point
+      blot.style.cssText = base + `clip-path:circle(0px at ${x}px ${y}px);`;
+      document.body.appendChild(blot);
+      requestAnimationFrame(() => {
+        const maxR = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        blot.style.transition = 'clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+        blot.style.clipPath = `circle(${maxR}px at ${x}px ${y}px)`;
+      });
+      break;
 
-  // Apply the real theme vars midway through (under the blot)
+    case 'poster':
+      // Hard horizontal wipe from left
+      blot.style.cssText = base + `transform:translateX(-100%);`;
+      document.body.appendChild(blot);
+      requestAnimationFrame(() => {
+        blot.style.transition = 'transform 0.35s cubic-bezier(0.77, 0, 0.175, 1)';
+        blot.style.transform = 'translateX(0)';
+      });
+      break;
+
+    case 'neon':
+      // Flash/glitch — instant white flash then settle
+      blot.style.cssText = base + `background:#fff;opacity:1;`;
+      document.body.appendChild(blot);
+      requestAnimationFrame(() => {
+        blot.style.transition = 'opacity 0.12s ease-out';
+        blot.style.opacity = '0';
+      });
+      // Apply theme almost instantly for neon
+      setTimeout(() => {
+        dnThemeIndex = nextIndex;
+        sessionStorage.setItem('datenight-theme', dnThemeIndex);
+        dnApplyTheme(dnThemeIndex);
+        blot.remove();
+        dnTransitioning = false;
+      }, 120);
+      return;
+
+    case 'earth':
+      // Vertical curtain drop from top
+      blot.style.cssText = base + `transform:translateY(-100%);`;
+      document.body.appendChild(blot);
+      requestAnimationFrame(() => {
+        blot.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        blot.style.transform = 'translateY(0)';
+      });
+      break;
+
+    case 'sunset':
+      // Warm diagonal wipe
+      blot.style.cssText = base + `clip-path:polygon(0 0, 0 0, 0 100%, 0 100%);`;
+      document.body.appendChild(blot);
+      requestAnimationFrame(() => {
+        blot.style.transition = 'clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+        blot.style.clipPath = 'polygon(0 0, 120% 0, 100% 100%, 0 100%)';
+      });
+      break;
+
+    default:
+      // Fallback circle
+      blot.style.cssText = base + `clip-path:circle(0px at ${x}px ${y}px);`;
+      document.body.appendChild(blot);
+      requestAnimationFrame(() => {
+        const maxR = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        blot.style.transition = 'clip-path 0.4s ease-out';
+        blot.style.clipPath = `circle(${maxR}px at ${x}px ${y}px)`;
+      });
+  }
+
+  // Apply theme midway under the overlay
   setTimeout(() => {
     dnThemeIndex = nextIndex;
     sessionStorage.setItem('datenight-theme', dnThemeIndex);
     dnApplyTheme(dnThemeIndex);
-  }, 350);
+  }, 200);
 
-  // Dissolve the blot away
+  // Dissolve overlay
   setTimeout(() => {
-    blot.style.transition = 'opacity 0.5s ease';
+    blot.style.transition = 'opacity 0.25s ease';
     blot.style.opacity = '0';
     setTimeout(() => {
       blot.remove();
       dnTransitioning = false;
-    }, 500);
-  }, 700);
+    }, 250);
+  }, 400);
 }
 
 // ── Particle burst ──
@@ -205,8 +250,8 @@ function dnSpawnParticles(x, y, theme) {
   for (let i = 0; i < count; i++) {
     const p = document.createElement('div');
     const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.6;
-    const distance = 70 + Math.random() * 120;
-    const duration = 600 + Math.random() * 500;
+    const distance = 50 + Math.random() * 90;
+    const duration = 350 + Math.random() * 300;
     const size = 5 + Math.random() * 8;
 
     // Base styles

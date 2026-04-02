@@ -144,11 +144,6 @@ body.lights-off {
   color: var(--dn-sub);
 }
 
-.room-btn-small {
-  font-size: 1rem;
-  padding: 0.3em 1.2em;
-}
-
 .room-status {
   font-family: var(--dn-heading-font);
   font-size: 1.1rem;
@@ -159,39 +154,6 @@ body.lights-off {
 
 .room-error {
   color: #d4726a;
-}
-
-.room-share {
-  margin-top: 1.5rem;
-}
-
-.room-share-text {
-  font-size: 0.9rem;
-  color: var(--dn-sub);
-  margin-bottom: 0.5rem;
-}
-
-.room-share-code {
-  font-family: var(--dn-heading-font);
-  font-size: 3rem;
-  font-weight: 600;
-  color: var(--dn-accent);
-  letter-spacing: 0.3em;
-  margin-bottom: 0.8rem;
-  user-select: all;
-}
-
-.room-copied {
-  font-family: var(--dn-heading-font);
-  font-size: 0.95rem;
-  color: #4caf50;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  margin-top: 0.3rem;
-}
-
-.room-copied.show {
-  opacity: 1;
 }
 
 .room-info {
