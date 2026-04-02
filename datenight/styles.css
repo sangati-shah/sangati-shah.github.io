@@ -22,8 +22,8 @@ body.lights-off {
   background: #0a0a12;
 }
 
-/* ── PASSWORD GATE ── */
-.password-gate {
+/* ── ROOM GATE ── */
+.room-gate {
   position: fixed;
   inset: 0;
   background: #faf8f5;
@@ -34,70 +34,171 @@ body.lights-off {
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.password-gate.gate-unlock {
+.room-gate.gate-unlock {
   opacity: 0;
   transform: scale(1.05);
 }
 
-.password-content {
+.room-content {
   text-align: center;
   padding: 2rem;
 }
 
-.password-lock {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.password-title {
+.room-title {
   font-family: 'Caveat', cursive;
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(2.5rem, 7vw, 4rem);
   font-weight: 600;
   color: #2c2c2c;
   margin-bottom: 0.3em;
 }
 
-.password-hint {
+.room-hint {
   font-size: clamp(0.85rem, 2vw, 1rem);
   color: #aaa;
   font-weight: 300;
   margin-bottom: 2em;
   letter-spacing: 0.02em;
+  line-height: 1.6;
 }
 
-.password-input {
+.room-code-display {
+  margin-bottom: 1.5rem;
+}
+
+.room-code-input {
   font-family: 'Caveat', cursive;
-  font-size: 1.4rem;
+  font-size: 2.4rem;
   text-align: center;
   border: none;
-  border-bottom: 2px solid #e0dbd6;
+  border-bottom: 3px solid #e0dbd6;
   background: transparent;
-  padding: 0.5em 1em;
+  padding: 0.3em 0.5em;
   outline: none;
   color: #2c2c2c;
-  width: min(300px, 80vw);
+  width: 5em;
+  letter-spacing: 0.4em;
   transition: border-color 0.3s ease;
 }
 
-.password-input:focus {
+.room-code-input:focus {
   border-bottom-color: #c4a882;
 }
 
-.password-input.shake {
-  animation: shake 0.4s ease;
+.room-code-input::placeholder {
+  color: #ddd;
+  letter-spacing: 0.3em;
 }
 
-.password-error {
-  font-size: 0.85rem;
+.room-buttons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.room-btn {
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  background: white;
+  border: 1.5px solid #e0dbd6;
+  border-radius: 30px;
+  padding: 0.5em 1.8em;
+  cursor: pointer;
+  color: #2c2c2c;
+  transition: all 0.3s ease;
+}
+
+.room-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  border-color: #c4a882;
+}
+
+.room-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.room-btn-alt {
+  background: transparent;
+  color: #999;
+}
+
+.room-btn-small {
+  font-size: 1rem;
+  padding: 0.3em 1.2em;
+}
+
+.room-status {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: #999;
+  margin-top: 1.2rem;
+  min-height: 1.5em;
+}
+
+.room-error {
   color: #d4726a;
-  margin-top: 1em;
+}
+
+.room-share {
+  margin-top: 1.5rem;
+}
+
+.room-share-text {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.room-share-code {
+  font-family: 'Caveat', cursive;
+  font-size: 3rem;
+  font-weight: 600;
+  color: #e85d75;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.8rem;
+  user-select: all;
+}
+
+.room-copied {
+  font-family: 'Caveat', cursive;
+  font-size: 0.95rem;
+  color: #4caf50;
   opacity: 0;
   transition: opacity 0.3s ease;
+  margin-top: 0.3rem;
 }
 
-.password-error.show {
+.room-copied.show {
   opacity: 1;
+}
+
+.room-info {
+  font-family: 'Caveat', cursive;
+  font-size: 0.95rem;
+  color: #bbb;
+  margin-top: 2rem;
+}
+
+/* ── PARTNER CURSOR ── */
+.partner-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  display: none;
+  transition: left 0.08s linear, top 0.08s linear;
+}
+
+.partner-label {
+  font-family: 'Caveat', cursive;
+  font-size: 0.8rem;
+  color: #e85d75;
+  position: absolute;
+  left: 18px;
+  top: 14px;
+  white-space: nowrap;
+  opacity: 0.7;
 }
 
 @keyframes shake {
