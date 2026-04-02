@@ -272,6 +272,13 @@
     });
 
     updatePreview();
+
+    // ── Click anywhere → particle burst ──
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button, a, input, .swatch, [data-dn-cycle]')) return;
+      const theme = DN_THEMES[dnThemeIndex];
+      dnSpawnParticles(e.clientX, e.clientY, theme);
+    });
   </script>
 </body>
 </html>
