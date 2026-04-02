@@ -40,10 +40,9 @@ function turnLightsOff() {
   const prompt = document.querySelector('.jar-prompt');
   const tentSwitch = document.getElementById('tent-switch-container');
 
-  // Let the CSS :has(:checked) flap animation play, then fade out
+  // Let the CSS :has(:checked) flap animation play, then fade out the prompt
   setTimeout(() => {
     prompt.classList.add('fade-out');
-    tentSwitch.classList.add('fade-out');
   }, 600);
 
   // After fade, transition to dark
@@ -63,16 +62,6 @@ function turnLightsOff() {
   }, 1200);
 }
 
-// ── Lights Back On (scared toggle) ──
-const lightsBackOn = document.getElementById('lights-back-on');
-if (lightsBackOn) {
-  lightsBackOn.addEventListener('change', function () {
-    if (this.checked) {
-      // Navigate to home with scared param
-      window.location.href = '../?scared=1';
-    }
-  });
-}
 
 // ── Fireflies ──
 function spawnFireflies() {
