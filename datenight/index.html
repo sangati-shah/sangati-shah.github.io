@@ -75,6 +75,26 @@
       }
     });
 
+    // Color theme toggle on title click
+    const themes = [
+      { bg: '#faf8f5', text: '#2c2c2c', sub: '#888' },
+      { bg: '#2c2c2c', text: '#ffd700', sub: '#ccc' },
+      { bg: '#1a1a2e', text: '#e94560', sub: '#a3a3c2' },
+      { bg: '#f0e6ef', text: '#6b2fa0', sub: '#9a7baa' },
+      { bg: '#e8f5e9', text: '#2e7d32', sub: '#6a9b6e' },
+      { bg: '#fff3e0', text: '#e65100', sub: '#b08060' },
+    ];
+    let themeIndex = 0;
+    const title = document.querySelector('.home-title');
+    const sub = document.getElementById('home-sub');
+    title.addEventListener('click', () => {
+      themeIndex = (themeIndex + 1) % themes.length;
+      const t = themes[themeIndex];
+      document.body.style.background = t.bg;
+      title.style.color = t.text;
+      sub.style.color = t.sub;
+    });
+
     // Check if coming back scared from the dark
     const params = new URLSearchParams(window.location.search);
     if (params.get('scared') === '1') {
