@@ -27,12 +27,6 @@
       </div>
 
       <div id="room-status" class="room-status"></div>
-      <div id="room-share" class="room-share" style="display:none;">
-        <p class="room-share-text">share this code with your person:</p>
-        <div class="room-share-code" id="room-share-code"></div>
-        <button class="room-btn room-btn-small" id="copy-link-btn">copy link</button>
-        <p class="room-copied" id="room-copied">copied!</p>
-      </div>
     </div>
   </div>
 
@@ -69,10 +63,6 @@
     const joinBtn = document.getElementById('join-btn');
     const createBtn = document.getElementById('create-btn');
     const statusEl = document.getElementById('room-status');
-    const shareEl = document.getElementById('room-share');
-    const shareCode = document.getElementById('room-share-code');
-    const copyBtn = document.getElementById('copy-link-btn');
-    const copiedEl = document.getElementById('room-copied');
     const partnerCursor = document.getElementById('partner-cursor');
 
     let peer = null;
@@ -133,10 +123,8 @@
 
       peer.on('open', () => {
         isHost = true;
-        showStatus('');
-        shareEl.style.display = '';
-        shareCode.textContent = code;
         codeInput.value = code;
+        showStatus('waiting for partner — share the code: ' + code);
 
         // Wait for partner to join
         peer.on('connection', (c) => {
@@ -161,15 +149,6 @@
         joinBtn.disabled = false;
         peer.destroy();
         peer = null;
-      });
-    });
-
-    // Copy link
-    copyBtn.addEventListener('click', () => {
-      const url = window.location.origin + window.location.pathname + '?room=' + codeInput.value;
-      navigator.clipboard.writeText(url).then(() => {
-        copiedEl.classList.add('show');
-        setTimeout(() => copiedEl.classList.remove('show'), 2000);
       });
     });
 
