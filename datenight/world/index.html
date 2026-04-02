@@ -297,7 +297,7 @@
   <div class="enter-vortex" id="enter-vortex"></div>
   <div class="enter-flash" id="enter-flash"></div>
 
-  <a href="../" class="back-btn">&larr; home</a>
+  <a href="#" class="back-btn" id="back-home-btn">&larr; home</a>
 
   <div class="intro-text" id="intro-text"></div>
 
@@ -397,6 +397,12 @@
       if (spawnAfter) {
         const adv = ADVENTURES.find(a => a.id === spawnAfter);
         if (adv) return adv.x + 80; // just past the box
+      }
+      // Resume from saved position (coming back from home)
+      const savedX = sessionStorage.getItem('datenight-map-x');
+      if (savedX) {
+        sessionStorage.removeItem('datenight-map-x');
+        return parseInt(savedX) || 120;
       }
       return 120;
     }
@@ -831,6 +837,13 @@
         }, 650);
       }, 300);
     }
+
+    // ── Back to home — save position so we can resume ──
+    document.getElementById('back-home-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      sessionStorage.setItem('datenight-map-x', Math.round(player.x));
+      window.location.href = '../?from=map';
+    });
 
     setupPeer();
     requestAnimationFrame(gameLoop);
