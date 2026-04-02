@@ -12,21 +12,51 @@
 <body>
   <!-- Room Gate -->
   <div class="room-gate" id="room-gate">
-    <div class="room-content">
+    <!-- Step 1: Choose join or new -->
+    <div class="room-content" id="gate-step-1">
       <h1 class="room-title" data-dn-cycle>date night</h1>
-      <p class="room-hint">enter a code to join a room<br/>or type your own and create it</p>
+      <p class="room-hint">a little corner of the internet, just for us</p>
 
-      <div class="room-code-display" id="room-code-display">
-        <input type="text" class="room-code-input" id="room-code-input"
-          maxlength="12" placeholder="----" autocomplete="off" spellcheck="false" autofocus />
+      <div class="room-buttons">
+        <button class="room-btn" id="goto-join-btn">join room</button>
+        <button class="room-btn room-btn-alt" id="goto-new-btn">new room</button>
+      </div>
+    </div>
+
+    <!-- Step 2a: Join — enter code to join existing room -->
+    <div class="room-content" id="gate-step-join" style="display:none;">
+      <h1 class="room-title" data-dn-cycle>date night</h1>
+      <p class="room-hint">enter the room code</p>
+
+      <div class="room-code-display">
+        <input type="text" class="room-code-input" id="join-code-input"
+          maxlength="12" placeholder="----" autocomplete="off" spellcheck="false" />
       </div>
 
       <div class="room-buttons">
         <button class="room-btn" id="join-btn">join room</button>
-        <button class="room-btn room-btn-alt" id="create-btn">create room</button>
+        <button class="room-btn room-btn-alt" id="join-back-btn">&larr; back</button>
       </div>
 
-      <div id="room-status" class="room-status"></div>
+      <div id="join-status" class="room-status"></div>
+    </div>
+
+    <!-- Step 2b: New — enter a code for your new room -->
+    <div class="room-content" id="gate-step-new" style="display:none;">
+      <h1 class="room-title" data-dn-cycle>date night</h1>
+      <p class="room-hint">pick a code for your room</p>
+
+      <div class="room-code-display">
+        <input type="text" class="room-code-input" id="new-code-input"
+          maxlength="12" placeholder="----" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div class="room-buttons">
+        <button class="room-btn" id="create-btn">create room</button>
+        <button class="room-btn room-btn-alt" id="new-back-btn">&larr; back</button>
+      </div>
+
+      <div id="new-status" class="room-status"></div>
     </div>
   </div>
 
@@ -59,11 +89,16 @@
   <script>
     const gate = document.getElementById('room-gate');
     const content = document.getElementById('home-content');
-    const codeInput = document.getElementById('room-code-input');
+    const partnerCursor = document.getElementById('partner-cursor');
+
+    // Gate steps
+    const step1 = document.getElementById('gate-step-1');
+    const stepJoin = document.getElementById('gate-step-join');
+    const stepNew = document.getElementById('gate-step-new');
+    const joinCodeInput = document.getElementById('join-code-input');
+    const newCodeInput = document.getElementById('new-code-input');
     const joinBtn = document.getElementById('join-btn');
     const createBtn = document.getElementById('create-btn');
-    const statusEl = document.getElementById('room-status');
-    const partnerCursor = document.getElementById('partner-cursor');
 
     let peer = null;
     let conn = null;
@@ -74,16 +109,26 @@
       return 'shahhub-datenight-' + code;
     }
 
-    function genCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-      let code = '';
-      for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
-      return code;
+    function showStep(step) {
+      step1.style.display = 'none';
+      stepJoin.style.display = 'none';
+      stepNew.style.display = 'none';
+      step.style.display = '';
+      // Focus the input if present
+      const input = step.querySelector('.room-code-input');
+      if (input) setTimeout(() => input.focus(), 50);
     }
 
-    function showStatus(msg, isError) {
-      statusEl.textContent = msg;
-      statusEl.className = 'room-status' + (isError ? ' room-error' : '');
+    function showJoinStatus(msg, isError) {
+      const el = document.getElementById('join-status');
+      el.textContent = msg;
+      el.className = 'room-status' + (isError ? ' room-error' : '');
+    }
+
+    function showNewStatus(msg, isError) {
+      const el = document.getElementById('new-status');
+      el.textContent = msg;
+      el.className = 'room-status' + (isError ? ' room-error' : '');
     }
 
     function enterRoom(code) {
@@ -98,34 +143,45 @@
       document.getElementById('room-info').textContent = 'room ' + code;
     }
 
-    // Auto-format code input
-    codeInput.addEventListener('input', () => {
-      codeInput.value = codeInput.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 12);
+    // Auto-format inputs (letters only, uppercase)
+    function formatInput(input) {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 12);
+      });
+    }
+    formatInput(joinCodeInput);
+    formatInput(newCodeInput);
+
+    // ── Step navigation ──
+    document.getElementById('goto-join-btn').addEventListener('click', () => showStep(stepJoin));
+    document.getElementById('goto-new-btn').addEventListener('click', () => showStep(stepNew));
+    document.getElementById('join-back-btn').addEventListener('click', () => showStep(step1));
+    document.getElementById('new-back-btn').addEventListener('click', () => showStep(step1));
+
+    // Enter on input → submit
+    joinCodeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && joinCodeInput.value.length >= 2) joinBtn.click();
+    });
+    newCodeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && newCodeInput.value.length >= 2) createBtn.click();
     });
 
-    codeInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && codeInput.value.length >= 2) {
-        joinBtn.click();
-      }
-    });
-
-    // Create room — use custom code if entered, otherwise random
-    // Enters immediately (no need to wait for partner)
+    // ── Create room ──
     createBtn.addEventListener('click', () => {
-      const custom = codeInput.value.trim().toUpperCase();
-      const code = custom.length >= 2 ? custom : genCode();
-      codeInput.value = code;
-      const id = peerIdFromCode(code);
+      const code = newCodeInput.value.trim().toUpperCase();
+      if (code.length < 2) {
+        showNewStatus('enter at least 2 letters', true);
+        return;
+      }
 
+      const id = peerIdFromCode(code);
       createBtn.disabled = true;
-      joinBtn.disabled = true;
-      showStatus('creating room...');
+      showNewStatus('creating room...');
 
       peer = new Peer(id);
 
       peer.on('open', () => {
         isHost = true;
-        // Enter room right away — don't wait for partner
         enterRoom(code);
 
         // Listen for partner to join later
@@ -143,28 +199,26 @@
 
       peer.on('error', (err) => {
         if (err.type === 'unavailable-id') {
-          showStatus('that room already exists, try again', true);
+          showNewStatus('that code is taken, try another', true);
         } else {
-          showStatus('connection error, try again', true);
+          showNewStatus('connection error, try again', true);
         }
         createBtn.disabled = false;
-        joinBtn.disabled = false;
         peer.destroy();
         peer = null;
       });
     });
 
-    // Join room — connect to host
+    // ── Join room ──
     joinBtn.addEventListener('click', () => {
-      const code = codeInput.value.trim().toUpperCase();
+      const code = joinCodeInput.value.trim().toUpperCase();
       if (code.length < 2) {
-        showStatus('enter at least 2 letters', true);
+        showJoinStatus('enter at least 2 letters', true);
         return;
       }
 
       joinBtn.disabled = true;
-      createBtn.disabled = true;
-      showStatus('joining room...');
+      showJoinStatus('joining room...');
 
       peer = new Peer();
 
@@ -183,12 +237,10 @@
           c.on('close', onPartnerDisconnect);
         });
 
-        // Timeout
         setTimeout(() => {
           if (!conn) {
-            showStatus('couldn\'t find that room', true);
+            showJoinStatus('couldn\'t find that room', true);
             joinBtn.disabled = false;
-            createBtn.disabled = false;
             peer.destroy();
             peer = null;
           }
@@ -196,15 +248,14 @@
       });
 
       peer.on('error', () => {
-        showStatus('connection error, check the code', true);
+        showJoinStatus('connection error, check the code', true);
         joinBtn.disabled = false;
-        createBtn.disabled = false;
         peer.destroy();
         peer = null;
       });
     });
 
-    // Handle incoming data
+    // ── Data & cursor sharing ──
     function handleData(data) {
       if (data.type === 'cursor') {
         partnerCursor.style.display = '';
@@ -213,19 +264,14 @@
       }
     }
 
-    // Cursor sharing
     function setupCursorSharing() {
       let lastSend = 0;
       document.addEventListener('mousemove', (e) => {
         const now = Date.now();
-        if (now - lastSend < 50) return; // throttle to ~20fps
+        if (now - lastSend < 50) return;
         lastSend = now;
         if (conn && conn.open) {
-          conn.send({
-            type: 'cursor',
-            x: e.clientX / window.innerWidth,
-            y: e.clientY / window.innerHeight,
-          });
+          conn.send({ type: 'cursor', x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
         }
       });
 
@@ -235,11 +281,7 @@
         lastSend = now;
         const touch = e.touches[0];
         if (conn && conn.open) {
-          conn.send({
-            type: 'cursor',
-            x: touch.clientX / window.innerWidth,
-            y: touch.clientY / window.innerHeight,
-          });
+          conn.send({ type: 'cursor', x: touch.clientX / window.innerWidth, y: touch.clientY / window.innerHeight });
         }
       });
     }
@@ -249,25 +291,22 @@
       document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner disconnected)';
     }
 
-    // Check URL for room code (shared link)
+    // ── URL params ──
     const params = new URLSearchParams(window.location.search);
     const urlRoom = params.get('room');
     if (urlRoom && urlRoom.length >= 2) {
-      codeInput.value = urlRoom;
+      showStep(stepJoin);
+      joinCodeInput.value = urlRoom;
       history.replaceState(null, '', './');
-      // Auto-join after a tiny delay
       setTimeout(() => joinBtn.click(), 300);
     }
 
     if (params.get('scared') === '1') {
-      // Let them in without a room (solo mode)
       gate.style.display = 'none';
       content.style.display = '';
       document.getElementById('home-sub').textContent = 'phew that was scary, should we try something different?';
       history.replaceState(null, '', './');
     }
-
-    // Theme is handled by theme.js (loaded in <head>)
   </script>
 </body>
 </html>
