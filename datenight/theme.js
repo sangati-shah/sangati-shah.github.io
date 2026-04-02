@@ -133,217 +133,272 @@ function dnCycleTheme(e) {
 
   // Bounce the title
   const titleEl = e.currentTarget;
-  titleEl.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
-  titleEl.style.transform = 'scale(1.12) rotate(-2deg)';
+  titleEl.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  titleEl.style.transform = 'scale(1.15) rotate(-2deg)';
   setTimeout(() => {
-    titleEl.style.transform = 'scale(1.05) rotate(1deg)';
-    setTimeout(() => { titleEl.style.transform = ''; }, 150);
-  }, 180);
+    titleEl.style.transform = 'scale(1.04) rotate(1deg)';
+    setTimeout(() => { titleEl.style.transform = ''; }, 120);
+  }, 150);
 
-  // Burst particles from the click point
-  dnSpawnParticles(x, y, next);
-
-  // Per-theme transition style
-  const blot = document.createElement('div');
-  const base = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99998;pointer-events:none;background:${next.bg};will-change:transform,clip-path,opacity;`;
+  // Flash overlay — all themes get a fast flash, tinted per theme
+  const flash = document.createElement('div');
+  const flashBase = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99998;pointer-events:none;opacity:1;`;
 
   switch (next.name) {
     case 'bloom':
-      // Soft radial bloom from click point
-      blot.style.cssText = base + `clip-path:circle(0px at ${x}px ${y}px);`;
-      document.body.appendChild(blot);
-      requestAnimationFrame(() => {
-        const maxR = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-        blot.style.transition = 'clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
-        blot.style.clipPath = `circle(${maxR}px at ${x}px ${y}px)`;
-      });
+      flash.style.cssText = flashBase + `background:${next.accent};`;
       break;
-
     case 'poster':
-      // Hard horizontal wipe from left
-      blot.style.cssText = base + `transform:translateX(-100%);`;
-      document.body.appendChild(blot);
-      requestAnimationFrame(() => {
-        blot.style.transition = 'transform 0.35s cubic-bezier(0.77, 0, 0.175, 1)';
-        blot.style.transform = 'translateX(0)';
-      });
+      flash.style.cssText = flashBase + `background:${next.accent};`;
       break;
-
     case 'neon':
-      // Flash/glitch — instant white flash then settle
-      blot.style.cssText = base + `background:#fff;opacity:1;`;
-      document.body.appendChild(blot);
-      requestAnimationFrame(() => {
-        blot.style.transition = 'opacity 0.12s ease-out';
-        blot.style.opacity = '0';
-      });
-      // Apply theme almost instantly for neon
-      setTimeout(() => {
-        dnThemeIndex = nextIndex;
-        sessionStorage.setItem('datenight-theme', dnThemeIndex);
-        dnApplyTheme(dnThemeIndex);
-        blot.remove();
-        dnTransitioning = false;
-      }, 120);
-      return;
-
+      flash.style.cssText = flashBase + `background:#fff;`;
+      break;
     case 'earth':
-      // Vertical curtain drop from top
-      blot.style.cssText = base + `transform:translateY(-100%);`;
-      document.body.appendChild(blot);
-      requestAnimationFrame(() => {
-        blot.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        blot.style.transform = 'translateY(0)';
-      });
+      flash.style.cssText = flashBase + `background:${next.sub};`;
       break;
-
     case 'sunset':
-      // Warm diagonal wipe
-      blot.style.cssText = base + `clip-path:polygon(0 0, 0 0, 0 100%, 0 100%);`;
-      document.body.appendChild(blot);
-      requestAnimationFrame(() => {
-        blot.style.transition = 'clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
-        blot.style.clipPath = 'polygon(0 0, 120% 0, 100% 100%, 0 100%)';
-      });
+      flash.style.cssText = flashBase + `background:linear-gradient(135deg, ${next.text}, ${next.accent});`;
       break;
-
     default:
-      // Fallback circle
-      blot.style.cssText = base + `clip-path:circle(0px at ${x}px ${y}px);`;
-      document.body.appendChild(blot);
-      requestAnimationFrame(() => {
-        const maxR = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-        blot.style.transition = 'clip-path 0.4s ease-out';
-        blot.style.clipPath = `circle(${maxR}px at ${x}px ${y}px)`;
-      });
+      flash.style.cssText = flashBase + `background:#fff;`;
   }
 
-  // Apply theme midway under the overlay
-  setTimeout(() => {
-    dnThemeIndex = nextIndex;
-    sessionStorage.setItem('datenight-theme', dnThemeIndex);
-    dnApplyTheme(dnThemeIndex);
-  }, 200);
+  document.body.appendChild(flash);
 
-  // Dissolve overlay
+  // Apply theme immediately behind the flash
+  dnThemeIndex = nextIndex;
+  sessionStorage.setItem('datenight-theme', dnThemeIndex);
+  dnApplyTheme(dnThemeIndex);
+
+  // Fade the flash out fast
+  requestAnimationFrame(() => {
+    flash.style.transition = 'opacity 0.15s ease-out';
+    flash.style.opacity = '0';
+  });
+
+  // Burst particles from click
+  dnSpawnParticles(x, y, next);
+
   setTimeout(() => {
-    blot.style.transition = 'opacity 0.25s ease';
-    blot.style.opacity = '0';
-    setTimeout(() => {
-      blot.remove();
-      dnTransitioning = false;
-    }, 250);
-  }, 400);
+    flash.remove();
+    dnTransitioning = false;
+  }, 180);
 }
 
 // ── Particle burst ──
-// Each theme gets its own particle personality:
-// bloom → soft petals that flutter
-// poster → chunky confetti squares that tumble
-// neon → glowing sparks that streak
-// earth → organic spores that drift
-// sunset → warm embers that float up
+// Each theme gets a totally different burst effect:
+// bloom → expanding ring of dots that pop outward
+// poster → text characters (!, *, #, ~) that scatter and spin
+// neon → electric lines/bolts that crackle from click point
+// earth → falling leaf shapes with gravity + wind drift
+// sunset → radial sun rays that shoot outward and fade
 
 function dnSpawnParticles(x, y, theme) {
-  const count = 16;
+  switch (theme.name) {
+    case 'bloom': return dnBurstRing(x, y, theme);
+    case 'poster': return dnBurstChars(x, y, theme);
+    case 'neon': return dnBurstBolts(x, y, theme);
+    case 'earth': return dnBurstLeaves(x, y, theme);
+    case 'sunset': return dnBurstRays(x, y, theme);
+    default: return dnBurstRing(x, y, theme);
+  }
+}
 
+// bloom — expanding ring of soft dots
+function dnBurstRing(x, y, theme) {
+  const count = 20;
   for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.6;
-    const distance = 50 + Math.random() * 90;
-    const duration = 350 + Math.random() * 300;
-    const size = 5 + Math.random() * 8;
-
-    // Base styles
-    let css = `
-      position: fixed; left: ${x}px; top: ${y}px;
-      pointer-events: none; z-index: 99999;
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-      will-change: transform, opacity, left, top;
+    const dot = document.createElement('div');
+    const angle = (Math.PI * 2 * i) / count;
+    const size = 4 + Math.random() * 6;
+    dot.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px; width:${size}px; height:${size}px;
+      background:${theme.accent}; border-radius:50%;
+      box-shadow: 0 0 ${size * 2}px ${theme.accent}88;
+      pointer-events:none; z-index:99999; opacity:1;
+      transform:translate(-50%,-50%) scale(0);
+      will-change:transform,opacity;
     `;
+    document.body.appendChild(dot);
+    const dist = 60 + Math.random() * 80;
+    const dx = x + Math.cos(angle) * dist;
+    const dy = y + Math.sin(angle) * dist;
+    const dur = 300 + Math.random() * 200;
+    // Stagger: ring expands in a wave
+    const delay = (i / count) * 80;
+    setTimeout(() => {
+      dot.style.transition = `all ${dur}ms cubic-bezier(0.22, 1, 0.36, 1)`;
+      dot.style.left = dx + 'px';
+      dot.style.top = dy + 'px';
+      dot.style.transform = 'translate(-50%,-50%) scale(1)';
+      dot.style.opacity = '0';
+    }, delay);
+    setTimeout(() => dot.remove(), delay + dur + 20);
+  }
+}
 
-    // Theme-specific particle shapes
-    switch (theme.name) {
-      case 'bloom':
-        // Soft petal circles with a blush glow
-        css += `
-          width: ${size}px; height: ${size * 1.3}px;
-          background: ${theme.accent};
-          border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-          box-shadow: 0 0 ${size}px ${theme.accent}66;
-        `;
-        break;
-      case 'poster':
-        // Chunky confetti rectangles that rotate
-        const w = size * 0.7;
-        const h = size * 1.4;
-        css += `
-          width: ${w}px; height: ${h}px;
-          background: ${Math.random() > 0.5 ? theme.accent : theme.text};
-          border-radius: 1px;
-        `;
-        break;
-      case 'neon':
-        // Glowing sparks — tiny but bright with long trails
-        const sparkSize = 3 + Math.random() * 4;
-        css += `
-          width: ${sparkSize}px; height: ${sparkSize}px;
-          background: ${theme.accent};
-          border-radius: 50%;
-          box-shadow: 0 0 ${sparkSize * 2}px ${theme.accent},
-                      0 0 ${sparkSize * 4}px ${theme.accent}88,
-                      0 0 ${sparkSize * 6}px ${theme.accent}44;
-        `;
-        break;
-      case 'earth':
-        // Organic spores — irregular soft blobs
-        const r1 = 40 + Math.random() * 20;
-        const r2 = 40 + Math.random() * 20;
-        const r3 = 40 + Math.random() * 20;
-        const r4 = 40 + Math.random() * 20;
-        css += `
-          width: ${size}px; height: ${size}px;
-          background: ${Math.random() > 0.4 ? theme.accent : theme.sub};
-          border-radius: ${r1}% ${r2}% ${r3}% ${r4}%;
-          opacity: 0.8;
-        `;
-        break;
-      case 'sunset':
-        // Warm embers — circles with gradient glow, drift upward
-        css += `
-          width: ${size}px; height: ${size}px;
-          background: radial-gradient(circle, ${theme.text}, ${theme.accent});
-          border-radius: 50%;
-          box-shadow: 0 0 ${size}px ${theme.accent}55;
-        `;
-        break;
-    }
-
-    p.style.cssText = css;
-    document.body.appendChild(p);
-
-    // Animate outward
-    const destX = x + Math.cos(angle) * distance;
-    // Sunset embers float up, others scatter normally
-    const yBias = theme.name === 'sunset' ? -Math.abs(Math.sin(angle)) * distance * 0.7 : Math.sin(angle) * distance;
-    const destY = y + yBias;
-
-    // Poster confetti tumbles with extra rotation
-    const rotation = theme.name === 'poster' ? `rotate(${180 + Math.random() * 360}deg)` : '';
-
+// poster — scattered text characters
+function dnBurstChars(x, y, theme) {
+  const chars = ['!', '*', '#', '~', '+', '&', '?', '%'];
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    const ch = chars[Math.floor(Math.random() * chars.length)];
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+    const dist = 50 + Math.random() * 100;
+    const spin = -180 + Math.random() * 360;
+    const size = 14 + Math.random() * 12;
+    el.textContent = ch;
+    el.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      font-family:'Abril Fatface',serif; font-size:${size}px; font-weight:700;
+      color:${Math.random() > 0.5 ? theme.accent : theme.text};
+      pointer-events:none; z-index:99999; opacity:1;
+      transform:translate(-50%,-50%) rotate(0deg) scale(1);
+      will-change:transform,opacity;
+    `;
+    document.body.appendChild(el);
+    const dur = 350 + Math.random() * 250;
     requestAnimationFrame(() => {
-      p.style.transition = `left ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                            top ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                            opacity ${duration}ms ease-out,
-                            transform ${duration}ms ease-out`;
-      p.style.left = destX + 'px';
-      p.style.top = destY + 'px';
-      p.style.opacity = '0';
-      p.style.transform = `translate(-50%, -50%) scale(0.2) ${rotation}`;
+      el.style.transition = `all ${dur}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+      el.style.left = (x + Math.cos(angle) * dist) + 'px';
+      el.style.top = (y + Math.sin(angle) * dist) + 'px';
+      el.style.transform = `translate(-50%,-50%) rotate(${spin}deg) scale(0.3)`;
+      el.style.opacity = '0';
     });
+    setTimeout(() => el.remove(), dur + 50);
+  }
+}
 
-    setTimeout(() => p.remove(), duration + 50);
+// neon — electric bolt lines that crackle outward
+function dnBurstBolts(x, y, theme) {
+  const count = 10;
+  for (let i = 0; i < count; i++) {
+    const bolt = document.createElement('div');
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+    const len = 30 + Math.random() * 50;
+    const thick = 1.5 + Math.random() * 1.5;
+    bolt.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:${len}px; height:${thick}px;
+      background:${theme.accent};
+      box-shadow: 0 0 8px ${theme.accent}, 0 0 20px ${theme.accent}88;
+      pointer-events:none; z-index:99999; opacity:1;
+      transform-origin:0 50%;
+      transform:rotate(${angle * 180 / Math.PI}deg) scaleX(0);
+      will-change:transform,opacity;
+    `;
+    document.body.appendChild(bolt);
+    const dur = 150 + Math.random() * 100;
+    requestAnimationFrame(() => {
+      bolt.style.transition = `transform ${dur}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${dur + 100}ms ease-out`;
+      bolt.style.transform = `rotate(${angle * 180 / Math.PI}deg) scaleX(1)`;
+    });
+    setTimeout(() => {
+      bolt.style.opacity = '0';
+    }, dur);
+    setTimeout(() => bolt.remove(), dur + 150);
+
+    // Add a zigzag fork on some bolts
+    if (Math.random() > 0.5) {
+      const fork = document.createElement('div');
+      const forkAngle = angle + (Math.random() > 0.5 ? 0.4 : -0.4);
+      const forkLen = 15 + Math.random() * 20;
+      fork.style.cssText = `
+        position:fixed; left:${x + Math.cos(angle) * len * 0.6}px; top:${y + Math.sin(angle) * len * 0.6}px;
+        width:${forkLen}px; height:${thick * 0.8}px;
+        background:${theme.accent};
+        box-shadow: 0 0 6px ${theme.accent};
+        pointer-events:none; z-index:99999; opacity:1;
+        transform-origin:0 50%;
+        transform:rotate(${forkAngle * 180 / Math.PI}deg) scaleX(0);
+        will-change:transform,opacity;
+      `;
+      document.body.appendChild(fork);
+      setTimeout(() => {
+        fork.style.transition = `transform ${dur * 0.7}ms ease-out, opacity ${dur}ms ease-out`;
+        fork.style.transform = `rotate(${forkAngle * 180 / Math.PI}deg) scaleX(1)`;
+      }, dur * 0.3);
+      setTimeout(() => { fork.style.opacity = '0'; }, dur + 50);
+      setTimeout(() => fork.remove(), dur + 200);
+    }
+  }
+}
+
+// earth — leaf shapes that fall with gravity and drift
+function dnBurstLeaves(x, y, theme) {
+  const count = 12;
+  for (let i = 0; i < count; i++) {
+    const leaf = document.createElement('div');
+    const size = 8 + Math.random() * 8;
+    const colors = [theme.accent, theme.sub, '#8d6e3f', '#a0c060'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    leaf.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:${size}px; height:${size * 1.4}px;
+      background:${color};
+      border-radius: 2px 50% 50% 50%;
+      pointer-events:none; z-index:99999; opacity:0.9;
+      transform:translate(-50%,-50%) rotate(${Math.random() * 360}deg) scale(0.5);
+      will-change:transform,opacity,left,top;
+    `;
+    document.body.appendChild(leaf);
+    // Scatter upward first, then gravity pulls down
+    const spreadX = (Math.random() - 0.5) * 160;
+    const peakY = -40 - Math.random() * 60;
+    const dur = 600 + Math.random() * 400;
+    const spin = Math.random() * 720 - 360;
+    // Phase 1: burst up and out
+    requestAnimationFrame(() => {
+      leaf.style.transition = `left ${dur * 0.4}ms ease-out, top ${dur * 0.4}ms ease-out, transform ${dur}ms ease-out, opacity ${dur}ms ease-out`;
+      leaf.style.left = (x + spreadX * 0.6) + 'px';
+      leaf.style.top = (y + peakY) + 'px';
+      leaf.style.transform = `translate(-50%,-50%) rotate(${spin * 0.3}deg) scale(1)`;
+    });
+    // Phase 2: drift down with wind
+    setTimeout(() => {
+      leaf.style.transition = `left ${dur * 0.6}ms ease-in, top ${dur * 0.6}ms ease-in, transform ${dur * 0.6}ms linear, opacity ${dur * 0.6}ms ease-in`;
+      leaf.style.left = (x + spreadX) + 'px';
+      leaf.style.top = (y + 80 + Math.random() * 60) + 'px';
+      leaf.style.transform = `translate(-50%,-50%) rotate(${spin}deg) scale(0.3)`;
+      leaf.style.opacity = '0';
+    }, dur * 0.4);
+    setTimeout(() => leaf.remove(), dur + 50);
+  }
+}
+
+// sunset — sun ray lines that shoot outward from click point
+function dnBurstRays(x, y, theme) {
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const ray = document.createElement('div');
+    const angle = (Math.PI * 2 * i) / count;
+    const len = 50 + Math.random() * 80;
+    const thick = 2 + Math.random() * 3;
+    const colors = [theme.text, theme.accent, theme.sub];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    ray.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:0px; height:${thick}px;
+      background:linear-gradient(to right, ${color}, transparent);
+      border-radius:${thick}px;
+      pointer-events:none; z-index:99999; opacity:0.8;
+      transform-origin:0 50%;
+      transform:rotate(${angle * 180 / Math.PI}deg);
+      will-change:width,opacity;
+    `;
+    document.body.appendChild(ray);
+    const dur = 250 + Math.random() * 200;
+    const delay = (i / count) * 60;
+    setTimeout(() => {
+      ray.style.transition = `width ${dur}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${dur + 100}ms ease-out`;
+      ray.style.width = len + 'px';
+    }, delay);
+    setTimeout(() => {
+      ray.style.opacity = '0';
+    }, delay + dur * 0.6);
+    setTimeout(() => ray.remove(), delay + dur + 150);
   }
 }
 
