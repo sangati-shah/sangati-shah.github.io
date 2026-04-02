@@ -27,7 +27,7 @@
 
     .world {
       position: absolute;
-      width: 3200px;
+      width: 3600px;
       height: 100%;
     }
 
@@ -211,12 +211,10 @@
 
   <a href="../" class="back-btn">&larr; home</a>
 
-  <div class="intro-text" id="intro-text">
-    reach the glowing light to begin<br/>your first adventure together
-  </div>
+  <div class="intro-text" id="intro-text"></div>
 
   <div class="victory-flash" id="victory-flash"></div>
-  <div class="victory-msg" id="victory-msg">you've reached the first adventure</div>
+  <div class="victory-msg" id="victory-msg"></div>
 
   <div class="viewport">
     <div class="world" id="world">
@@ -251,7 +249,12 @@
     // ══════════════════════════════════════
     // CONFIG
     // ══════════════════════════════════════
-    const WORLD_W = 3200;
+    // ── Level system ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const LEVEL = parseInt(urlParams.get('level')) || 1;
+    if (LEVEL === 2) history.replaceState(null, '', window.location.pathname);
+
+    const WORLD_W = LEVEL === 1 ? 3200 : 3600;
     const GROUND_H = 80;  // ground line is at bottom: 80px
     const LINE_BOTTOM = 80;
     const SPRITE_W = 32;
@@ -271,7 +274,7 @@
       return { x, w, h, type: type || 'ground' };
     }
 
-    const OBSTACLE_DEFS = [
+    const OBSTACLE_DEFS_L1 = [
       ob(400, 30, 28),
       ob(620, 30, 28),
       ob(850, 120, 18, 'float'),   // duck under
@@ -283,8 +286,28 @@
       ob(2400, 30, 28),
     ];
 
-    const FINISH_X = 2850;
+    const OBSTACLE_DEFS_L2 = [
+      ob(350, 35, 28),
+      ob(550, 30, 32),
+      ob(750, 130, 18, 'float'),   // duck under
+      ob(950, 40, 28),
+      ob(1100, 35, 35),
+      ob(1300, 30, 28),
+      ob(1500, 150, 18, 'float'),  // duck under
+      ob(1700, 40, 28),
+      ob(1900, 35, 32),
+      ob(2050, 120, 18, 'float'),  // duck under
+      ob(2250, 45, 28),
+      ob(2450, 30, 35),
+      ob(2600, 140, 18, 'float'),  // duck under
+      ob(2750, 120, 20),           // stacking platform — wide ground block near finish
+    ];
+
+    const OBSTACLE_DEFS = LEVEL === 1 ? OBSTACLE_DEFS_L1 : OBSTACLE_DEFS_L2;
+
+    const FINISH_X = LEVEL === 1 ? 2850 : 2850;
     const FINISH_SIZE = 60;
+    const FINISH_ELEVATION = LEVEL === 1 ? 70 : 170; // level 2 is too high for a single jump
 
     let obstacles = [];
 
@@ -313,7 +336,9 @@
       const fb = document.getElementById('finish-box');
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
       fb.style.left = FINISH_X + 'px';
-      fb.style.top = (lineY - FINISH_SIZE - 70) + 'px';
+      fb.style.top = (lineY - FINISH_SIZE - FINISH_ELEVATION) + 'px';
+      fb.style.cursor = 'pointer';
+      fb.style.pointerEvents = 'auto';
     }
 
     // ══════════════════════════════════════
@@ -341,7 +366,7 @@
     // PLAYER STATE
     // ══════════════════════════════════════
     const player = { x: 120, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right' };
-    const partner = { x: 160, y: 0 };
+    const partner = { x: 160, y: 0, jumping: false, ducking: false };
     let finished = false;
 
     const playerEl = document.getElementById('player');
@@ -406,7 +431,7 @@
     // ══════════════════════════════════════
     function checkFinish() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
-      const fbY = lineY - FINISH_SIZE - 70;
+      const fbY = lineY - FINISH_SIZE - FINISH_ELEVATION;
       const px = player.x, py = player.y;
 
       if (px + SPRITE_W > FINISH_X && px < FINISH_X + FINISH_SIZE &&
@@ -426,8 +451,9 @@
 
       sendPeer({ type: 'finish' });
 
+      const nextURL = LEVEL === 1 ? '../puzzle/music/' : '../';
       setTimeout(() => {
-        window.location.href = '../puzzle/music/';
+        window.location.href = nextURL;
       }, 1800);
     }
 
@@ -471,6 +497,18 @@
       if (player.x < 0) player.x = 0;
       if (player.x > WORLD_W - SPRITE_W) player.x = WORLD_W - SPRITE_W;
 
+      // ── Stacking mechanic: land on partner's head ──
+      if (partnerEl.style.display !== 'none' && !partner.jumping && player.vy >= 0) {
+        const pFeetY = player.y + SPRITE_H;
+        const partnerTopY = partner.y;
+        const xOverlap = player.x + SPRITE_W > partner.x && player.x < partner.x + SPRITE_W;
+        if (xOverlap && pFeetY >= partnerTopY && pFeetY <= partnerTopY + 8) {
+          player.y = partner.y - SPRITE_H;
+          player.vy = 0;
+          player.jumping = false;
+        }
+      }
+
       // Use shorter hitbox when ducking
       const effectiveH = player.ducking ? DUCK_H : SPRITE_H;
       const effectiveY = player.ducking ? (player.y + SPRITE_H - DUCK_H) : player.y;
@@ -504,6 +542,10 @@
     // PARTNER
     // ══════════════════════════════════════
     function updatePartner(data) {
+      partner.x = data.x;
+      partner.y = data.y;
+      partner.jumping = data.jumping;
+      partner.ducking = !!data.ducking;
       partnerEl.style.display = '';
       partnerEl.style.left = data.x + 'px';
       partnerEl.style.top = data.y + 'px';
@@ -566,6 +608,17 @@
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
+    // ── Level-aware text ──
+    document.getElementById('intro-text').innerHTML = LEVEL === 1
+      ? 'reach the glowing light to begin<br/>your first adventure together'
+      : "this one's too high... try standing on each other!";
+    document.getElementById('victory-msg').textContent = LEVEL === 1
+      ? "you've reached the first adventure"
+      : 'teamwork makes the dream work!';
+
+    // ── Set world width dynamically ──
+    document.getElementById('world').style.width = WORLD_W + 'px';
+
     computeObstacles();
     renderObstacles();
 
@@ -576,6 +629,10 @@
     buildSprite(partnerEl, partnerChar);
     playerEl.style.left = player.x + 'px';
     playerEl.style.top = player.y + 'px';
+
+    // ── Click/touch finish box to trigger finish directly ──
+    document.getElementById('finish-box').addEventListener('click', () => triggerFinish());
+    document.getElementById('finish-box').addEventListener('touchend', (e) => { e.preventDefault(); triggerFinish(); });
 
     setupPeer();
     requestAnimationFrame(gameLoop);
