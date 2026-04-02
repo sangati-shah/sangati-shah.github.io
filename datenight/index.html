@@ -392,10 +392,50 @@
     // ── Start Adventure Transition ──
     document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
       e.preventDefault();
-      // Simple fast fade to background color, then navigate
-      document.body.style.transition = 'opacity 0.3s ease';
-      document.body.style.opacity = '0';
-      setTimeout(() => { window.location.href = 'world/'; }, 350);
+
+      const charPreview = document.getElementById('home-char-preview');
+      const charSprite = document.getElementById('home-char-sprite');
+
+      // Get character's current screen position
+      const charRect = charSprite ? charSprite.getBoundingClientRect() : null;
+
+      // 1) Zoom away all content EXCEPT the character sprite
+      const allContent = content.querySelectorAll('.home-title, .home-flavor, .home-actions, .home-sparkles, .room-info, .waiting-banner, .home-char-name');
+      allContent.forEach(el => {
+        el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 1, 1), opacity 0.4s ease';
+        el.style.transform = 'scale(2.5)';
+        el.style.opacity = '0';
+      });
+
+      // 2) Move character to fixed center of screen
+      if (charSprite && charRect) {
+        // Stop the idle bounce
+        charSprite.style.animation = 'none';
+        // Move preview to fixed positioning
+        charPreview.style.transition = 'none';
+        charPreview.style.position = 'fixed';
+        charPreview.style.top = charRect.top + 'px';
+        charPreview.style.left = charRect.left + 'px';
+        charPreview.style.width = charRect.width + 'px';
+        charPreview.style.zIndex = '10000';
+        charPreview.style.margin = '0';
+
+        // Animate to center
+        requestAnimationFrame(() => {
+          charPreview.style.transition = 'top 0.5s ease, left 0.5s ease';
+          charPreview.style.top = (window.innerHeight / 2 - charRect.height / 2) + 'px';
+          charPreview.style.left = (window.innerWidth / 2 - charRect.width / 2) + 'px';
+        });
+      }
+
+      // 3) After zoom-out, fade background and navigate
+      setTimeout(() => {
+        document.body.style.transition = 'opacity 0.25s ease';
+        document.body.style.opacity = '0';
+        // Tell the world page to do the drop-in animation
+        sessionStorage.setItem('datenight-drop-in', '1');
+        setTimeout(() => { window.location.href = 'world/'; }, 280);
+      }, 550);
     });
   </script>
 </body>

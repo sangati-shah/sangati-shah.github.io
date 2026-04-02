@@ -205,9 +205,78 @@
       transition: color 0.3s;
     }
     .back-btn:hover { color: var(--dn-text, #555); }
+
+    /* ── Drop-in animation ── */
+    .drop-in-overlay {
+      position: fixed; inset: 0;
+      background: var(--dn-bg, #fef0f5);
+      z-index: 8000;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.4s ease;
+    }
+    .drop-in-overlay.fade-out {
+      opacity: 0; pointer-events: none;
+    }
+    .drop-in-char {
+      position: relative;
+      width: 72px; height: 108px;
+    }
+    .drop-in-char .dc-hair {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 42px; height: 24px; border-radius: 50% 50% 30% 30%; z-index: 3;
+    }
+    .drop-in-char .dc-face {
+      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+      width: 34px; height: 36px; border-radius: 50%; z-index: 2;
+    }
+    .drop-in-char .dc-eyes {
+      position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
+      width: 20px; display: flex; justify-content: space-between; z-index: 4;
+    }
+    .drop-in-char .dc-eye { width: 5px; height: 6px; background: #1a1a1a; border-radius: 50%; }
+    .drop-in-char .dc-mouth {
+      position: absolute; top: 35px; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 5px; border-bottom: 2px solid #c0756b; border-radius: 0 0 50% 50%; z-index: 4;
+    }
+    .drop-in-char .dc-body {
+      position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+      width: 36px; height: 30px; border-radius: 8px 8px 4px 4px; z-index: 1;
+    }
+    .drop-in-char .dc-legs {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px;
+    }
+    .drop-in-char .dc-leg {
+      width: 12px; height: 24px; border-radius: 4px 4px 6px 6px;
+    }
+
+    .drop-in-wrapper {
+      transition: transform 0.6s cubic-bezier(0.22, 1.2, 0.36, 1);
+    }
+    .drop-in-wrapper.dropping {
+      /* set dynamically via JS */
+    }
+
+    @keyframes squish-land {
+      0% { transform: scaleY(1) scaleX(1); }
+      30% { transform: scaleY(0.75) scaleX(1.2); }
+      60% { transform: scaleY(1.05) scaleX(0.97); }
+      100% { transform: scaleY(1) scaleX(1); }
+    }
+    .drop-in-char.landed {
+      animation: squish-land 0.35s ease forwards;
+      transform-origin: bottom center;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Drop-in overlay (shown when transitioning from home) -->
+  <div class="drop-in-overlay" id="drop-in-overlay" style="display:none;">
+    <div class="drop-in-wrapper" id="drop-in-wrapper">
+      <div class="drop-in-char" id="drop-in-char"></div>
+    </div>
+  </div>
 
   <a href="../" class="back-btn">&larr; home</a>
 
@@ -633,6 +702,72 @@
     // ── Click/touch finish box to trigger finish directly ──
     document.getElementById('finish-box').addEventListener('click', () => triggerFinish());
     document.getElementById('finish-box').addEventListener('touchend', (e) => { e.preventDefault(); triggerFinish(); });
+
+    // ── Drop-in animation from home page ──
+    let gameStarted = false;
+    const dropIn = sessionStorage.getItem('datenight-drop-in') === '1';
+
+    if (dropIn) {
+      sessionStorage.removeItem('datenight-drop-in');
+      // Hide the real player sprite and game elements temporarily
+      playerEl.style.opacity = '0';
+      document.getElementById('intro-text').style.opacity = '0';
+      document.querySelector('.back-btn').style.opacity = '0';
+
+      // Build the overlay character using home-page style (larger sprite)
+      const overlay = document.getElementById('drop-in-overlay');
+      const wrapper = document.getElementById('drop-in-wrapper');
+      const dropChar = document.getElementById('drop-in-char');
+      overlay.style.display = '';
+
+      dropChar.innerHTML = `
+        <div class="dc-hair" style="background:${myChar.hair}"></div>
+        <div class="dc-face" style="background:${myChar.skin}"></div>
+        <div class="dc-eyes"><div class="dc-eye"></div><div class="dc-eye"></div></div>
+        <div class="dc-mouth"></div>
+        <div class="dc-body" style="background:${myChar.shirt}"></div>
+        <div class="dc-legs">
+          <div class="dc-leg" style="background:${myChar.pants || '#3a3a5c'}"></div>
+          <div class="dc-leg" style="background:${myChar.pants || '#3a3a5c'}"></div>
+        </div>`;
+
+      // Calculate where the ground line is on screen
+      const lineScreenY = window.innerHeight - LINE_BOTTOM - 3;
+      // Character bottom should land on the line, so top = lineScreenY - charHeight
+      const charH = 108;
+      const landY = lineScreenY - charH;
+      // Currently centered: top = 50% - charH/2
+      const centerY = window.innerHeight / 2 - charH / 2;
+      const dropDistance = landY - centerY;
+
+      // Pause, then drop
+      setTimeout(() => {
+        wrapper.style.transform = `translateY(${dropDistance}px)`;
+        // After drop animation
+        setTimeout(() => {
+          dropChar.classList.add('landed');
+          // Squish done, fade overlay and reveal the real game
+          setTimeout(() => {
+            // Show the real player at ground position
+            playerEl.style.transition = 'opacity 0.2s';
+            playerEl.style.opacity = '1';
+            // Fade out overlay
+            overlay.classList.add('fade-out');
+            // Show intro text and back btn
+            const intro = document.getElementById('intro-text');
+            intro.style.transition = 'opacity 0.8s ease';
+            intro.style.opacity = '1';
+            document.querySelector('.back-btn').style.transition = 'opacity 0.5s';
+            document.querySelector('.back-btn').style.opacity = '1';
+            gameStarted = true;
+
+            setTimeout(() => overlay.remove(), 500);
+          }, 400);
+        }, 650);
+      }, 300);
+    } else {
+      gameStarted = true;
+    }
 
     setupPeer();
     requestAnimationFrame(gameLoop);
