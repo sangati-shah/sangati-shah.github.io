@@ -30,7 +30,7 @@
 
       <div class="room-code-display">
         <input type="text" class="room-code-input" id="join-code-input"
-          maxlength="12" placeholder="----" autocomplete="off" spellcheck="false" />
+          maxlength="4" placeholder="----" autocomplete="off" spellcheck="false" />
       </div>
 
       <div class="room-buttons">
@@ -48,7 +48,7 @@
 
       <div class="room-code-display">
         <input type="text" class="room-code-input" id="new-code-input"
-          maxlength="12" placeholder="----" autocomplete="off" spellcheck="false" />
+          maxlength="4" placeholder="----" autocomplete="off" spellcheck="false" />
       </div>
 
       <div class="room-buttons">
@@ -161,7 +161,7 @@
     // Auto-format inputs (letters only, uppercase)
     function formatInput(input) {
       input.addEventListener('input', () => {
-        input.value = input.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 12);
+        input.value = input.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4);
       });
     }
     formatInput(joinCodeInput);
@@ -175,17 +175,17 @@
 
     // Enter on input → submit
     joinCodeInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && joinCodeInput.value.length >= 2) joinBtn.click();
+      if (e.key === 'Enter' && joinCodeInput.value.length === 4) joinBtn.click();
     });
     newCodeInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && newCodeInput.value.length >= 2) createBtn.click();
+      if (e.key === 'Enter' && newCodeInput.value.length === 4) createBtn.click();
     });
 
     // ── Create room ──
     createBtn.addEventListener('click', () => {
       const code = newCodeInput.value.trim().toUpperCase();
-      if (code.length < 2) {
-        showNewStatus('enter at least 2 letters', true);
+      if (code.length !== 4) {
+        showNewStatus('enter exactly 4 letters', true);
         return;
       }
 
@@ -233,8 +233,8 @@
     // ── Join room ──
     joinBtn.addEventListener('click', () => {
       const code = joinCodeInput.value.trim().toUpperCase();
-      if (code.length < 2) {
-        showJoinStatus('enter at least 2 letters', true);
+      if (code.length !== 4) {
+        showJoinStatus('enter exactly 4 letters', true);
         return;
       }
 
@@ -315,7 +315,7 @@
     // ── URL params ──
     const params = new URLSearchParams(window.location.search);
     const urlRoom = params.get('room');
-    if (urlRoom && urlRoom.length >= 2) {
+    if (urlRoom && urlRoom.length === 4) {
       showStep(stepJoin);
       joinCodeInput.value = urlRoom;
       history.replaceState(null, '', './');
