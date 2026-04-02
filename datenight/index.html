@@ -35,11 +35,11 @@
     <h1 class="home-title" data-dn-cycle>date night</h1>
     <p class="home-sub" id="home-sub">a little corner of the internet, just for us</p>
     <div class="home-buttons">
+      <a href="puzzle/" class="home-btn" id="puzzle-btn">
+        <span class="btn-icon">🧩</span>
+      </a>
       <a href="intrusive/" class="home-btn" id="question-jar-btn">
         <span class="btn-icon">🫙</span>
-      </a>
-      <a href="games/" class="home-btn" id="games-btn">
-        <span class="btn-icon">🎮</span>
       </a>
       <a href="art/" class="home-btn" id="art-btn">
         <span class="btn-icon">🖼️</span>
@@ -89,6 +89,7 @@
     function enterRoom(code) {
       roomCode = code;
       sessionStorage.setItem('datenight-room', code);
+      sessionStorage.setItem('datenight-host', isHost ? '1' : '0');
       gate.classList.add('gate-unlock');
       setTimeout(() => {
         gate.style.display = 'none';

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>puzzle night</title>
+  <link rel="stylesheet" href="puzzle.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="../theme.js"></script>
+</head>
+<body>
+  <a href="../" class="back-btn">&larr; back</a>
+
+  <div class="points-display">
+    <span class="pts-num" id="pts-num">0</span> <span>pts</span>
+  </div>
+
+  <div class="puzzle-hub">
+    <h1 class="puzzle-title" data-dn-cycle>puzzle night</h1>
+    <p class="puzzle-sub">work together to unlock each challenge<br/>find hidden gems along the way</p>
+
+    <div class="level-list" id="level-list">
+      <!-- Levels injected by JS -->
+    </div>
+  </div>
+
+  <!-- Hidden easter egg -->
+  <div class="hidden-gem" id="gem-hub" style="bottom: 2.5rem; left: 50%; transform: translateX(-50%);">
+    &#x1f48e;
+  </div>
+  <div class="gem-toast" id="gem-toast"></div>
+
+  <script>
+    const LEVELS = [
+      {
+        id: 'music',
+        name: 'music puzzle',
+        desc: 'recreate the melody together',
+        icon: '\u{1F3B5}',
+        href: 'music/',
+      },
+      {
+        id: 'games',
+        name: 'game night',
+        desc: 'the final challenge awaits',
+        icon: '\u{1F3AE}',
+        href: '../games/',
+      },
+    ];
+
+    function getPoints() {
+      return parseInt(sessionStorage.getItem('puzzle-points') || '0');
+    }
+
+    function setPoints(n) {
+      sessionStorage.setItem('puzzle-points', n);
+      document.getElementById('pts-num').textContent = n;
+    }
+
+    function getCompleted() {
+      try {
+        return JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]');
+      } catch { return []; }
+    }
+
+    function renderLevels() {
+      const completed = getCompleted();
+      const list = document.getElementById('level-list');
+      list.innerHTML = '';
+
+      LEVELS.forEach((lvl, i) => {
+        const done = completed.includes(lvl.id);
+        // First level always unlocked, rest require previous completed
+        const unlocked = i === 0 || completed.includes(LEVELS[i - 1].id);
+
+        const card = document.createElement('a');
+        card.className = 'level-card' + (done ? ' completed' : '') + (!unlocked ? ' locked' : '');
+        card.href = unlocked ? lvl.href : '#';
+
+        if (!unlocked) {
+          card.addEventListener('click', (e) => e.preventDefault());
+        }
+
+        card.innerHTML = `
+          <span class="level-icon">${lvl.icon}</span>
+          <div class="level-info">
+            <div class="level-name">${lvl.name}</div>
+            <div class="level-desc">${lvl.desc}</div>
+            ${done ? '<div class="level-pts">completed</div>' : ''}
+          </div>
+          <span class="level-status">${done ? '\u2705' : (unlocked ? '\u27A1\uFE0F' : '\u{1F512}')}</span>
+        `;
+
+        list.appendChild(card);
+      });
+    }
+
+    // Points display
+    setPoints(getPoints());
+    renderLevels();
+
+    // Easter egg on hub page
+    const hubGem = document.getElementById('gem-hub');
+    const gemToast = document.getElementById('gem-toast');
+    let hubGemFound = sessionStorage.getItem('gem-hub-found') === '1';
+
+    if (hubGemFound) {
+      hubGem.style.display = 'none';
+    }
+
+    hubGem.addEventListener('click', () => {
+      if (hubGemFound) return;
+      hubGemFound = true;
+      sessionStorage.setItem('gem-hub-found', '1');
+      hubGem.classList.add('found');
+
+      const bonus = 15;
+      setPoints(getPoints() + bonus);
+
+      gemToast.textContent = '\u{1F48E} +' + bonus + ' pts! you found a gem!';
+      gemToast.classList.add('show');
+      setTimeout(() => {
+        gemToast.classList.remove('show');
+        hubGem.style.display = 'none';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
