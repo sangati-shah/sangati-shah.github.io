@@ -39,10 +39,38 @@
     .status-bar .pts-num { color: #d49b3c; font-weight: 600; }
 
     /* ---- Level Container ---- */
-    #level {
+    #level-wrap {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
+      padding: 6px;
+      border-radius: 8px;
+      background: #1a1a1e;
+      box-shadow:
+        0 0 0 3px #0a0a0c,
+        0 8px 40px rgba(0,0,0,0.8),
+        0 0 80px rgba(0,0,0,0.4);
+    }
+    #level {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Void / fall-off outside the level */
+    .level-void {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .level-void::before {
+      content: '';
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+      border-radius: 16px;
     }
 
     .tile {
@@ -361,7 +389,7 @@
   <a href="../../world/" class="back-link">&larr; back to map</a>
   <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
 
-  <div id="level"></div>
+  <div id="level-wrap"><div id="level"></div></div>
 
   <!-- Players -->
   <div class="player player-fire" id="player-fire">
@@ -492,17 +520,17 @@ document.getElementById('pts-num').textContent = getPoints();
 let tileW, tileH, levelLeft, levelTop;
 
 function calcTileSize() {
-  const pad = 60; // space for HUD and controls
-  const availW = window.innerWidth - 20;
-  const availH = window.innerHeight - pad;
+  const pad = 80; // space for HUD and controls
+  const sidePad = 80; // breathing room on sides
+  const availW = window.innerWidth - sidePad * 2;
+  const availH = window.innerHeight - pad * 2;
   tileW = Math.floor(availW / COLS);
   tileH = Math.floor(availH / ROWS);
   // Keep square-ish tiles
   const ts = Math.min(tileW, tileH);
   tileW = ts;
   tileH = ts;
-  levelLeft = Math.floor((window.innerWidth - COLS * tileW) / 2);
-  levelTop = Math.floor((window.innerHeight - ROWS * tileH) / 2);
+  // levelLeft/levelTop computed in renderLevel after sizing
 }
 calcTileSize();
 
@@ -516,11 +544,16 @@ let plateBEls = [];
 
 function renderLevel() {
   levelEl.innerHTML = '';
-  levelEl.style.width = COLS * tileW + 'px';
-  levelEl.style.height = ROWS * tileH + 'px';
-  levelEl.style.left = levelLeft + 'px';
-  levelEl.style.top = levelTop + 'px';
-  levelEl.style.transform = 'none';
+  const w = COLS * tileW;
+  const h = ROWS * tileH;
+  levelEl.style.width = w + 'px';
+  levelEl.style.height = h + 'px';
+
+  // Position the wrapper (centered via CSS), update levelLeft/Top for player positioning
+  const wrapEl = document.getElementById('level-wrap');
+  // levelLeft/levelTop are used for absolute player sprite positioning on the page
+  levelLeft = Math.floor((window.innerWidth - w) / 2);
+  levelTop = Math.floor((window.innerHeight - h) / 2);
 
   tileEls.length = 0;
   gateAEls = [];
