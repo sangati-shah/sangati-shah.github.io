@@ -259,12 +259,6 @@ body.lights-off {
   transform: rotate(180deg);
 }
 
-/* ── Small variant for dark mode corner ── */
-.tent-switch.small {
-  width: 130px;
-  transform: rotate(180deg) scale(0.75);
-}
-
 /* ── Scared corner (bottom-right in dark mode) ── */
 .scared-corner {
   position: fixed;
@@ -290,18 +284,19 @@ body.lights-off {
   text-align: center;
   line-height: 1.4;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.scared-text:hover {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ── TRANSITION ANIMATIONS ── */
 .jar-prompt.fade-out {
   opacity: 0;
   transform: translateY(-20px);
-}
-
-.tent-switch.fade-out {
-  opacity: 0;
-  transform: rotate(180deg) scale(0.8);
-  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 /* ── LIGHTS OFF / CAMPFIRE STATE ── */
