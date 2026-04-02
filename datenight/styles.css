@@ -95,8 +95,7 @@ body.lights-off {
   padding: 0.3em 0.5em;
   outline: none;
   color: var(--dn-input-text);
-  width: 80%;
-  max-width: 12em;
+  width: 6em;
   letter-spacing: 0.3em;
   transition: border-color 0.3s ease;
 }
@@ -192,129 +191,179 @@ body.lights-off {
   80% { transform: translateX(6px); }
 }
 
-/* ── WAITING BANNER ── */
-.waiting-banner {
-  font-family: var(--dn-heading-font);
-  font-size: 0.85rem;
-  color: var(--dn-sub);
-  padding: 0.4em 0;
-  margin-bottom: 0.8em;
-  opacity: 0.7;
-}
-
-.waiting-banner span {
-  font-weight: 600;
-  color: var(--dn-accent);
-  letter-spacing: 0.15em;
-}
-
 /* ── HOME SCREEN ── */
 .home-content {
   text-align: center;
+  position: relative;
+  padding: 0 1.5rem;
 }
 
-/* ── RPG FRAME ── */
-.rpg-frame {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.rpg-title {
+.home-title {
   font-family: var(--dn-heading-font);
-  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  font-size: clamp(3rem, 9vw, 5rem);
   font-weight: 600;
   color: var(--dn-text);
-  margin-bottom: 0.15em;
+  margin-bottom: 0.1em;
   cursor: pointer;
   transition: color 0.6s ease, font-family 0.3s ease;
   user-select: none;
 }
 
-.rpg-subtitle {
+.home-flavor {
   font-family: 'Caveat', cursive;
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: var(--dn-sub);
-  font-weight: 400;
-  margin-bottom: 2em;
-  letter-spacing: 0.02em;
   font-style: italic;
+  margin-bottom: 1.5em;
 }
 
-.rpg-chapter {
-  font-family: var(--dn-heading-font);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
+/* ── Waiting Banner ── */
+.waiting-banner {
+  font-family: 'Caveat', cursive;
+  font-size: 0.85rem;
   color: var(--dn-sub);
   opacity: 0.6;
-  margin-bottom: 1.2em;
+  margin-bottom: 1em;
 }
 
-.rpg-menu {
+.waiting-banner span {
+  font-weight: 600;
+  color: var(--dn-accent);
+  letter-spacing: 0.12em;
+}
+
+/* ── Home Character Preview ── */
+.home-char-preview {
+  margin-bottom: 1.5em;
+}
+
+.home-char {
+  position: relative;
+  width: 72px;
+  height: 108px;
+  margin: 0 auto;
+  animation: char-idle 2s ease-in-out infinite;
+}
+
+@keyframes char-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.home-char .hc-hair {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 42px; height: 24px; border-radius: 50% 50% 30% 30%; z-index: 3;
+}
+.home-char .hc-face {
+  position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+  width: 34px; height: 36px; border-radius: 50%; z-index: 2;
+}
+.home-char .hc-eyes {
+  position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
+  width: 20px; display: flex; justify-content: space-between; z-index: 4;
+}
+.home-char .hc-eye {
+  width: 5px; height: 6px; background: #1a1a1a; border-radius: 50%;
+}
+.home-char .hc-mouth {
+  position: absolute; top: 35px; left: 50%; transform: translateX(-50%);
+  width: 10px; height: 5px; border-bottom: 2px solid #c0756b; border-radius: 0 0 50% 50%; z-index: 4;
+}
+.home-char .hc-body {
+  position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 30px; border-radius: 8px 8px 4px 4px; z-index: 1;
+}
+.home-char .hc-legs {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 5px;
+}
+.home-char .hc-leg {
+  width: 12px; height: 24px; border-radius: 4px 4px 6px 6px;
+}
+
+.home-char-name {
+  font-family: var(--dn-heading-font);
+  font-size: 1.1rem;
+  color: var(--dn-text);
+  margin-top: 0.4rem;
+}
+
+/* ── Action Buttons ── */
+.home-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5em;
+}
+
+.home-action-btn {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-}
-
-.rpg-option {
-  display: flex;
   align-items: center;
-  gap: 1rem;
-  background: var(--dn-home-btn-bg);
-  border: 1.5px solid var(--dn-home-btn-border);
-  border-radius: 16px;
-  padding: 1.1rem 1.4rem;
-  cursor: pointer;
-  transition: all 0.25s ease;
+  gap: 0.5rem;
+  width: 120px;
+  padding: 1.4rem 1rem;
+  border-radius: 20px;
   text-decoration: none;
   color: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.rpg-option:hover {
-  transform: translateX(4px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border-color: var(--dn-accent);
+.home-action-create {
+  background: var(--dn-home-btn-bg);
+  border: 2px dashed var(--dn-home-btn-border);
 }
 
-.rpg-option-icon {
-  font-size: 1.6rem;
-  flex-shrink: 0;
-  width: 2.2rem;
-  text-align: center;
+.home-action-go {
+  background: var(--dn-accent);
+  border: 2px solid var(--dn-accent);
+  color: #fff;
 }
 
-.rpg-option-text {
-  flex: 1;
-  text-align: left;
+.home-action-btn:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
-.rpg-option-title {
-  display: block;
+.home-action-go:hover {
+  box-shadow: 0 10px 30px rgba(232, 93, 117, 0.3);
+}
+
+.ha-icon {
+  font-size: 2rem;
+}
+
+.ha-label {
   font-family: var(--dn-heading-font);
-  font-size: 1.15rem;
-  color: var(--dn-text);
-  margin-bottom: 0.1em;
+  font-size: 1rem;
 }
 
-.rpg-option-desc {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--dn-sub);
-  font-weight: 300;
+/* ── Floating Sparkles ── */
+.home-sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 
-.rpg-arrow {
-  font-size: 1.6rem;
-  color: var(--dn-sub);
-  opacity: 0.4;
-  transition: opacity 0.2s, transform 0.2s;
-  flex-shrink: 0;
+.sparkle {
+  position: absolute;
+  bottom: -10%;
+  color: var(--dn-accent);
+  opacity: 0;
+  animation: sparkle-float linear infinite;
 }
 
-.rpg-option:hover .rpg-arrow {
-  opacity: 0.8;
-  transform: translateX(3px);
+@keyframes sparkle-float {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  15% { opacity: 0.5; }
+  85% { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-100vh) rotate(360deg); }
 }
 
 /* ── BACK BUTTON ── */

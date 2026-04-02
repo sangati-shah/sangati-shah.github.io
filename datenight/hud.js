@@ -2,8 +2,8 @@
 // Include this script + hud.css on any datenight page.
 
 (function () {
-  const DEFAULT_ME = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75' };
-  const DEFAULT_PARTNER = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b' };
+  const DEFAULT_ME = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
+  const DEFAULT_PARTNER = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b', pants: '#1a1a2e' };
 
   let myChar = DEFAULT_ME;
   let partnerChar = DEFAULT_PARTNER;
@@ -18,7 +18,7 @@
         <div class="hud-hair" style="background:${c.hair}"></div>
         <div class="hud-face" style="background:${c.skin}"></div>
         <div class="hud-body" style="background:${c.shirt}"></div>
-        <div class="hud-legs"><div class="hud-leg"></div><div class="hud-leg"></div></div>
+        <div class="hud-legs"><div class="hud-leg" style="background:${c.pants || '#3a3a5c'}"></div><div class="hud-leg" style="background:${c.pants || '#3a3a5c'}"></div></div>
       </div>`;
   }
 

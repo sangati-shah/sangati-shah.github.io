@@ -23,197 +23,119 @@
     }
 
     .back-btn {
-      position: fixed;
-      top: 1.5rem;
-      left: 1.5rem;
-      background: none;
-      border: none;
+      position: fixed; top: 1.5rem; left: 1.5rem;
+      background: none; border: none;
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 1.2rem;
-      color: var(--dn-sub, #999);
-      cursor: pointer;
-      z-index: 100;
-      transition: color 0.3s;
-      text-decoration: none;
+      font-size: 1.2rem; color: var(--dn-sub, #999);
+      cursor: pointer; z-index: 100;
+      transition: color 0.3s; text-decoration: none;
     }
     .back-btn:hover { color: var(--dn-text, #555); }
 
     .creator {
       text-align: center;
-      padding: 2rem 1rem;
-      width: 100%;
-      max-width: 400px;
+      padding: 3rem 1rem 2rem;
+      width: 100%; max-width: 380px;
     }
 
     .creator-title {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: clamp(2rem, 6vw, 3rem);
-      font-weight: 600;
-      color: var(--dn-text);
-      margin-bottom: 0.2em;
-      cursor: pointer;
-      user-select: none;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      font-weight: 600; color: var(--dn-text);
+      margin-bottom: 0.15em; cursor: pointer; user-select: none;
     }
 
     .creator-sub {
       font-family: 'Caveat', cursive;
-      font-size: 1rem;
-      color: var(--dn-sub, #888);
-      margin-bottom: 2em;
-      font-style: italic;
+      font-size: 1rem; color: var(--dn-sub, #888);
+      margin-bottom: 1.5em; font-style: italic;
     }
 
     /* ── Character Preview ── */
     .preview-area {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 2rem;
+      display: flex; justify-content: center;
+      margin-bottom: 1.8rem;
     }
 
     .character {
       position: relative;
-      width: 64px;
-      height: 96px;
+      width: 72px; height: 108px;
+      animation: idle-bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes idle-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
 
     .char-hair {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 38px;
-      height: 22px;
-      border-radius: 50% 50% 30% 30%;
-      z-index: 3;
-      transition: background 0.3s;
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 42px; height: 24px; border-radius: 50% 50% 30% 30%;
+      z-index: 3; transition: background 0.3s;
     }
-
     .char-face {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 30px;
-      height: 32px;
-      border-radius: 50%;
-      z-index: 2;
-      transition: background 0.3s;
+      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+      width: 34px; height: 36px; border-radius: 50%;
+      z-index: 2; transition: background 0.3s;
     }
-
     .char-eyes {
-      position: absolute;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 18px;
-      display: flex;
-      justify-content: space-between;
-      z-index: 4;
+      position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
+      width: 20px; display: flex; justify-content: space-between; z-index: 4;
     }
-
-    .char-eye {
-      width: 4px;
-      height: 5px;
-      background: #1a1a1a;
-      border-radius: 50%;
-    }
-
+    .char-eye { width: 5px; height: 6px; background: #1a1a1a; border-radius: 50%; }
     .char-mouth {
-      position: absolute;
-      top: 31px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 8px;
-      height: 4px;
-      border-bottom: 2px solid #c0756b;
-      border-radius: 0 0 50% 50%;
-      z-index: 4;
+      position: absolute; top: 35px; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 5px; border-bottom: 2px solid #c0756b;
+      border-radius: 0 0 50% 50%; z-index: 4;
     }
-
     .char-body {
-      position: absolute;
-      top: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 32px;
-      height: 28px;
-      border-radius: 8px 8px 4px 4px;
-      z-index: 1;
+      position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+      width: 36px; height: 30px; border-radius: 8px 8px 4px 4px;
+      z-index: 1; transition: background 0.3s;
+    }
+    .char-legs {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px;
+    }
+    .char-leg {
+      width: 12px; height: 24px; border-radius: 4px 4px 6px 6px;
       transition: background 0.3s;
     }
-
-    .char-legs {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 4px;
-    }
-
-    .char-leg {
-      width: 10px;
-      height: 22px;
-      background: #3a3a5c;
-      border-radius: 4px 4px 6px 6px;
-    }
-
     .char-name-tag {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 1rem;
-      color: var(--dn-text);
-      margin-top: 0.5rem;
-      min-height: 1.5em;
+      font-size: 1.1rem; color: var(--dn-text);
+      margin-top: 0.4rem; min-height: 1.4em;
     }
 
     /* ── Form ── */
-    .field {
-      margin-bottom: 1.5rem;
-      text-align: left;
-    }
+    .field { margin-bottom: 1.2rem; text-align: left; }
 
     .field-label {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 1.1rem;
-      color: var(--dn-sub, #888);
-      margin-bottom: 0.5rem;
-      display: block;
+      font-size: 1.05rem; color: var(--dn-sub, #888);
+      margin-bottom: 0.4rem; display: block;
     }
 
     .name-input {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 1.3rem;
-      width: 100%;
-      padding: 0.5em 0.8em;
+      font-size: 1.2rem; width: 100%;
+      padding: 0.45em 0.8em;
       border: 1.5px solid var(--dn-input-border, #e0a0b0);
       border-radius: 12px;
       background: var(--dn-input-bg, rgba(255,255,255,0.5));
       color: var(--dn-input-text, #2c2c2c);
-      outline: none;
-      transition: border-color 0.3s;
+      outline: none; transition: border-color 0.3s;
     }
     .name-input:focus { border-color: var(--dn-accent, #e85d75); }
 
-    .swatches {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
+    .swatches { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 
     .swatch {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+      width: 32px; height: 32px; border-radius: 50%;
       border: 3px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
+      cursor: pointer; transition: all 0.2s ease;
     }
-
-    .swatch:hover {
-      transform: scale(1.15);
-    }
-
+    .swatch:hover { transform: scale(1.15); }
     .swatch.active {
       border-color: var(--dn-accent, #e85d75);
       box-shadow: 0 0 0 2px var(--dn-bg, #fef0f5), 0 0 0 4px var(--dn-accent, #e85d75);
@@ -222,41 +144,28 @@
     .save-btn {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
       font-size: 1.3rem;
-      background: var(--dn-btn-bg, rgba(255,255,255,0.65));
-      border: 1.5px solid var(--dn-btn-border, #e0a0b0);
+      background: var(--dn-accent, #e85d75);
+      border: none;
       border-radius: var(--dn-btn-radius, 50px);
-      padding: 0.5em 2.5em;
+      padding: 0.55em 2.5em;
       cursor: pointer;
-      color: var(--dn-btn-text, #2c2c2c);
+      color: #fff;
       transition: all 0.3s ease;
-      margin-top: 0.5rem;
+      margin-top: 0.8rem;
     }
     .save-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      border-color: var(--dn-accent, #e85d75);
+      box-shadow: 0 6px 20px rgba(232,93,117,0.3);
     }
-
-    .saved-msg {
-      font-family: 'Caveat', cursive;
-      font-size: 1rem;
-      color: #4caf50;
-      margin-top: 0.8rem;
-      min-height: 1.5em;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .saved-msg.show { opacity: 1; }
   </style>
 </head>
 <body>
   <a href="../" class="back-btn">&larr; back</a>
 
   <div class="creator">
-    <h1 class="creator-title" data-dn-cycle>your character</h1>
+    <h1 class="creator-title" data-dn-cycle>create your character</h1>
     <p class="creator-sub">who will you be in this story?</p>
 
-    <!-- Live Preview -->
     <div class="preview-area">
       <div>
         <div class="character" id="char-preview">
@@ -265,47 +174,50 @@
           <div class="char-eyes"><div class="char-eye"></div><div class="char-eye"></div></div>
           <div class="char-mouth"></div>
           <div class="char-body" id="p-body"></div>
-          <div class="char-legs"><div class="char-leg"></div><div class="char-leg"></div></div>
+          <div class="char-legs">
+            <div class="char-leg" id="p-leg-l"></div>
+            <div class="char-leg" id="p-leg-r"></div>
+          </div>
         </div>
         <div class="char-name-tag" id="char-name-tag"></div>
       </div>
     </div>
 
-    <!-- Name -->
     <div class="field">
       <label class="field-label">name</label>
-      <input type="text" class="name-input" id="name-input" maxlength="16" placeholder="enter your name" autocomplete="off" spellcheck="false" />
+      <input type="text" class="name-input" id="name-input" maxlength="16" placeholder="what should we call you?" autocomplete="off" spellcheck="false" />
     </div>
 
-    <!-- Hair Color -->
     <div class="field">
       <label class="field-label">hair</label>
       <div class="swatches" id="hair-swatches"></div>
     </div>
 
-    <!-- Skin Color -->
     <div class="field">
       <label class="field-label">skin</label>
       <div class="swatches" id="skin-swatches"></div>
     </div>
 
-    <!-- Shirt Color -->
     <div class="field">
-      <label class="field-label">outfit</label>
+      <label class="field-label">top</label>
       <div class="swatches" id="shirt-swatches"></div>
     </div>
 
-    <button class="save-btn" id="save-btn">save character</button>
-    <div class="saved-msg" id="saved-msg">character saved!</div>
+    <div class="field">
+      <label class="field-label">bottoms</label>
+      <div class="swatches" id="pants-swatches"></div>
+    </div>
+
+    <button class="save-btn" id="save-btn">save & go!</button>
   </div>
 
   <script>
     const HAIR_COLORS = ['#1a1a1a', '#4a3728', '#8b6914', '#d4a843', '#c0392b', '#e67e22', '#ecf0f1', '#6c3483', '#2e86c1', '#f39c9c'];
     const SKIN_COLORS = ['#fde7d1', '#f5cba7', '#e0ac69', '#c68642', '#8d5524', '#5c3a1e', '#3b2412'];
     const SHIRT_COLORS = ['#e85d75', '#4a7c9b', '#2e7d32', '#f9a825', '#7b1fa2', '#ff6d00', '#1565c0', '#ec407a', '#26a69a', '#ef5350'];
+    const PANTS_COLORS = ['#3a3a5c', '#1a1a2e', '#2c3e50', '#4a3728', '#1b5e20', '#4a148c', '#b71c1c', '#f5f5dc', '#37474f', '#5d4037'];
 
-    // Load existing character
-    let char = { name: '', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75' };
+    let char = { name: '', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
     try {
       const saved = JSON.parse(sessionStorage.getItem('my-character'));
       if (saved) char = { ...char, ...saved };
@@ -315,6 +227,8 @@
       document.getElementById('p-hair').style.background = char.hair;
       document.getElementById('p-face').style.background = char.skin;
       document.getElementById('p-body').style.background = char.shirt;
+      document.getElementById('p-leg-l').style.background = char.pants;
+      document.getElementById('p-leg-r').style.background = char.pants;
       document.getElementById('char-name-tag').textContent = char.name || '';
     }
 
@@ -337,6 +251,7 @@
     buildSwatches('hair-swatches', HAIR_COLORS, 'hair');
     buildSwatches('skin-swatches', SKIN_COLORS, 'skin');
     buildSwatches('shirt-swatches', SHIRT_COLORS, 'shirt');
+    buildSwatches('pants-swatches', PANTS_COLORS, 'pants');
 
     const nameInput = document.getElementById('name-input');
     nameInput.value = char.name;
@@ -346,10 +261,14 @@
     });
 
     document.getElementById('save-btn').addEventListener('click', () => {
+      if (!char.name) {
+        nameInput.focus();
+        nameInput.style.borderColor = '#ef5350';
+        setTimeout(() => nameInput.style.borderColor = '', 1500);
+        return;
+      }
       sessionStorage.setItem('my-character', JSON.stringify(char));
-      const msg = document.getElementById('saved-msg');
-      msg.classList.add('show');
-      setTimeout(() => msg.classList.remove('show'), 2000);
+      window.location.href = '../';
     });
 
     updatePreview();
