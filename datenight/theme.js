@@ -617,37 +617,87 @@ function dnBurstFood(x, y, theme) {
   }
 }
 
-// sheet-music — music notes that float upward from click point
+// sheet-music — staff lines expand, notes dance along wave paths, treble clef blooms
 function dnBurstNotes(x, y, theme) {
-  const notes = ['♩', '♪', '♫', '♬', '𝅘𝅥𝅮', '𝅗𝅥'];
-  const count = 12;
+  // 1) Staff lines — 5 horizontal lines that expand outward from click
+  for (let i = 0; i < 5; i++) {
+    const line = document.createElement('div');
+    const lineY = y - 24 + i * 12;
+    line.style.cssText = `
+      position:fixed; left:${x}px; top:${lineY}px;
+      width:0; height:1.5px;
+      background:#1a1a1a;
+      pointer-events:none; z-index:99997; opacity:0.3;
+      transform:translateX(-50%);
+      will-change:width,opacity;
+    `;
+    document.body.appendChild(line);
+    const delay = i * 30;
+    setTimeout(() => {
+      line.style.transition = 'width 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.8s ease-out';
+      line.style.width = '220px';
+    }, delay);
+    setTimeout(() => { line.style.opacity = '0'; }, 400 + delay);
+    setTimeout(() => line.remove(), 900);
+  }
+
+  // 2) Treble clef at center — blooms and fades
+  const clef = document.createElement('div');
+  clef.textContent = '𝄞';
+  clef.style.cssText = `
+    position:fixed; left:${x}px; top:${y}px;
+    font-size:0px; color:#1a1a1a;
+    pointer-events:none; z-index:99999; opacity:0.7;
+    transform:translate(-50%,-50%);
+    will-change:font-size,opacity;
+  `;
+  document.body.appendChild(clef);
+  requestAnimationFrame(() => {
+    clef.style.transition = 'font-size 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.6s ease-out';
+    clef.style.fontSize = '48px';
+  });
+  setTimeout(() => { clef.style.opacity = '0'; }, 350);
+  setTimeout(() => clef.remove(), 700);
+
+  // 3) Notes — travel outward along sine-wave paths with connecting beams
+  const notes = ['♩', '♪', '♫', '♬', '♪', '♩'];
+  const count = 14;
   for (let i = 0; i < count; i++) {
     const el = document.createElement('div');
     const note = notes[Math.floor(Math.random() * notes.length)];
-    const size = 16 + Math.random() * 14;
-    const shade = Math.random() > 0.4 ? '#1a1a1a' : '#888';
+    const size = 18 + Math.random() * 10;
+    const shade = Math.random() > 0.3 ? '#1a1a1a' : '#666';
+    const goRight = i % 2 === 0;
     el.textContent = note;
     el.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
       font-size:${size}px; color:${shade};
-      pointer-events:none; z-index:99999; opacity:0.9;
-      transform:translate(-50%,-50%) rotate(0deg) scale(0.5);
+      pointer-events:none; z-index:99999; opacity:0;
+      transform:translate(-50%,-50%) scale(0.3);
       will-change:transform,opacity,left,top;
     `;
     document.body.appendChild(el);
-    const spreadX = (Math.random() - 0.5) * 120;
-    const floatY = -(80 + Math.random() * 100);
-    const spin = (Math.random() - 0.5) * 60;
-    const dur = 600 + Math.random() * 400;
-    const delay = Math.random() * 100;
+
+    const travelX = (goRight ? 1 : -1) * (40 + Math.random() * 100);
+    const waveY = Math.sin((i / count) * Math.PI * 3) * (25 + Math.random() * 20);
+    const dur = 700 + Math.random() * 400;
+    const delay = 80 + (i / count) * 200;
+
+    // Appear and travel
     setTimeout(() => {
-      el.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, transform ${dur * 0.4}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur}ms ease-in`;
-      el.style.left = (x + spreadX) + 'px';
-      el.style.top = (y + floatY) + 'px';
-      el.style.transform = `translate(-50%,-50%) rotate(${spin}deg) scale(1)`;
+      el.style.transition = `left ${dur}ms cubic-bezier(0.25,0.46,0.45,0.94), top ${dur}ms ease-out, transform ${dur * 0.3}ms cubic-bezier(0.22,1,0.36,1), opacity 0.15s ease-out`;
+      el.style.opacity = '0.85';
+      el.style.left = (x + travelX) + 'px';
+      el.style.top = (y + waveY - 30) + 'px';
+      el.style.transform = `translate(-50%,-50%) scale(1) rotate(${(Math.random()-0.5)*20}deg)`;
     }, delay);
-    setTimeout(() => { el.style.opacity = '0'; }, delay + dur * 0.5);
-    setTimeout(() => el.remove(), delay + dur + 50);
+    // Float up slightly more and fade
+    setTimeout(() => {
+      el.style.transition = `top ${dur * 0.5}ms ease-in, opacity ${dur * 0.4}ms ease-in`;
+      el.style.top = (y + waveY - 70) + 'px';
+      el.style.opacity = '0';
+    }, delay + dur * 0.55);
+    setTimeout(() => el.remove(), delay + dur + 100);
   }
 }
 
