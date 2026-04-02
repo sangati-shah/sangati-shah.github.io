@@ -49,6 +49,11 @@
       opacity: 0.7;
     }
 
+    .obstacle-float {
+      opacity: 0.5;
+      border-radius: 3px;
+    }
+
     /* ── Glowing Finish Box ── */
     .finish-box {
       position: absolute;
@@ -119,6 +124,8 @@
     @keyframes walk-r { 0% { transform: rotate(18deg); } 100% { transform: rotate(-18deg); } }
 
     .sprite.jumping .s-leg { animation: none !important; transform: rotate(0deg) !important; }
+    .sprite.ducking .sprite-inner { transform: scaleY(0.58); transform-origin: bottom center; }
+    .sprite.ducking.facing-left .sprite-inner { transform: scaleX(-1) scaleY(0.58); transform-origin: bottom center; }
     .sprite.facing-left .sprite-inner { transform: scaleX(-1); }
 
     .sprite-name {
@@ -224,6 +231,7 @@
       <button class="ctrl-btn" id="btn-right">&rarr;</button>
     </div>
     <div class="ctrl-group">
+      <button class="ctrl-btn" id="btn-duck">&darr;</button>
       <button class="ctrl-btn jump-btn" id="btn-jump">jump</button>
     </div>
   </div>
@@ -239,27 +247,29 @@
     const SPRITE_H = 52;
     const GRAVITY = 0.55;
     const JUMP_VEL = -9.5;
-    const SPEED = 3.8;
+    const SPEED = 2.4;
+    const DUCK_H = 30; // sprite height when ducking
 
     function groundY() { return window.innerHeight - LINE_BOTTOM - 3 - SPRITE_H; }
 
     // ══════════════════════════════════════
-    // OBSTACLES — simple boxes on the line
+    // OBSTACLES — ground boxes + floating blocks to duck under
     // ══════════════════════════════════════
-    function ob(x, w, h) {
-      return { x, w, h };
+    // type: 'ground' = sits on line, 'float' = hovers above (duck under)
+    function ob(x, w, h, type) {
+      return { x, w, h, type: type || 'ground' };
     }
 
     const OBSTACLE_DEFS = [
-      ob(400, 30, 30),
-      ob(620, 30, 30),
-      ob(900, 35, 35),
-      ob(1150, 30, 40),
-      ob(1400, 30, 30),
-      ob(1650, 40, 35),
-      ob(1900, 55, 30),
-      ob(2200, 30, 35),
-      ob(2500, 30, 30),
+      ob(400, 30, 28),
+      ob(620, 30, 28),
+      ob(850, 120, 18, 'float'),   // duck under
+      ob(1100, 30, 35),
+      ob(1350, 30, 28),
+      ob(1550, 140, 18, 'float'),  // duck under
+      ob(1850, 45, 28),
+      ob(2100, 120, 18, 'float'),  // duck under
+      ob(2400, 30, 28),
     ];
 
     const FINISH_X = 2850;
@@ -269,12 +279,13 @@
 
     function computeObstacles() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3; // top of line
-      obstacles = OBSTACLE_DEFS.map(o => ({
-        x: o.x,
-        y: lineY - o.h,
-        w: o.w,
-        h: o.h,
-      }));
+      obstacles = OBSTACLE_DEFS.map(o => {
+        if (o.type === 'float') {
+          // Float 20px above the ground — player must duck (30px) to fit under
+          return { x: o.x, y: lineY - DUCK_H - o.h - 2, w: o.w, h: o.h, type: 'float' };
+        }
+        return { x: o.x, y: lineY - o.h, w: o.w, h: o.h, type: 'ground' };
+      });
     }
 
     function renderObstacles() {
@@ -282,7 +293,7 @@
       container.innerHTML = '';
       obstacles.forEach(o => {
         const el = document.createElement('div');
-        el.className = 'obstacle';
+        el.className = 'obstacle' + (o.type === 'float' ? ' obstacle-float' : '');
         el.style.cssText = `left:${o.x}px; top:${o.y}px; width:${o.w}px; height:${o.h}px; position:absolute;`;
         container.appendChild(el);
       });
@@ -291,7 +302,7 @@
       const fb = document.getElementById('finish-box');
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
       fb.style.left = FINISH_X + 'px';
-      fb.style.top = (lineY - FINISH_SIZE - 50) + 'px';
+      fb.style.top = (lineY - FINISH_SIZE - 70) + 'px';
     }
 
     // ══════════════════════════════════════
@@ -318,7 +329,7 @@
     // ══════════════════════════════════════
     // PLAYER STATE
     // ══════════════════════════════════════
-    const player = { x: 120, y: 0, vx: 0, vy: 0, jumping: false, facing: 'right' };
+    const player = { x: 120, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right' };
     const partner = { x: 160, y: 0 };
     let finished = false;
 
@@ -344,13 +355,14 @@
     }
     setupMobileBtn('btn-left', 'ArrowLeft');
     setupMobileBtn('btn-right', 'ArrowRight');
+    setupMobileBtn('btn-duck', 'ArrowDown');
     setupMobileBtn('btn-jump', 'Space');
 
     // ══════════════════════════════════════
     // COLLISION
     // ══════════════════════════════════════
-    function collide(px, py) {
-      const pw = SPRITE_W, ph = SPRITE_H;
+    function collideDuck(px, py, ph) {
+      const pw = SPRITE_W;
       for (const o of obstacles) {
         if (px + pw <= o.x || px >= o.x + o.w || py + ph <= o.y || py >= o.y + o.h) continue;
 
@@ -361,11 +373,12 @@
         const min = Math.min(overlapL, overlapR, overlapT, overlapB);
 
         if (min === overlapT) {
-          player.y = o.y - ph;
+          // Land on top
+          player.y = o.y - SPRITE_H; // always use full height for positioning
           player.vy = 0;
           player.jumping = false;
         } else if (min === overlapB) {
-          player.y = o.y + o.h;
+          player.y = o.y + o.h - (SPRITE_H - ph); // adjust for duck offset
           player.vy = 1;
         } else if (min === overlapL) {
           player.x = o.x - pw;
@@ -382,7 +395,7 @@
     // ══════════════════════════════════════
     function checkFinish() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
-      const fbY = lineY - FINISH_SIZE - 50;
+      const fbY = lineY - FINISH_SIZE - 70;
       const px = player.x, py = player.y;
 
       if (px + SPRITE_W > FINISH_X && px < FINISH_X + FINISH_SIZE &&
@@ -416,16 +429,19 @@
     function gameLoop() {
       if (finished) { requestAnimationFrame(gameLoop); return; }
 
-      if (introShown && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'])) {
+      if (introShown && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'] || keys['ArrowDown'])) {
         document.getElementById('intro-text').classList.add('fade');
         introShown = false;
       }
+
+      // Ducking
+      player.ducking = !!(keys['ArrowDown'] && !player.jumping);
 
       if (keys['ArrowLeft']) { player.vx = -SPEED; player.facing = 'left'; }
       else if (keys['ArrowRight']) { player.vx = SPEED; player.facing = 'right'; }
       else { player.vx = 0; }
 
-      if (keys['Space'] && !player.jumping) {
+      if (keys['Space'] && !player.jumping && !player.ducking) {
         player.vy = JUMP_VEL;
         player.jumping = true;
       }
@@ -444,11 +460,15 @@
       if (player.x < 0) player.x = 0;
       if (player.x > WORLD_W - SPRITE_W) player.x = WORLD_W - SPRITE_W;
 
-      collide(player.x, player.y);
+      // Use shorter hitbox when ducking
+      const effectiveH = player.ducking ? DUCK_H : SPRITE_H;
+      const effectiveY = player.ducking ? (player.y + SPRITE_H - DUCK_H) : player.y;
+      collideDuck(player.x, effectiveY, effectiveH);
 
       const walking = Math.abs(player.vx) > 0 && !player.jumping;
       playerEl.classList.toggle('walking', walking);
       playerEl.classList.toggle('jumping', player.jumping);
+      playerEl.classList.toggle('ducking', player.ducking);
       playerEl.classList.toggle('facing-left', player.facing === 'left');
       playerEl.style.left = player.x + 'px';
       playerEl.style.top = player.y + 'px';
@@ -463,7 +483,7 @@
       const now = Date.now();
       if (now - lastPeerSend > 50) {
         lastPeerSend = now;
-        sendPeer({ type: 'pos', x: player.x, y: player.y, vx: player.vx, jumping: player.jumping, facing: player.facing });
+        sendPeer({ type: 'pos', x: player.x, y: player.y, vx: player.vx, jumping: player.jumping, ducking: player.ducking, facing: player.facing });
       }
 
       requestAnimationFrame(gameLoop);
@@ -478,6 +498,7 @@
       partnerEl.style.top = data.y + 'px';
       partnerEl.classList.toggle('walking', Math.abs(data.vx) > 0 && !data.jumping);
       partnerEl.classList.toggle('jumping', data.jumping);
+      partnerEl.classList.toggle('ducking', !!data.ducking);
       partnerEl.classList.toggle('facing-left', data.facing === 'left');
     }
 

@@ -320,6 +320,17 @@
       setTimeout(() => joinBtn.click(), 300);
     }
 
+    // Coming back from character creator — skip gate, show home
+    if (params.get('from') === 'character' && sessionStorage.getItem('datenight-room')) {
+      gate.style.display = 'none';
+      content.style.display = '';
+      roomCode = sessionStorage.getItem('datenight-room');
+      isHost = sessionStorage.getItem('datenight-host') === '1';
+      document.getElementById('room-info').textContent = 'room ' + roomCode;
+      history.replaceState(null, '', './');
+      showHomeChar();
+    }
+
     if (params.get('scared') === '1') {
       gate.style.display = 'none';
       content.style.display = '';
@@ -381,101 +392,10 @@
     // ── Start Adventure Transition ──
     document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
       e.preventDefault();
-
-      const homeContent = document.getElementById('home-content');
-      const charPreview = document.getElementById('home-char-preview');
-      const charEl = document.querySelector('.home-char');
-      const hasChar = charPreview && charPreview.style.display !== 'none' && charEl;
-
-      // Create transition overlay so it feels seamless
-      const overlay = document.createElement('div');
-      overlay.style.cssText = `
-        position: fixed; inset: 0; z-index: 500;
-        background: var(--dn-bg, #fef0f5);
-        display: flex; align-items: center; justify-content: center;
-        opacity: 0; transition: opacity 0.4s ease;
-        pointer-events: none;
-      `;
-
-      // Build the "landing" scene: character on a line
-      const scene = document.createElement('div');
-      scene.style.cssText = `
-        position: relative; width: 100%; height: 100%;
-      `;
-
-      // The ground line
-      const line = document.createElement('div');
-      line.style.cssText = `
-        position: absolute; bottom: 38%; left: 0; right: 0;
-        height: 3px; background: var(--dn-accent, #e85d75);
-        transform: scaleX(0); transition: transform 0.5s ease 0.3s;
-        transform-origin: left center;
-      `;
-      scene.appendChild(line);
-
-      // Mini character on the line
-      if (hasChar) {
-        const miniChar = charEl.cloneNode(true);
-        miniChar.style.cssText = `
-          position: absolute; bottom: calc(38% + 3px); left: 12%;
-          width: 36px; height: 54px;
-          transform: scale(0); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.5s;
-          transform-origin: bottom center;
-        `;
-        // Scale down inner elements
-        miniChar.querySelectorAll('*').forEach(el => {
-          el.style.animation = 'none';
-        });
-        scene.appendChild(miniChar);
-        // Trigger pop-in
-        requestAnimationFrame(() => {
-          setTimeout(() => { miniChar.style.transform = 'scale(0.5)'; }, 20);
-        });
-      }
-
-      // A few simple boxes on the line (preview of world)
-      [18, 30, 45].forEach((pct, i) => {
-        const box = document.createElement('div');
-        const size = 16 + i * 4;
-        box.style.cssText = `
-          position: absolute; bottom: calc(38% + 3px); left: ${pct}%;
-          width: ${size}px; height: ${size}px;
-          background: var(--dn-accent, #e85d75); opacity: 0.5;
-          border-radius: 3px;
-          transform: translateY(20px); opacity: 0;
-          transition: transform 0.4s ease ${0.4 + i * 0.08}s, opacity 0.4s ease ${0.4 + i * 0.08}s;
-        `;
-        scene.appendChild(box);
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            box.style.transform = 'translateY(0)';
-            box.style.opacity = '0.5';
-          }, 20);
-        });
-      });
-
-      overlay.appendChild(scene);
-      document.body.appendChild(overlay);
-
-      // Step 1: Fade out home content
-      homeContent.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-      homeContent.style.opacity = '0';
-      homeContent.style.transform = 'translateX(-60px)';
-
-      // Step 2: Fade in the transition scene
-      setTimeout(() => {
-        overlay.style.opacity = '1';
-        overlay.style.pointerEvents = 'all';
-        // Animate the line in
-        requestAnimationFrame(() => {
-          line.style.transform = 'scaleX(1)';
-        });
-      }, 300);
-
-      // Step 3: Navigate
-      setTimeout(() => {
-        window.location.href = 'world/';
-      }, 1200);
+      // Simple fast fade to background color, then navigate
+      document.body.style.transition = 'opacity 0.3s ease';
+      document.body.style.opacity = '0';
+      setTimeout(() => { window.location.href = 'world/'; }, 350);
     });
   </script>
 </body>
