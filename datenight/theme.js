@@ -72,6 +72,40 @@ const DN_THEMES = [
     homeBtnBorder: '#a1887f',
   },
   {
+    name: 'smiski',
+    bg: '#e8f5e9',
+    text: '#2e7d32',
+    sub: '#81c784',
+    accent: '#66bb6a',
+    headingFont: "'Quicksand', sans-serif",
+    btnBg: 'rgba(255,255,255,0.6)',
+    btnBorder: '#a5d6a7',
+    btnRadius: '20px',
+    btnText: '#2e7d32',
+    inputBg: 'rgba(255,255,255,0.5)',
+    inputBorder: '#a5d6a7',
+    inputText: '#2e7d32',
+    homeBtnBg: 'rgba(255,255,255,0.6)',
+    homeBtnBorder: '#a5d6a7',
+  },
+  {
+    name: 'cooking',
+    bg: '#fdf6f0',
+    text: '#5d4037',
+    sub: '#bcaaa4',
+    accent: '#e64a19',
+    headingFont: "'Caveat', cursive",
+    btnBg: 'rgba(255,248,240,0.7)',
+    btnBorder: '#d7ccc8',
+    btnRadius: '8px',
+    btnText: '#5d4037',
+    inputBg: 'rgba(255,248,240,0.5)',
+    inputBorder: '#d7ccc8',
+    inputText: '#5d4037',
+    homeBtnBg: 'rgba(255,248,240,0.7)',
+    homeBtnBorder: '#d7ccc8',
+  },
+  {
     name: 'sheet-music',
     bg: '#faf9f6',
     text: '#1a1a1a',
@@ -157,6 +191,12 @@ function dnCycleTheme(e) {
     case 'earth':
       flash.style.cssText = flashBase + `background:${next.sub};`;
       break;
+    case 'smiski':
+      flash.style.cssText = flashBase + `background:${next.accent};`;
+      break;
+    case 'cooking':
+      flash.style.cssText = flashBase + `background:${next.accent};`;
+      break;
     case 'sheet-music':
       flash.style.cssText = flashBase + `background:#1a1a1a;`;
       break;
@@ -192,6 +232,8 @@ function dnCycleTheme(e) {
 // poster → text characters (!, *, #, ~) that scatter and spin
 // neon → electric lines/bolts that crackle from click point
 // earth → falling leaf shapes with gravity + wind drift
+// smiski → glowing green blobs that peek out and hide
+// cooking → food emoji that scatter like tossed ingredients
 // sheet-music → music notes that float upward and fade
 
 function dnSpawnParticles(x, y, theme) {
@@ -200,6 +242,8 @@ function dnSpawnParticles(x, y, theme) {
     case 'poster': return dnBurstChars(x, y, theme);
     case 'neon': return dnBurstBolts(x, y, theme);
     case 'earth': return dnBurstLeaves(x, y, theme);
+    case 'smiski': return dnBurstSmiskis(x, y, theme);
+    case 'cooking': return dnBurstFood(x, y, theme);
     case 'sheet-music': return dnBurstNotes(x, y, theme);
     default: return dnBurstRing(x, y, theme);
   }
@@ -415,6 +459,99 @@ function dnBurstLeaves(x, y, theme) {
       leaf.style.opacity = '0';
     }, dur * 0.4);
     setTimeout(() => leaf.remove(), dur + 50);
+  }
+}
+
+// smiski — glowing green blobs that peek up then duck back down
+function dnBurstSmiskis(x, y, theme) {
+  const count = 10;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    const size = 10 + Math.random() * 12;
+    const hue = 120 + Math.random() * 30;
+    el.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:${size}px; height:${size * 1.5}px;
+      background:hsl(${hue}, 50%, ${65 + Math.random() * 15}%);
+      border-radius:${size * 0.45}px ${size * 0.45}px ${size * 0.25}px ${size * 0.25}px;
+      pointer-events:none; z-index:99999; opacity:0;
+      transform:translate(-50%,0) scale(0.4);
+      box-shadow:0 0 ${size}px hsla(${hue},60%,70%,0.4);
+      will-change:transform,opacity,top;
+    `;
+    // tiny dot eyes
+    const eyeSize = Math.max(2, size * 0.12);
+    el.innerHTML = `<div style="position:absolute;top:25%;left:50%;transform:translateX(-50%);display:flex;gap:${size*0.2}px">
+      <div style="width:${eyeSize}px;height:${eyeSize}px;background:#2e7d32;border-radius:50%"></div>
+      <div style="width:${eyeSize}px;height:${eyeSize}px;background:#2e7d32;border-radius:50%"></div>
+    </div>`;
+    document.body.appendChild(el);
+
+    const spreadX = (Math.random() - 0.5) * 140;
+    const peekY = -(30 + Math.random() * 50);
+    const dur = 800 + Math.random() * 400;
+    const delay = Math.random() * 150;
+
+    // Phase 1: peek up
+    setTimeout(() => {
+      el.style.transition = `left ${dur * 0.4}ms ease-out, top ${dur * 0.4}ms ease-out, transform ${dur * 0.4}ms cubic-bezier(0.22,1,0.36,1), opacity 0.15s ease-out`;
+      el.style.opacity = '0.9';
+      el.style.left = (x + spreadX) + 'px';
+      el.style.top = (y + peekY) + 'px';
+      el.style.transform = 'translate(-50%,0) scale(1)';
+    }, delay);
+    // Phase 2: duck back down and fade
+    setTimeout(() => {
+      el.style.transition = `top ${dur * 0.5}ms ease-in, opacity ${dur * 0.4}ms ease-in, transform ${dur * 0.5}ms ease-in`;
+      el.style.top = (y + 20) + 'px';
+      el.style.transform = 'translate(-50%,0) scale(0.3)';
+      el.style.opacity = '0';
+    }, delay + dur * 0.5);
+    setTimeout(() => el.remove(), delay + dur + 50);
+  }
+}
+
+// cooking — food emoji that scatter like tossed ingredients
+function dnBurstFood(x, y, theme) {
+  const foods = ['🍳', '🧈', '🌶️', '🍅', '🧄', '🥄', '🍕', '🥘', '🍝', '🧁', '🥐', '🫕'];
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    const food = foods[Math.floor(Math.random() * foods.length)];
+    const size = 16 + Math.random() * 12;
+    el.textContent = food;
+    el.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      font-size:${size}px; line-height:1;
+      pointer-events:none; z-index:99999; opacity:0.9;
+      transform:translate(-50%,-50%) rotate(0deg) scale(0.3);
+      will-change:transform,opacity,left,top;
+    `;
+    document.body.appendChild(el);
+
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.6;
+    const dist = 50 + Math.random() * 80;
+    const peakY = -(40 + Math.random() * 70);
+    const spin = (Math.random() - 0.5) * 180;
+    const dur = 600 + Math.random() * 400;
+    const delay = Math.random() * 80;
+
+    // Phase 1: toss up and out
+    setTimeout(() => {
+      el.style.transition = `left ${dur * 0.45}ms ease-out, top ${dur * 0.45}ms ease-out, transform ${dur * 0.45}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur}ms ease-in`;
+      el.style.left = (x + Math.cos(angle) * dist) + 'px';
+      el.style.top = (y + peakY) + 'px';
+      el.style.transform = `translate(-50%,-50%) rotate(${spin * 0.4}deg) scale(1)`;
+    }, delay);
+    // Phase 2: fall back down with gravity
+    setTimeout(() => {
+      el.style.transition = `left ${dur * 0.55}ms ease-in, top ${dur * 0.55}ms ease-in, transform ${dur * 0.55}ms linear, opacity ${dur * 0.4}ms ease-in`;
+      el.style.left = (x + Math.cos(angle) * dist * 1.3) + 'px';
+      el.style.top = (y + 60 + Math.random() * 50) + 'px';
+      el.style.transform = `translate(-50%,-50%) rotate(${spin}deg) scale(0.5)`;
+      el.style.opacity = '0';
+    }, delay + dur * 0.45);
+    setTimeout(() => el.remove(), delay + dur + 50);
   }
 }
 
