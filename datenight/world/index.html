@@ -59,11 +59,11 @@
       z-index: 25;
       width: 50px; height: 50px;
       border-radius: 50%;
-      background: var(--dn-accent, #e85d75);
+      background: var(--orb-color, var(--dn-accent, #e85d75));
       box-shadow:
-        0 0 20px var(--dn-accent, #e85d75),
-        0 0 40px color-mix(in srgb, var(--dn-accent, #e85d75) 50%, transparent),
-        0 0 80px color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+        0 0 20px var(--orb-color, var(--dn-accent, #e85d75)),
+        0 0 40px color-mix(in srgb, var(--orb-color, var(--dn-accent, #e85d75)) 50%, transparent),
+        0 0 80px color-mix(in srgb, var(--orb-color, var(--dn-accent, #e85d75)) 25%, transparent);
       animation: glow-box 1.5s ease-in-out infinite alternate;
       cursor: pointer;
       pointer-events: auto;
@@ -72,12 +72,12 @@
     .adventure-box.completed {
       opacity: 0.35;
       animation: none;
-      box-shadow: 0 0 10px color-mix(in srgb, var(--dn-accent, #e85d75) 20%, transparent);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--orb-color, var(--dn-accent, #e85d75)) 20%, transparent);
     }
 
     @keyframes glow-box {
-      0% { transform: scale(1); box-shadow: 0 0 20px var(--dn-accent, #e85d75), 0 0 40px rgba(232,93,117,0.3); }
-      100% { transform: scale(1.08); box-shadow: 0 0 30px var(--dn-accent, #e85d75), 0 0 60px rgba(232,93,117,0.5), 0 0 100px rgba(232,93,117,0.2); }
+      0% { transform: scale(1); box-shadow: 0 0 20px var(--orb-color, var(--dn-accent)), 0 0 40px color-mix(in srgb, var(--orb-color, var(--dn-accent)) 40%, transparent); }
+      100% { transform: scale(1.08); box-shadow: 0 0 30px var(--orb-color, var(--dn-accent)), 0 0 60px color-mix(in srgb, var(--orb-color, var(--dn-accent)) 55%, transparent), 0 0 100px color-mix(in srgb, var(--orb-color, var(--dn-accent)) 25%, transparent); }
     }
 
     /* ── Enter-box animation ── */
@@ -382,8 +382,8 @@
     // ADVENTURE BOXES — the glowing orbs on the map
     // ══════════════════════════════════════
     const ADVENTURES = [
-      { id: 'music', x: 2850, elevation: 70, url: '../puzzle/music/', hint: 'reach the light to begin your first adventure' },
-      { id: 'adv2',  x: 5300, elevation: 170, url: '../',             hint: 'this one is high... try standing on each other!' },
+      { id: 'music',    x: 2850, elevation: 70,  url: '../puzzle/music/',    hint: 'reach the light to begin your first adventure', color: '#d49b3c' },
+      { id: 'elements', x: 5300, elevation: 170, url: '../puzzle/elements/', hint: 'this one is high... try standing on each other!', color: '#4fc3f7' },
     ];
 
     // ══════════════════════════════════════
@@ -447,7 +447,7 @@
         el.className = 'adventure-box' + (completed.includes(adv.id) ? ' completed' : '');
         el.dataset.id = adv.id;
         const top = lineY - BOX_SIZE - adv.elevation;
-        el.style.cssText = `left:${adv.x}px; top:${top}px; width:${BOX_SIZE}px; height:${BOX_SIZE}px;`;
+        el.style.cssText = `left:${adv.x}px; top:${top}px; width:${BOX_SIZE}px; height:${BOX_SIZE}px; --orb-color:${adv.color};`;
         el.addEventListener('click', () => enterAdventure(adv));
         el.addEventListener('touchend', (e) => { e.preventDefault(); enterAdventure(adv); });
         container.appendChild(el);
@@ -581,6 +581,7 @@
       const vortex = document.getElementById('enter-vortex');
       vortex.classList.add('active');
 
+      const orbColor = adv.color || 'var(--dn-accent, #e85d75)';
       for (let i = 0; i < 5; i++) {
         const ring = document.createElement('div');
         ring.className = 'enter-ring';
@@ -588,6 +589,7 @@
         ring.style.cssText = `
           width: ${size}px; height: ${size}px;
           left: ${boxScreenX}px; top: ${boxScreenY}px;
+          border-color: ${orbColor};
           animation: ring-collapse ${0.5 + i * 0.08}s ease-in ${i * 0.08}s forwards;
         `;
         vortex.appendChild(ring);
@@ -596,6 +598,7 @@
       // 3) Flash and navigate
       setTimeout(() => {
         const flash = document.getElementById('enter-flash');
+        flash.style.background = orbColor;
         flash.classList.add('show');
         setTimeout(() => {
           window.location.href = adv.url;
