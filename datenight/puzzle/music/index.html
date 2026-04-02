@@ -414,7 +414,7 @@
       <div class="victory-emoji">&#x1F3B6;</div>
       <div class="victory-title">perfect rhythm!</div>
       <div class="victory-pts" id="victory-pts">+60 pts</div>
-      <a href="../../world/?level=2" class="victory-btn">continue adventure &rarr;</a>
+      <a href="../../world/?after=music" class="victory-btn">back to map &rarr;</a>
     </div>
   </div>
 
@@ -1041,7 +1041,7 @@
     document.getElementById('record-btn').addEventListener('click', startRecording);
     document.getElementById('skip-btn').addEventListener('click', () => {
       markCompleted('music');
-      window.location.href = '../../world/?level=2';
+      window.location.href = '../../world/?after=music';
     });
 
     if (roomCode) setupPeer();

@@ -27,7 +27,6 @@
 
     .world {
       position: absolute;
-      width: 3600px;
       height: 100%;
     }
 
@@ -54,31 +53,70 @@
       border-radius: 3px;
     }
 
-    /* ── Glowing Finish Box ── */
-    .finish-box {
+    /* ── Glowing Adventure Box ── */
+    .adventure-box {
       position: absolute;
       z-index: 25;
-      width: 60px; height: 60px;
-      border-radius: 12px;
+      width: 50px; height: 50px;
+      border-radius: 50%;
       background: var(--dn-accent, #e85d75);
       box-shadow:
         0 0 20px var(--dn-accent, #e85d75),
         0 0 40px color-mix(in srgb, var(--dn-accent, #e85d75) 50%, transparent),
         0 0 80px color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
       animation: glow-box 1.5s ease-in-out infinite alternate;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
     }
 
-    .finish-box::before {
-      content: '\2728';
-      font-size: 1.6rem;
+    .adventure-box.completed {
+      opacity: 0.35;
+      animation: none;
+      box-shadow: 0 0 10px color-mix(in srgb, var(--dn-accent, #e85d75) 20%, transparent);
     }
 
     @keyframes glow-box {
       0% { transform: scale(1); box-shadow: 0 0 20px var(--dn-accent, #e85d75), 0 0 40px rgba(232,93,117,0.3); }
       100% { transform: scale(1.08); box-shadow: 0 0 30px var(--dn-accent, #e85d75), 0 0 60px rgba(232,93,117,0.5), 0 0 100px rgba(232,93,117,0.2); }
+    }
+
+    /* ── Enter-box animation ── */
+    .enter-vortex {
+      position: fixed; inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .enter-vortex.active { opacity: 1; }
+
+    .enter-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid var(--dn-accent, #e85d75);
+      opacity: 0;
+    }
+
+    @keyframes ring-collapse {
+      0% { transform: translate(-50%,-50%) scale(3); opacity: 0; }
+      40% { opacity: 0.7; }
+      100% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+    }
+
+    .enter-flash {
+      position: fixed; inset: 0;
+      z-index: 9999;
+      background: var(--dn-accent, #e85d75);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .enter-flash.show {
+      animation: flash-in 0.6s ease forwards;
+    }
+    @keyframes flash-in {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 1; }
     }
 
     /* ── Character Sprite ── */
@@ -128,6 +166,12 @@
     .sprite.ducking.facing-left .sprite-inner { transform: scaleX(-1) scaleY(0.58); transform-origin: bottom center; }
     .sprite.facing-left .sprite-inner { transform: scaleX(-1); }
 
+    /* Player getting sucked into box */
+    .sprite.entering {
+      transition: transform 0.5s cubic-bezier(0.6, 0, 1, 1), opacity 0.4s ease 0.2s;
+      opacity: 0;
+    }
+
     .sprite-name {
       position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
       font-family: 'Caveat', cursive; font-size: 0.65rem;
@@ -150,32 +194,6 @@
       transition: opacity 1s ease;
     }
     .intro-text.fade { opacity: 0; }
-
-    /* ── Victory Flash ── */
-    .victory-flash {
-      position: fixed; inset: 0;
-      background: var(--dn-accent, #e85d75);
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    .victory-flash.show { opacity: 1; }
-
-    .victory-msg {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: clamp(2rem, 5vw, 3rem);
-      color: #fff;
-      z-index: 10000;
-      text-align: center;
-      pointer-events: none;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-    }
-    .victory-msg.show { transform: translate(-50%, -50%) scale(1); }
 
     /* ── Mobile Controls ── */
     .mobile-controls {
@@ -253,9 +271,6 @@
     .drop-in-wrapper {
       transition: transform 0.6s cubic-bezier(0.22, 1.2, 0.36, 1);
     }
-    .drop-in-wrapper.dropping {
-      /* set dynamically via JS */
-    }
 
     @keyframes squish-land {
       0% { transform: scaleY(1) scaleX(1); }
@@ -278,12 +293,13 @@
     </div>
   </div>
 
+  <!-- Enter-box vortex effect -->
+  <div class="enter-vortex" id="enter-vortex"></div>
+  <div class="enter-flash" id="enter-flash"></div>
+
   <a href="../" class="back-btn">&larr; home</a>
 
   <div class="intro-text" id="intro-text"></div>
-
-  <div class="victory-flash" id="victory-flash"></div>
-  <div class="victory-msg" id="victory-msg"></div>
 
   <div class="viewport">
     <div class="world" id="world">
@@ -292,8 +308,8 @@
       <!-- Obstacles built by JS -->
       <div id="obstacles"></div>
 
-      <!-- Finish box -->
-      <div class="finish-box" id="finish-box"></div>
+      <!-- Adventure boxes built by JS -->
+      <div id="adventure-boxes"></div>
 
       <!-- Player -->
       <div class="sprite" id="player"></div>
@@ -318,73 +334,91 @@
     // ══════════════════════════════════════
     // CONFIG
     // ══════════════════════════════════════
-    // ── Level system ──
-    const urlParams = new URLSearchParams(window.location.search);
-    const LEVEL = parseInt(urlParams.get('level')) || 1;
-    if (LEVEL === 2) history.replaceState(null, '', window.location.pathname);
-
-    const WORLD_W = LEVEL === 1 ? 3200 : 3600;
-    const GROUND_H = 80;  // ground line is at bottom: 80px
+    const WORLD_W = 5600;
     const LINE_BOTTOM = 80;
     const SPRITE_W = 32;
     const SPRITE_H = 52;
     const GRAVITY = 0.55;
     const JUMP_VEL = -9.5;
     const SPEED = 2.4;
-    const DUCK_H = 30; // sprite height when ducking
+    const DUCK_H = 30;
+    const BOX_SIZE = 50;
 
     function groundY() { return window.innerHeight - LINE_BOTTOM - 3 - SPRITE_H; }
 
     // ══════════════════════════════════════
-    // OBSTACLES — ground boxes + floating blocks to duck under
+    // OBSTACLES — one continuous map
     // ══════════════════════════════════════
-    // type: 'ground' = sits on line, 'float' = hovers above (duck under)
     function ob(x, w, h, type) {
       return { x, w, h, type: type || 'ground' };
     }
 
-    const OBSTACLE_DEFS_L1 = [
+    const OBSTACLE_DEFS = [
+      // Section 1 — before first adventure box
       ob(400, 30, 28),
       ob(620, 30, 28),
-      ob(850, 120, 18, 'float'),   // duck under
+      ob(850, 120, 18, 'float'),
       ob(1100, 30, 35),
       ob(1350, 30, 28),
-      ob(1550, 140, 18, 'float'),  // duck under
+      ob(1550, 140, 18, 'float'),
       ob(1850, 45, 28),
-      ob(2100, 120, 18, 'float'),  // duck under
+      ob(2100, 120, 18, 'float'),
       ob(2400, 30, 28),
+      // Section 2 — between box 1 and box 2
+      ob(3200, 35, 28),
+      ob(3400, 30, 32),
+      ob(3600, 130, 18, 'float'),
+      ob(3800, 40, 28),
+      ob(3950, 35, 35),
+      ob(4150, 30, 28),
+      ob(4350, 150, 18, 'float'),
+      ob(4550, 40, 28),
+      ob(4700, 35, 32),
+      ob(4850, 120, 18, 'float'),
+      ob(5000, 45, 28),
     ];
 
-    const OBSTACLE_DEFS_L2 = [
-      ob(350, 35, 28),
-      ob(550, 30, 32),
-      ob(750, 130, 18, 'float'),   // duck under
-      ob(950, 40, 28),
-      ob(1100, 35, 35),
-      ob(1300, 30, 28),
-      ob(1500, 150, 18, 'float'),  // duck under
-      ob(1700, 40, 28),
-      ob(1900, 35, 32),
-      ob(2050, 120, 18, 'float'),  // duck under
-      ob(2250, 45, 28),
-      ob(2450, 30, 35),
-      ob(2600, 140, 18, 'float'),  // duck under
-      ob(2750, 120, 20),           // stacking platform — wide ground block near finish
+    // ══════════════════════════════════════
+    // ADVENTURE BOXES — the glowing orbs on the map
+    // ══════════════════════════════════════
+    const ADVENTURES = [
+      { id: 'music', x: 2850, elevation: 70, url: '../puzzle/music/', hint: 'reach the light to begin your first adventure' },
+      { id: 'adv2',  x: 5300, elevation: 170, url: '../',             hint: 'this one is high... try standing on each other!' },
     ];
 
-    const OBSTACLE_DEFS = LEVEL === 1 ? OBSTACLE_DEFS_L1 : OBSTACLE_DEFS_L2;
+    // ══════════════════════════════════════
+    // SPAWN POSITION — based on which adventure was just completed
+    // ══════════════════════════════════════
+    const urlParams = new URLSearchParams(window.location.search);
+    const spawnAfter = urlParams.get('after'); // e.g. "music" — spawn near that box
+    if (spawnAfter) history.replaceState(null, '', window.location.pathname);
 
-    const FINISH_X = LEVEL === 1 ? 2850 : 2850;
-    const FINISH_SIZE = 60;
-    const FINISH_ELEVATION = LEVEL === 1 ? 70 : 170; // level 2 is too high for a single jump
+    function getSpawnX() {
+      if (spawnAfter) {
+        const adv = ADVENTURES.find(a => a.id === spawnAfter);
+        if (adv) return adv.x + 80; // just past the box
+      }
+      return 120;
+    }
 
+    // Track completed adventures
+    function getCompleted() {
+      try { return JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch { return []; }
+    }
+    function markCompleted(id) {
+      const c = getCompleted();
+      if (!c.includes(id)) { c.push(id); sessionStorage.setItem('datenight-completed', JSON.stringify(c)); }
+    }
+
+    // ══════════════════════════════════════
+    // COMPUTED OBSTACLES & BOXES
+    // ══════════════════════════════════════
     let obstacles = [];
 
     function computeObstacles() {
-      const lineY = window.innerHeight - LINE_BOTTOM - 3; // top of line
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
       obstacles = OBSTACLE_DEFS.map(o => {
         if (o.type === 'float') {
-          // Float 20px above the ground — player must duck (30px) to fit under
           return { x: o.x, y: lineY - DUCK_H - o.h - 2, w: o.w, h: o.h, type: 'float' };
         }
         return { x: o.x, y: lineY - o.h, w: o.w, h: o.h, type: 'ground' };
@@ -400,14 +434,24 @@
         el.style.cssText = `left:${o.x}px; top:${o.y}px; width:${o.w}px; height:${o.h}px; position:absolute;`;
         container.appendChild(el);
       });
+    }
 
-      // Finish box — elevated so player must jump to reach it
-      const fb = document.getElementById('finish-box');
+    function renderAdventureBoxes() {
+      const container = document.getElementById('adventure-boxes');
+      container.innerHTML = '';
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
-      fb.style.left = FINISH_X + 'px';
-      fb.style.top = (lineY - FINISH_SIZE - FINISH_ELEVATION) + 'px';
-      fb.style.cursor = 'pointer';
-      fb.style.pointerEvents = 'auto';
+      const completed = getCompleted();
+
+      ADVENTURES.forEach(adv => {
+        const el = document.createElement('div');
+        el.className = 'adventure-box' + (completed.includes(adv.id) ? ' completed' : '');
+        el.dataset.id = adv.id;
+        const top = lineY - BOX_SIZE - adv.elevation;
+        el.style.cssText = `left:${adv.x}px; top:${top}px; width:${BOX_SIZE}px; height:${BOX_SIZE}px;`;
+        el.addEventListener('click', () => enterAdventure(adv));
+        el.addEventListener('touchend', (e) => { e.preventDefault(); enterAdventure(adv); });
+        container.appendChild(el);
+      });
     }
 
     // ══════════════════════════════════════
@@ -434,9 +478,10 @@
     // ══════════════════════════════════════
     // PLAYER STATE
     // ══════════════════════════════════════
-    const player = { x: 120, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right' };
-    const partner = { x: 160, y: 0, jumping: false, ducking: false };
-    let finished = false;
+    const spawnX = getSpawnX();
+    const player = { x: spawnX, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right' };
+    const partner = { x: spawnX + 40, y: 0, jumping: false, ducking: false };
+    let entering = false;
 
     const playerEl = document.getElementById('player');
     const partnerEl = document.getElementById('partner');
@@ -478,12 +523,11 @@
         const min = Math.min(overlapL, overlapR, overlapT, overlapB);
 
         if (min === overlapT) {
-          // Land on top
-          player.y = o.y - SPRITE_H; // always use full height for positioning
+          player.y = o.y - SPRITE_H;
           player.vy = 0;
           player.jumping = false;
         } else if (min === overlapB) {
-          player.y = o.y + o.h - (SPRITE_H - ph); // adjust for duck offset
+          player.y = o.y + o.h - (SPRITE_H - ph);
           player.vy = 1;
         } else if (min === overlapL) {
           player.x = o.x - pw;
@@ -496,34 +540,67 @@
     }
 
     // ══════════════════════════════════════
-    // FINISH CHECK
+    // ADVENTURE BOX — check proximity + enter animation
     // ══════════════════════════════════════
-    function checkFinish() {
+    function checkAdventureBoxes() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
-      const fbY = lineY - FINISH_SIZE - FINISH_ELEVATION;
-      const px = player.x, py = player.y;
-
-      if (px + SPRITE_W > FINISH_X && px < FINISH_X + FINISH_SIZE &&
-          py + SPRITE_H > fbY && py < fbY + FINISH_SIZE) {
-        triggerFinish();
-      }
+      ADVENTURES.forEach(adv => {
+        const bx = adv.x, by = lineY - BOX_SIZE - adv.elevation;
+        if (player.x + SPRITE_W > bx && player.x < bx + BOX_SIZE &&
+            player.y + SPRITE_H > by && player.y < by + BOX_SIZE) {
+          enterAdventure(adv);
+        }
+      });
     }
 
-    function triggerFinish() {
-      if (finished) return;
-      finished = true;
+    function enterAdventure(adv) {
+      if (entering) return;
+      entering = true;
 
-      const flash = document.getElementById('victory-flash');
-      const msg = document.getElementById('victory-msg');
-      flash.classList.add('show');
-      msg.classList.add('show');
+      markCompleted(adv.id);
+      sendPeer({ type: 'enter', id: adv.id });
 
-      sendPeer({ type: 'finish' });
+      // Calculate box screen position
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
+      const boxWorldX = adv.x + BOX_SIZE / 2;
+      const boxWorldY = lineY - BOX_SIZE - adv.elevation + BOX_SIZE / 2;
 
-      const nextURL = LEVEL === 1 ? '../puzzle/music/' : '../';
+      const vpW = window.innerWidth;
+      let camX = -(player.x - vpW / 2 + 16);
+      camX = Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
+      const boxScreenX = boxWorldX + camX;
+      const boxScreenY = boxWorldY;
+
+      // 1) Pull player sprite toward the box
+      const dx = adv.x + BOX_SIZE / 2 - player.x - SPRITE_W / 2;
+      const dy = (lineY - BOX_SIZE - adv.elevation + BOX_SIZE / 2) - player.y - SPRITE_H / 2;
+      playerEl.classList.add('entering');
+      playerEl.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
+
+      // 2) Spawn vortex rings collapsing toward the box
+      const vortex = document.getElementById('enter-vortex');
+      vortex.classList.add('active');
+
+      for (let i = 0; i < 5; i++) {
+        const ring = document.createElement('div');
+        ring.className = 'enter-ring';
+        const size = 80 + i * 60;
+        ring.style.cssText = `
+          width: ${size}px; height: ${size}px;
+          left: ${boxScreenX}px; top: ${boxScreenY}px;
+          animation: ring-collapse ${0.5 + i * 0.08}s ease-in ${i * 0.08}s forwards;
+        `;
+        vortex.appendChild(ring);
+      }
+
+      // 3) Flash and navigate
       setTimeout(() => {
-        window.location.href = nextURL;
-      }, 1800);
+        const flash = document.getElementById('enter-flash');
+        flash.classList.add('show');
+        setTimeout(() => {
+          window.location.href = adv.url;
+        }, 500);
+      }, 600);
     }
 
     // ══════════════════════════════════════
@@ -533,7 +610,7 @@
     let introShown = true;
 
     function gameLoop() {
-      if (finished) { requestAnimationFrame(gameLoop); return; }
+      if (entering) { requestAnimationFrame(gameLoop); return; }
 
       if (introShown && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'] || keys['ArrowDown'])) {
         document.getElementById('intro-text').classList.add('fade');
@@ -596,7 +673,7 @@
       camX = Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
       worldEl.style.transform = `translateX(${camX}px)`;
 
-      checkFinish();
+      checkAdventureBoxes();
 
       const now = Date.now();
       if (now - lastPeerSend > 50) {
@@ -641,7 +718,10 @@
         buildSprite(partnerEl, partnerChar);
         if (window.hudUpdatePartner) window.hudUpdatePartner(data.data);
       }
-      else if (data.type === 'finish') triggerFinish();
+      else if (data.type === 'enter') {
+        const adv = ADVENTURES.find(a => a.id === data.id);
+        if (adv) enterAdventure(adv);
+      }
     }
 
     function setupPeer() {
@@ -677,19 +757,19 @@
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
-    // ── Level-aware text ──
-    document.getElementById('intro-text').innerHTML = LEVEL === 1
-      ? 'reach the glowing light to begin<br/>your first adventure together'
-      : "this one's too high... try standing on each other!";
-    document.getElementById('victory-msg').textContent = LEVEL === 1
-      ? "you've reached the first adventure"
-      : 'teamwork makes the dream work!';
+    // ── Intro text — show hint for the nearest upcoming adventure ──
+    const completed = getCompleted();
+    const nextAdv = ADVENTURES.find(a => !completed.includes(a.id));
+    document.getElementById('intro-text').textContent = nextAdv
+      ? nextAdv.hint
+      : 'explore freely...';
 
-    // ── Set world width dynamically ──
-    document.getElementById('world').style.width = WORLD_W + 'px';
+    // ── Set world width ──
+    worldEl.style.width = WORLD_W + 'px';
 
     computeObstacles();
     renderObstacles();
+    renderAdventureBoxes();
 
     player.y = groundY();
     partner.y = groundY();
@@ -699,22 +779,15 @@
     playerEl.style.left = player.x + 'px';
     playerEl.style.top = player.y + 'px';
 
-    // ── Click/touch finish box to trigger finish directly ──
-    document.getElementById('finish-box').addEventListener('click', () => triggerFinish());
-    document.getElementById('finish-box').addEventListener('touchend', (e) => { e.preventDefault(); triggerFinish(); });
-
     // ── Drop-in animation from home page ──
-    let gameStarted = false;
     const dropIn = sessionStorage.getItem('datenight-drop-in') === '1';
 
     if (dropIn) {
       sessionStorage.removeItem('datenight-drop-in');
-      // Hide the real player sprite and game elements temporarily
       playerEl.style.opacity = '0';
       document.getElementById('intro-text').style.opacity = '0';
       document.querySelector('.back-btn').style.opacity = '0';
 
-      // Build the overlay character using home-page style (larger sprite)
       const overlay = document.getElementById('drop-in-overlay');
       const wrapper = document.getElementById('drop-in-wrapper');
       const dropChar = document.getElementById('drop-in-char');
@@ -731,42 +804,29 @@
           <div class="dc-leg" style="background:${myChar.pants || '#3a3a5c'}"></div>
         </div>`;
 
-      // Calculate where the ground line is on screen
       const lineScreenY = window.innerHeight - LINE_BOTTOM - 3;
-      // Character bottom should land on the line, so top = lineScreenY - charHeight
       const charH = 108;
       const landY = lineScreenY - charH;
-      // Currently centered: top = 50% - charH/2
       const centerY = window.innerHeight / 2 - charH / 2;
       const dropDistance = landY - centerY;
 
-      // Pause, then drop
       setTimeout(() => {
         wrapper.style.transform = `translateY(${dropDistance}px)`;
-        // After drop animation
         setTimeout(() => {
           dropChar.classList.add('landed');
-          // Squish done, fade overlay and reveal the real game
           setTimeout(() => {
-            // Show the real player at ground position
             playerEl.style.transition = 'opacity 0.2s';
             playerEl.style.opacity = '1';
-            // Fade out overlay
             overlay.classList.add('fade-out');
-            // Show intro text and back btn
             const intro = document.getElementById('intro-text');
             intro.style.transition = 'opacity 0.8s ease';
             intro.style.opacity = '1';
             document.querySelector('.back-btn').style.transition = 'opacity 0.5s';
             document.querySelector('.back-btn').style.opacity = '1';
-            gameStarted = true;
-
             setTimeout(() => overlay.remove(), 500);
           }, 400);
         }, 650);
       }, 300);
-    } else {
-      gameStarted = true;
     }
 
     setupPeer();
@@ -775,6 +835,7 @@
     window.addEventListener('resize', () => {
       computeObstacles();
       renderObstacles();
+      renderAdventureBoxes();
       player.y = Math.min(player.y, groundY());
     });
   </script>
