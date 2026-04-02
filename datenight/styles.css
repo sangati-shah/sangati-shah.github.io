@@ -536,12 +536,12 @@ body.lights-off {
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-end;
-  gap: 1.2rem 1.4rem;
+  gap: 1.4rem 1.6rem;
   position: absolute;
   top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 400px;
+  max-width: 500px;
   padding: 0 1rem;
   z-index: 10;
 }
@@ -557,35 +557,35 @@ body.lights-off {
 }
 
 .deck-jar .jar {
-  width: 65px;
-  height: 88px;
+  width: 85px;
+  height: 115px;
 }
 
 .deck-jar .jar-lid {
-  width: 40px;
-  height: 11px;
+  width: 52px;
+  height: 14px;
 }
 
 .deck-jar .jar-lid::after {
-  bottom: -3px;
-  left: -4px;
-  right: -4px;
-  height: 5px;
+  bottom: -4px;
+  left: -5px;
+  right: -5px;
+  height: 6px;
 }
 
 .deck-jar .jar-body {
-  width: 54px;
-  height: 68px;
-  top: 13px;
+  width: 70px;
+  height: 90px;
+  top: 16px;
 }
 
 .deck-jar .paper {
-  width: 18px;
+  width: 24px;
 }
 
-.deck-jar .paper-1 { height: 32px; bottom: 6px; left: 6px; }
-.deck-jar .paper-2 { height: 28px; bottom: 5px; left: 18px; }
-.deck-jar .paper-3 { height: 30px; bottom: 8px; right: 6px; }
+.deck-jar .paper-1 { height: 42px; bottom: 8px; left: 8px; }
+.deck-jar .paper-2 { height: 36px; bottom: 6px; left: 24px; }
+.deck-jar .paper-3 { height: 40px; bottom: 10px; right: 8px; }
 
 .deck-jar.active .jar-body {
   border-color: rgba(255, 200, 100, 0.45);
@@ -603,7 +603,7 @@ body.lights-off {
   padding: 1px 2px;
   font-family: 'Caveat', cursive;
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   color: #111;
   letter-spacing: 0.02em;
   z-index: 5;
@@ -1117,31 +1117,31 @@ body.lights-off::after {
   }
 
   .jar-grid {
-    gap: 0.9rem 1rem;
-    max-width: 300px;
+    gap: 1rem 1.2rem;
+    max-width: 380px;
   }
 
   .deck-jar .jar {
-    width: 55px;
-    height: 75px;
+    width: 70px;
+    height: 95px;
   }
 
   .deck-jar .jar-lid {
-    width: 34px;
-    height: 9px;
+    width: 44px;
+    height: 12px;
   }
 
   .deck-jar .jar-body {
-    width: 46px;
-    height: 58px;
-    top: 11px;
+    width: 58px;
+    height: 74px;
+    top: 14px;
   }
 
   .deck-jar .paper {
-    width: 15px;
+    width: 20px;
   }
 
   .tape-label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
   }
 }
