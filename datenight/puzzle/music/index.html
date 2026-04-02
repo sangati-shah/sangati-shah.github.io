@@ -15,16 +15,17 @@
     body {
       font-family: 'Inter', sans-serif;
       min-height: 100dvh;
-      background: #0a0a0a;
+      background: linear-gradient(145deg, #0f0a06 0%, #0a0a0f 40%, #100810 70%, #0a0608 100%);
       color: #f0e6d3;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
 
-    /* ── Ambient ── */
+    /* -- Ambient background -- */
     .bg-grain {
       position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.03;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -33,13 +34,18 @@
     .bg-pulse {
       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 120vmax; height: 120vmax;
-      background: radial-gradient(ellipse, rgba(212,155,60,0.04) 0%, transparent 50%);
+      background: radial-gradient(ellipse, rgba(212,155,60,0.05) 0%, rgba(140,60,180,0.02) 30%, transparent 55%);
       pointer-events: none; z-index: 0;
       animation: bg-breathe 4s ease-in-out infinite alternate;
     }
     @keyframes bg-breathe { 0% { transform: translate(-50%,-50%) scale(1); } 100% { transform: translate(-50%,-50%) scale(1.15); } }
 
-    /* ── Top bar ── */
+    /* Floating particles */
+    .particles-canvas {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+
+    /* -- Top bar -- */
     .top-bar {
       position: fixed; top: 0; left: 0; right: 0;
       display: flex; justify-content: space-between; align-items: center;
@@ -57,101 +63,150 @@
     .pts-num { color: #d49b3c; font-weight: 600; transition: transform 0.3s; }
     .pts-num.bump { transform: scale(1.4); display: inline-block; }
 
-    /* ── Main ── */
+    /* -- Main -- */
     .music-app {
       position: relative; z-index: 1;
-      width: 100%; max-width: 500px;
-      padding: 1rem;
+      width: 100%; max-width: 520px;
+      padding: 1rem 1.2rem;
       display: flex; flex-direction: column;
-      align-items: center; gap: 1.2rem;
+      align-items: center; gap: 1rem;
     }
 
     .page-title {
       font-family: 'Abril Fatface', serif;
       font-size: clamp(1.6rem, 5vw, 2.4rem);
-      color: #d49b3c; letter-spacing: 0.02em;
+      color: #d49b3c; letter-spacing: 0.04em;
       cursor: pointer; user-select: none;
+      text-shadow: 0 0 30px rgba(212,155,60,0.15);
     }
     .page-sub {
       font-family: 'Caveat', cursive;
       font-size: clamp(0.9rem, 2.5vw, 1.1rem);
       color: rgba(240,230,211,0.3); text-align: center;
-      line-height: 1.4; margin-bottom: 0.5rem;
+      line-height: 1.4; margin-bottom: 0.3rem;
     }
 
-    /* ── Beat Timeline ── */
+    /* -- Beat Timeline -- */
     .timeline {
-      width: 100%; height: 50px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      display: flex; align-items: center;
-      padding: 0 0.6rem; gap: 3px;
-      position: relative; overflow: hidden;
-    }
-
-    .beat-cell {
-      flex: 1; height: 34px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.04);
+      width: 100%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem;
-      transition: all 0.15s ease;
+      padding: 0.6rem 0; gap: 8px;
       position: relative;
     }
-    .beat-cell.active {
-      border-color: rgba(212,155,60,0.4);
-      background: rgba(212,155,60,0.08);
+
+    .beat-dot {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+      position: relative;
+      backdrop-filter: blur(4px);
     }
-    .beat-cell.playing {
-      background: rgba(212,155,60,0.25);
+    .beat-dot .dot-label {
+      font-family: 'Caveat', cursive; font-size: 0.65rem;
+      color: rgba(240,230,211,0.2);
+    }
+    .beat-dot.active {
+      border-color: rgba(212,155,60,0.5);
+      background: rgba(212,155,60,0.1);
+      box-shadow: 0 0 12px rgba(212,155,60,0.15);
+    }
+    .beat-dot.current-beat {
+      border-color: rgba(212,155,60,0.8);
+      background: rgba(212,155,60,0.2);
+      box-shadow: 0 0 20px rgba(212,155,60,0.3);
+      transform: scale(1.15);
+    }
+    .beat-dot.playing {
+      background: rgba(212,155,60,0.3);
       border-color: #d49b3c;
-      transform: scale(1.05);
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(212,155,60,0.4);
     }
-    .beat-cell.correct { border-color: #4caf50; background: rgba(76,175,80,0.15); }
-    .beat-cell.wrong { border-color: #ef5350; background: rgba(239,83,80,0.1); }
-
-    .beat-cell .cell-label {
-      font-family: 'Caveat', cursive; font-size: 0.6rem;
-      color: rgba(240,230,211,0.3);
+    .beat-dot.correct {
+      border-color: #4caf50;
+      background: rgba(76,175,80,0.2);
+      box-shadow: 0 0 12px rgba(76,175,80,0.2);
+    }
+    .beat-dot.wrong {
+      border-color: #ef5350;
+      background: rgba(239,83,80,0.15);
+      box-shadow: 0 0 12px rgba(239,83,80,0.15);
     }
 
-    /* ── Pad Grid ── */
+    /* -- Instrument Sections -- */
+    .instrument-section {
+      width: 100%; max-width: 400px;
+    }
+    .section-label {
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      color: rgba(240,230,211,0.25);
+      text-transform: lowercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+      padding-left: 0.2rem;
+    }
+    .section-label.partner { color: rgba(240,230,211,0.15); }
+
+    /* -- Pad Grid -- */
     .pad-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.8rem;
-      width: 100%; max-width: 380px;
+      gap: 0.7rem;
+      width: 100%; max-width: 400px;
     }
 
     .pad {
       aspect-ratio: 1;
       border-radius: 20px;
-      border: 2px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       cursor: pointer;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 0.3rem;
-      transition: all 0.1s ease;
+      align-items: center; justify-content: center; gap: 0.25rem;
+      transition: all 0.12s ease;
       position: relative; overflow: hidden;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .pad::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 20px;
+      padding: 1.5px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent 50%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      pointer-events: none;
     }
     .pad:active, .pad.hit {
       transform: scale(0.94);
     }
-    .pad .pad-emoji { font-size: clamp(1.8rem, 5vw, 2.4rem); pointer-events: none; }
+    .pad .pad-emoji { font-size: clamp(1.6rem, 4.5vw, 2.2rem); pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
     .pad .pad-name {
-      font-family: 'Caveat', cursive; font-size: clamp(0.75rem, 2vw, 0.9rem);
-      pointer-events: none; opacity: 0.6;
+      font-family: 'Caveat', cursive; font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+      pointer-events: none; opacity: 0.5;
+      letter-spacing: 0.04em;
+    }
+
+    /* Pad glow animation for active pads */
+    @keyframes pad-glow-pulse {
+      0%, 100% { box-shadow: 0 0 15px color-mix(in srgb, var(--pad-color) 15%, transparent), 0 4px 16px rgba(0,0,0,0.2); }
+      50% { box-shadow: 0 0 25px color-mix(in srgb, var(--pad-color) 25%, transparent), 0 4px 16px rgba(0,0,0,0.2); }
     }
 
     /* Ripple on hit */
     .pad .ripple {
       position: absolute; border-radius: 50%;
-      transform: scale(0); opacity: 0.4;
+      transform: scale(0); opacity: 0.35;
       animation: ripple-out 0.6s ease-out forwards;
       pointer-events: none;
     }
@@ -167,27 +222,62 @@
     .pad[data-inst="kebero"]  { --pad-color: #e67e22; }
     .pad[data-inst="masinko"] { --pad-color: #2980b9; }
 
-    .pad:hover { border-color: var(--pad-color, #555); background: rgba(255,255,255,0.05); }
+    .pad:hover:not(.locked) {
+      border-color: color-mix(in srgb, var(--pad-color, #555) 50%, transparent);
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+    }
     .pad.hit {
       border-color: var(--pad-color, #d49b3c);
-      box-shadow: 0 0 30px color-mix(in srgb, var(--pad-color, #d49b3c) 30%, transparent),
-                  inset 0 0 20px color-mix(in srgb, var(--pad-color, #d49b3c) 10%, transparent);
+      box-shadow: 0 0 35px color-mix(in srgb, var(--pad-color, #d49b3c) 35%, transparent),
+                  inset 0 0 25px color-mix(in srgb, var(--pad-color, #d49b3c) 12%, transparent);
+      background: linear-gradient(135deg,
+        color-mix(in srgb, var(--pad-color, #d49b3c) 15%, transparent),
+        color-mix(in srgb, var(--pad-color, #d49b3c) 5%, transparent));
     }
 
-    /* ── Controls ── */
+    /* Locked partner pads */
+    .pad.locked {
+      cursor: default;
+      opacity: 0.35;
+      filter: saturate(0.4);
+    }
+    .pad.locked:hover {
+      border-color: rgba(255,255,255,0.1);
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      transform: none;
+    }
+    .pad.locked:active { transform: none; }
+    .pad.locked .lock-icon {
+      position: absolute;
+      top: 6px; right: 6px;
+      font-size: 0.6rem;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    /* Partner flash: temporarily override locked styling */
+    .pad.locked.partner-flash {
+      opacity: 0.75;
+      filter: saturate(0.8);
+      border-color: var(--pad-color, #d49b3c);
+      box-shadow: 0 0 25px color-mix(in srgb, var(--pad-color, #d49b3c) 25%, transparent);
+    }
+
+    /* -- Controls -- */
     .controls {
       display: flex; gap: 0.6rem; align-items: center;
       flex-wrap: wrap; justify-content: center;
+      margin-top: 0.2rem;
     }
 
     .ctrl-btn {
       font-family: 'Caveat', cursive; font-size: 1.1rem;
-      background: rgba(255,255,255,0.05);
+      background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
       border: 1.5px solid rgba(255,255,255,0.1);
       border-radius: 50px;
       padding: 0.5em 1.6em;
       color: rgba(240,230,211,0.6); cursor: pointer;
       transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
     }
     .ctrl-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
     .ctrl-btn.active {
@@ -208,7 +298,7 @@
     }
     .ctrl-btn-small:hover { color: rgba(240,230,211,0.5); }
 
-    /* ── Status ── */
+    /* -- Status -- */
     .status {
       font-family: 'Caveat', cursive; font-size: 1.1rem;
       color: rgba(240,230,211,0.35);
@@ -219,7 +309,7 @@
     .status.bad { color: #ef5350; }
     .status.gold { color: #d49b3c; }
 
-    /* ── Victory ── */
+    /* -- Victory -- */
     .victory-overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
@@ -250,7 +340,7 @@
     }
     .victory-btn:hover { background: rgba(212,155,60,0.25); transform: translateY(-2px); }
 
-    /* ── Easter Eggs ── */
+    /* -- Easter Eggs -- */
     .hidden-gem { position: fixed; font-size: 0.9rem; cursor: pointer; opacity: 0.05; transition: all 0.3s; z-index: 50; user-select: none; }
     .hidden-gem:hover { opacity: 0.35; transform: scale(1.3); }
     .hidden-gem.found { opacity: 1; transform: scale(1.5); }
@@ -267,19 +357,21 @@
     }
     .gem-toast.show { transform: translate(-50%,-50%) scale(1); opacity: 1; }
 
-    /* ── Responsive ── */
+    /* -- Responsive -- */
     @media (max-width: 420px) {
-      .pad-grid { gap: 0.5rem; max-width: 300px; }
-      .music-app { gap: 0.8rem; }
+      .pad-grid { gap: 0.4rem; max-width: 300px; }
+      .music-app { gap: 0.6rem; }
+      .beat-dot { width: 32px; height: 32px; }
     }
     @media (min-height: 800px) {
-      .pad-grid { gap: 1rem; }
+      .pad-grid { gap: 0.9rem; }
     }
   </style>
 </head>
 <body>
   <div class="bg-grain"></div>
   <div class="bg-pulse"></div>
+  <canvas class="particles-canvas" id="particles-canvas"></canvas>
 
   <div class="top-bar">
     <a href="../../world/" class="back-link">&larr; back to adventure</a>
@@ -288,7 +380,7 @@
 
   <div class="music-app">
     <h1 class="page-title" data-dn-cycle>rhythm</h1>
-    <p class="page-sub" id="page-sub">listen to the beat, then replay it on the pads</p>
+    <p class="page-sub" id="page-sub">listen to the beat, then replay it together</p>
 
     <!-- Beat Timeline -->
     <div class="timeline" id="timeline"></div>
@@ -296,8 +388,17 @@
     <!-- Status -->
     <div class="status" id="status"></div>
 
-    <!-- Pad Grid -->
-    <div class="pad-grid" id="pad-grid"></div>
+    <!-- Your instruments -->
+    <div class="instrument-section" id="your-section">
+      <div class="section-label">your instruments</div>
+      <div class="pad-grid" id="your-pads"></div>
+    </div>
+
+    <!-- Partner instruments -->
+    <div class="instrument-section" id="partner-section">
+      <div class="section-label partner">their instruments</div>
+      <div class="pad-grid" id="partner-pads"></div>
+    </div>
 
     <!-- Controls -->
     <div class="controls" id="controls">
@@ -313,7 +414,7 @@
       <div class="victory-emoji">&#x1F3B6;</div>
       <div class="victory-title">perfect rhythm!</div>
       <div class="victory-pts" id="victory-pts">+60 pts</div>
-      <a href="../" class="victory-btn">next puzzle &rarr;</a>
+      <a href="../../world/?level=2" class="victory-btn">continue adventure &rarr;</a>
     </div>
   </div>
 
@@ -323,9 +424,9 @@
   <div class="gem-toast" id="gem-toast"></div>
 
   <script>
-    // ══════════════════════════════════════
+    // ======================================
     // INSTRUMENTS
-    // ══════════════════════════════════════
+    // ======================================
     const INSTRUMENTS = [
       { id: 'tabla',   emoji: '\u{1F941}', name: 'tabla',   color: '#d49b3c' },
       { id: 'sitar',   emoji: '\u{1FA95}', name: 'sitar',   color: '#c0392b' },
@@ -335,13 +436,20 @@
       { id: 'masinko', emoji: '\u{1F3BB}', name: 'masinko', color: '#2980b9' },
     ];
 
-    // The target beat pattern: 8 beats, each is an instrument id or null (rest)
-    const TARGET_BEAT = ['tabla', 'kebero', 'sitar', null, 'bansuri', 'krar', 'masinko', 'tabla'];
+    const HOST_INSTRUMENTS = ['tabla', 'sitar', 'bansuri'];
+    const GUEST_INSTRUMENTS = ['krar', 'kebero', 'masinko'];
+
+    const isHost = sessionStorage.getItem('datenight-host') === '1';
+    const myInstruments = isHost ? HOST_INSTRUMENTS : GUEST_INSTRUMENTS;
+    const partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
+
+    // Target beat uses instruments from BOTH players
+    const TARGET_BEAT = ['tabla', 'kebero', 'sitar', 'krar', 'bansuri', 'masinko', 'tabla', 'kebero'];
     const BEAT_GAP = 0.45; // seconds between beats
 
-    // ══════════════════════════════════════
+    // ======================================
     // AUDIO SYNTHESIS
-    // ══════════════════════════════════════
+    // ======================================
     let audioCtx = null;
     function getCtx() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -468,13 +576,14 @@
       }
     }
 
-    // ══════════════════════════════════════
+    // ======================================
     // STATE
-    // ══════════════════════════════════════
+    // ======================================
     let mode = 'idle'; // idle, listening, recording, checking, jamming
     let playerBeat = Array(8).fill(null);
     let currentBeatIndex = 0;
     let beatTimer = null;
+    let metronomeTimer = null;
     let solved = false;
     let attempts = 0;
 
@@ -490,35 +599,103 @@
     }
     document.getElementById('pts-num').textContent = getPoints();
 
-    // ══════════════════════════════════════
+    // ======================================
+    // FLOATING PARTICLES
+    // ======================================
+    function initParticles() {
+      const canvas = document.getElementById('particles-canvas');
+      const ctx2d = canvas.getContext('2d');
+      let w, h;
+      const particles = [];
+      const PARTICLE_COUNT = 40;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.5 + 0.5,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.2 - 0.1,
+          alpha: Math.random() * 0.15 + 0.03,
+          color: ['#d49b3c', '#c0392b', '#27ae60', '#8e44ad', '#e67e22', '#2980b9'][Math.floor(Math.random() * 6)],
+        });
+      }
+
+      function draw() {
+        ctx2d.clearRect(0, 0, w, h);
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
+          if (p.y < -10) p.y = h + 10;
+          if (p.y > h + 10) p.y = -10;
+          ctx2d.beginPath();
+          ctx2d.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx2d.fillStyle = p.color;
+          ctx2d.globalAlpha = p.alpha;
+          ctx2d.fill();
+        }
+        ctx2d.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // ======================================
     // BUILD UI
-    // ══════════════════════════════════════
+    // ======================================
     function buildTimeline() {
       const tl = document.getElementById('timeline');
       tl.innerHTML = '';
       for (let i = 0; i < 8; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'beat-cell';
-        cell.dataset.index = i;
-        cell.innerHTML = `<span class="cell-label">${i+1}</span>`;
-        tl.appendChild(cell);
+        const dot = document.createElement('div');
+        dot.className = 'beat-dot';
+        dot.dataset.index = i;
+        dot.innerHTML = `<span class="dot-label">${i+1}</span>`;
+        tl.appendChild(dot);
       }
     }
 
     function buildPads() {
-      const grid = document.getElementById('pad-grid');
-      grid.innerHTML = '';
-      INSTRUMENTS.forEach(inst => {
+      const yourGrid = document.getElementById('your-pads');
+      const partnerGrid = document.getElementById('partner-pads');
+      yourGrid.innerHTML = '';
+      partnerGrid.innerHTML = '';
+
+      const myInstData = INSTRUMENTS.filter(inst => myInstruments.includes(inst.id));
+      const partnerInstData = INSTRUMENTS.filter(inst => partnerInstruments.includes(inst.id));
+
+      myInstData.forEach(inst => {
         const pad = document.createElement('div');
         pad.className = 'pad';
         pad.dataset.inst = inst.id;
         pad.innerHTML = `<span class="pad-emoji">${inst.emoji}</span><span class="pad-name">${inst.name}</span>`;
         pad.addEventListener('pointerdown', e => { e.preventDefault(); hitPad(inst.id, pad); });
-        grid.appendChild(pad);
+        yourGrid.appendChild(pad);
+      });
+
+      partnerInstData.forEach(inst => {
+        const pad = document.createElement('div');
+        pad.className = 'pad locked';
+        pad.dataset.inst = inst.id;
+        pad.innerHTML = `<span class="lock-icon">\u{1F512}</span><span class="pad-emoji">${inst.emoji}</span><span class="pad-name">${inst.name}</span>`;
+        // No click handler - locked
+        partnerGrid.appendChild(pad);
       });
     }
 
     function hitPad(id, padEl) {
+      // Only allow hitting your own instruments
+      if (!myInstruments.includes(id)) return;
+
       // Play sound
       playSound(id);
 
@@ -537,24 +714,74 @@
 
       // Record beat
       if (mode === 'recording' && currentBeatIndex < 8) {
-        playerBeat[currentBeatIndex] = id;
-        const cell = document.querySelector(`.beat-cell[data-index="${currentBeatIndex}"]`);
-        const inst = INSTRUMENTS.find(i => i.id === id);
-        cell.classList.add('active');
-        cell.innerHTML = `<span style="font-size:0.9rem">${inst.emoji}</span>`;
-        currentBeatIndex++;
-        if (currentBeatIndex >= 8) {
-          finishRecording();
+        const neededInst = TARGET_BEAT[currentBeatIndex];
+        if (neededInst && myInstruments.includes(neededInst) && id === neededInst) {
+          // Correct instrument for this beat
+          recordBeatHit(id);
+        } else if (neededInst && myInstruments.includes(neededInst)) {
+          // Wrong instrument but it was your turn
+          recordBeatHit(id);
         }
+        // If it's partner's turn, ignore our taps for recording (partner will fill it in)
       }
 
       // Send to partner
-      sendPeerData({ type: 'hit', instrument: id });
+      sendPeerData({ type: 'hit', instrument: id, beatIndex: currentBeatIndex });
     }
 
-    // ══════════════════════════════════════
-    // LISTEN MODE — play the target beat
-    // ══════════════════════════════════════
+    function recordBeatHit(id) {
+      playerBeat[currentBeatIndex] = id;
+      const dot = document.querySelector(`.beat-dot[data-index="${currentBeatIndex}"]`);
+      const inst = INSTRUMENTS.find(i => i.id === id);
+      dot.classList.add('active');
+      dot.classList.remove('current-beat');
+      dot.innerHTML = `<span style="font-size:0.85rem">${inst.emoji}</span>`;
+      advanceToNextBeat();
+    }
+
+    function advanceToNextBeat() {
+      currentBeatIndex++;
+      clearTimeout(metronomeTimer);
+      if (currentBeatIndex >= 8) {
+        finishRecording();
+      } else {
+        highlightCurrentBeat();
+        startMetronomeTick();
+      }
+    }
+
+    function highlightCurrentBeat() {
+      document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('current-beat'));
+      if (currentBeatIndex < 8) {
+        const dot = document.querySelector(`.beat-dot[data-index="${currentBeatIndex}"]`);
+        if (dot) dot.classList.add('current-beat');
+      }
+    }
+
+    function startMetronomeTick() {
+      clearTimeout(metronomeTimer);
+      metronomeTimer = setTimeout(() => {
+        if (mode !== 'recording' || currentBeatIndex >= 8) return;
+        // Auto-advance: if beat wasn't filled, mark as null (missed)
+        if (playerBeat[currentBeatIndex] === null) {
+          const dot = document.querySelector(`.beat-dot[data-index="${currentBeatIndex}"]`);
+          dot.classList.remove('current-beat');
+          // Check if this beat needed partner's instrument - show waiting indicator
+          const needed = TARGET_BEAT[currentBeatIndex];
+          if (needed && !myInstruments.includes(needed)) {
+            // Partner's beat - if they haven't sent it, mark as missed
+            dot.innerHTML = `<span style="font-size:0.7rem; opacity:0.3">-</span>`;
+          } else {
+            dot.innerHTML = `<span style="font-size:0.7rem; opacity:0.3">-</span>`;
+          }
+          advanceToNextBeat();
+        }
+      }, BEAT_GAP * 1000 * 2.5); // Give 2.5x beat gap to respond
+    }
+
+    // ======================================
+    // LISTEN MODE
+    // ======================================
     function startListening() {
       if (mode === 'listening') return;
       mode = 'listening';
@@ -569,15 +796,15 @@
       TARGET_BEAT.forEach((inst, i) => {
         const playAt = time;
         setTimeout(() => {
-          const cell = document.querySelector(`.beat-cell[data-index="${i}"]`);
-          cell.classList.add('playing');
+          const dot = document.querySelector(`.beat-dot[data-index="${i}"]`);
+          dot.classList.add('playing');
           if (inst) {
             const info = INSTRUMENTS.find(x => x.id === inst);
-            cell.innerHTML = `<span style="font-size:0.9rem">${info.emoji}</span>`;
+            dot.innerHTML = `<span style="font-size:0.85rem">${info.emoji}</span>`;
           }
           setTimeout(() => {
-            cell.classList.remove('playing');
-            cell.innerHTML = `<span class="cell-label">${i+1}</span>`;
+            dot.classList.remove('playing');
+            dot.innerHTML = `<span class="dot-label">${i+1}</span>`;
           }, BEAT_GAP * 800);
         }, (playAt - ctx.currentTime) * 1000);
 
@@ -590,13 +817,13 @@
         mode = 'idle';
         listenBtn.classList.remove('active');
         listenBtn.textContent = 'listen again';
-        setStatus('now tap "start recording" and replay it!');
+        setStatus('now tap "start recording" and replay it together!');
       }, total * 1000);
     }
 
-    // ══════════════════════════════════════
-    // RECORD MODE — player taps the pads
-    // ══════════════════════════════════════
+    // ======================================
+    // RECORD MODE
+    // ======================================
     function startRecording() {
       if (mode === 'listening') return;
       mode = 'recording';
@@ -604,32 +831,41 @@
       currentBeatIndex = 0;
 
       // Clear timeline
-      document.querySelectorAll('.beat-cell').forEach((c, i) => {
-        c.className = 'beat-cell';
-        c.innerHTML = `<span class="cell-label">${i+1}</span>`;
+      document.querySelectorAll('.beat-dot').forEach((d, i) => {
+        d.className = 'beat-dot';
+        d.innerHTML = `<span class="dot-label">${i+1}</span>`;
       });
 
       document.getElementById('record-btn').classList.add('active');
       document.getElementById('record-btn').textContent = 'recording...';
-      setStatus('tap the pads to recreate the beat! (8 beats)', 'gold');
+      setStatus('tap your instruments when your beat comes up!', 'gold');
+
+      // Notify partner
+      sendPeerData({ type: 'recording-start' });
+
+      // Highlight first beat
+      highlightCurrentBeat();
+      startMetronomeTick();
     }
 
     function finishRecording() {
       mode = 'checking';
       attempts++;
+      clearTimeout(metronomeTimer);
+      document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('current-beat'));
       document.getElementById('record-btn').classList.remove('active');
       document.getElementById('record-btn').textContent = 'tap the beat';
 
       // Check each beat
       let correct = 0;
       playerBeat.forEach((hit, i) => {
-        const cell = document.querySelector(`.beat-cell[data-index="${i}"]`);
+        const dot = document.querySelector(`.beat-dot[data-index="${i}"]`);
         const target = TARGET_BEAT[i];
         if (hit === target) {
-          cell.classList.add('correct');
+          dot.classList.add('correct');
           correct++;
         } else {
-          cell.classList.add('wrong');
+          dot.classList.add('wrong');
         }
       });
 
@@ -645,19 +881,19 @@
         document.getElementById('victory-pts').textContent = '+' + pts + ' pts';
         setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 1000);
       } else if (correct >= 6) {
-        setStatus(correct + '/8 — so close! listen again and retry', 'gold');
+        setStatus(correct + '/8 \u2014 so close! listen again and retry', 'gold');
         const pts = correct * 3;
         addPoints(pts);
         setTimeout(() => { mode = 'idle'; }, 1500);
       } else {
-        setStatus(correct + '/8 — listen again and try to match each beat');
+        setStatus(correct + '/8 \u2014 listen again and try to match each beat');
         setTimeout(() => { mode = 'idle'; }, 1500);
       }
     }
 
-    // ══════════════════════════════════════
+    // ======================================
     // HELPERS
-    // ══════════════════════════════════════
+    // ======================================
     function setStatus(msg, cls) {
       const el = document.getElementById('status');
       el.textContent = msg;
@@ -670,11 +906,10 @@
       if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
     }
 
-    // ══════════════════════════════════════
+    // ======================================
     // PEERJS
-    // ══════════════════════════════════════
+    // ======================================
     const roomCode = sessionStorage.getItem('datenight-room');
-    const isHost = sessionStorage.getItem('datenight-host') === '1';
     let peer = null, conn = null;
 
     function peerIdForPuzzle(code) { return 'shahhub-puzzle-music-' + code; }
@@ -708,10 +943,33 @@
 
     function handlePeerData(data) {
       if (data.type === 'hit') {
-        // Partner hit a pad — play the sound and flash the pad
+        // Partner hit a pad -- play the sound and flash their pad
         playSound(data.instrument);
         const pad = document.querySelector(`.pad[data-inst="${data.instrument}"]`);
-        if (pad) { pad.classList.add('hit'); setTimeout(() => pad.classList.remove('hit'), 150); }
+        if (pad) {
+          pad.classList.add('partner-flash');
+          pad.classList.add('hit');
+          setTimeout(() => {
+            pad.classList.remove('partner-flash');
+            pad.classList.remove('hit');
+          }, 200);
+        }
+
+        // If we're recording and this beat needs partner's instrument, record it
+        if (mode === 'recording' && currentBeatIndex < 8) {
+          const neededInst = TARGET_BEAT[currentBeatIndex];
+          if (neededInst && partnerInstruments.includes(neededInst) && data.instrument === neededInst) {
+            recordBeatHit(data.instrument);
+          } else if (neededInst && partnerInstruments.includes(neededInst)) {
+            // Partner hit wrong instrument but it was their turn
+            recordBeatHit(data.instrument);
+          }
+        }
+      } else if (data.type === 'recording-start') {
+        // Partner started recording - sync up
+        if (mode !== 'recording') {
+          startRecording();
+        }
       } else if (data.type === 'attempt') {
         if (data.correct === 8 && !solved) {
           solved = true; addPoints(60); markCompleted('music');
@@ -721,9 +979,9 @@
       }
     }
 
-    // ══════════════════════════════════════
+    // ======================================
     // EASTER EGGS
-    // ══════════════════════════════════════
+    // ======================================
     function setupEasterEggs() {
       [{ id: 'gem-1', key: 'gem-music-1', msg: 'hidden star!' },
        { id: 'gem-2', key: 'gem-music-2', msg: 'secret note!' }].forEach(g => {
@@ -754,31 +1012,36 @@
       });
     }
 
-    // ══════════════════════════════════════
-    // KEYBOARD SHORTCUTS
-    // ══════════════════════════════════════
-    const KEY_MAP = { '1': 'tabla', '2': 'sitar', '3': 'bansuri', '4': 'krar', '5': 'kebero', '6': 'masinko',
-                      'q': 'tabla', 'w': 'sitar', 'e': 'bansuri', 'a': 'krar', 's': 'kebero', 'd': 'masinko' };
+    // ======================================
+    // KEYBOARD SHORTCUTS (only YOUR instruments)
+    // ======================================
+    const ALL_KEY_MAP = {
+      '1': 'tabla', '2': 'sitar', '3': 'bansuri',
+      '4': 'krar', '5': 'kebero', '6': 'masinko',
+      'q': 'tabla', 'w': 'sitar', 'e': 'bansuri',
+      'a': 'krar', 's': 'kebero', 'd': 'masinko'
+    };
     document.addEventListener('keydown', e => {
-      const inst = KEY_MAP[e.key.toLowerCase()];
-      if (inst) {
+      const inst = ALL_KEY_MAP[e.key.toLowerCase()];
+      if (inst && myInstruments.includes(inst)) {
         e.preventDefault();
-        const pad = document.querySelector(`.pad[data-inst="${inst}"]`);
+        const pad = document.querySelector(`#your-pads .pad[data-inst="${inst}"]`);
         if (pad) hitPad(inst, pad);
       }
     });
 
-    // ══════════════════════════════════════
+    // ======================================
     // INIT
-    // ══════════════════════════════════════
+    // ======================================
     buildTimeline();
     buildPads();
+    initParticles();
 
     document.getElementById('listen-btn').addEventListener('click', startListening);
     document.getElementById('record-btn').addEventListener('click', startRecording);
     document.getElementById('skip-btn').addEventListener('click', () => {
       markCompleted('music');
-      window.location.href = '../';
+      window.location.href = '../../world/?level=2';
     });
 
     if (roomCode) setupPeer();
