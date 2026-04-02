@@ -212,10 +212,10 @@
   </div>
 
   <script>
-    const HAIR_COLORS = ['#1a1a1a', '#4a3728', '#8b6914', '#d4a843', '#c0392b', '#e67e22', '#ecf0f1', '#6c3483', '#2e86c1', '#f39c9c'];
-    const SKIN_COLORS = ['#fde7d1', '#f5cba7', '#e0ac69', '#c68642', '#8d5524', '#5c3a1e', '#3b2412'];
-    const SHIRT_COLORS = ['#e85d75', '#4a7c9b', '#2e7d32', '#f9a825', '#7b1fa2', '#ff6d00', '#1565c0', '#ec407a', '#26a69a', '#ef5350'];
-    const PANTS_COLORS = ['#3a3a5c', '#1a1a2e', '#2c3e50', '#4a3728', '#1b5e20', '#4a148c', '#b71c1c', '#f5f5dc', '#37474f', '#5d4037'];
+    const HAIR_COLORS = ['#1a1a1a', '#4a3728', '#8b6914', '#d4a843', '#c0392b', '#e67e22', '#ecf0f1', '#6c3483', '#2e86c1'];
+    const SKIN_COLORS = ['#fde7d1', '#f5cba7', '#e0ac69', '#c68642', '#8d5524', '#5c3a1e', '#3b2412', '#f8d5c2', '#a0522d'];
+    const SHIRT_COLORS = ['#e85d75', '#4a7c9b', '#2e7d32', '#f9a825', '#7b1fa2', '#ff6d00', '#1565c0', '#ec407a', '#26a69a'];
+    const PANTS_COLORS = ['#3a3a5c', '#1a1a2e', '#2c3e50', '#4a3728', '#1b5e20', '#4a148c', '#b71c1c', '#f5f5dc', '#37474f'];
 
     let char = { name: '', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
     try {
@@ -268,7 +268,7 @@
         return;
       }
       sessionStorage.setItem('my-character', JSON.stringify(char));
-      window.location.href = '../';
+      window.location.href = '../?from=character';
     });
 
     updatePreview();
