@@ -7,7 +7,7 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--dn-bg, #fef0f5);
+  background: var(--dn-bg, #f7f2e7);
   color: var(--dn-text, #2c2c2c);
   min-height: 100dvh;
   display: flex;
@@ -497,7 +497,7 @@ body {
 
 .victory-card {
   text-align: center;
-  background: var(--dn-bg, #fef0f5);
+  background: var(--dn-bg, #f7f2e7);
   border-radius: 24px;
   padding: 2.5rem 2rem;
   max-width: 360px;
@@ -587,7 +587,7 @@ body {
   font-family: var(--dn-heading-font, 'Caveat', cursive);
   font-size: 1.5rem;
   color: var(--dn-accent, #e85d75);
-  background: var(--dn-bg, #fef0f5);
+  background: var(--dn-bg, #f7f2e7);
   padding: 1rem 2rem;
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
