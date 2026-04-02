@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>adventure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="../theme.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100dvh;
+      width: 100vw;
+      background: #0a0a1a;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ── Back Button ── */
+    .back-btn {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(0,0,0,0.3);
+      border: none;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      z-index: 200;
+      text-decoration: none;
+      padding: 0.3em 0.8em;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+    }
+    .back-btn:hover { color: #fff; }
+
+    /* ── HUD ── */
+    .hud {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 200;
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .hud-item {
+      font-family: 'Caveat', cursive;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      background: rgba(0,0,0,0.3);
+      padding: 0.3em 0.7em;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── World Viewport ── */
+    .viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .world {
+      position: absolute;
+      width: 2400px;
+      height: 100%;
+      transition: transform 0.1s linear;
+    }
+
+    /* ── Sky ── */
+    .sky {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+        #0a0a2e 0%,
+        #1a1a4e 30%,
+        #2d1b4e 60%,
+        #4a2040 100%
+      );
+    }
+
+    /* ── Stars ── */
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.6;
+    }
+
+    .star.twinkle {
+      animation: twinkle 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.3; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* ── Moon ── */
+    .moon {
+      position: absolute;
+      top: 8%;
+      right: 15%;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle at 35% 35%, #fffde7, #ffd54f);
+      border-radius: 50%;
+      box-shadow: 0 0 40px 10px rgba(255,213,79,0.15), 0 0 80px 30px rgba(255,213,79,0.08);
+    }
+
+    /* ── Ground ── */
+    .ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(to bottom, #2d5a27, #1a3d16);
+      z-index: 10;
+    }
+
+    .ground::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 0;
+      width: 100%;
+      height: 16px;
+      background: #3a7a30;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+
+    /* ── Hills ── */
+    .hill {
+      position: absolute;
+      bottom: 92px;
+      border-radius: 50%;
+      z-index: 5;
+    }
+
+    .hill-1 { width: 400px; height: 160px; left: 100px; background: #1a3d16; opacity: 0.4; }
+    .hill-2 { width: 500px; height: 200px; left: 600px; background: #1a3d16; opacity: 0.3; }
+    .hill-3 { width: 350px; height: 140px; left: 1400px; background: #1a3d16; opacity: 0.35; }
+    .hill-4 { width: 450px; height: 180px; left: 1900px; background: #1a3d16; opacity: 0.3; }
+
+    /* ── Trees ── */
+    .tree {
+      position: absolute;
+      bottom: 92px;
+      z-index: 15;
+    }
+
+    .tree-trunk {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 40px;
+      background: linear-gradient(to right, #5c3317, #8b4513, #5c3317);
+      border-radius: 3px;
+    }
+
+    .tree-top {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 55px;
+      background: #1a4a1a;
+      border-radius: 50% 50% 45% 45%;
+    }
+
+    .tree-top::after {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 35px;
+      height: 40px;
+      background: #1f5a1f;
+      border-radius: 50%;
+    }
+
+    .tree.small .tree-trunk { height: 25px; width: 8px; }
+    .tree.small .tree-top { width: 30px; height: 35px; bottom: 18px; }
+    .tree.small .tree-top::after { width: 22px; height: 28px; top: -10px; }
+
+    /* ── Fairy Lights on Trees ── */
+    .fairy-light {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      z-index: 16;
+    }
+
+    .fairy-light.warm { background: #ffd54f; box-shadow: 0 0 6px 2px rgba(255,213,79,0.4); }
+    .fairy-light.pink { background: #f48fb1; box-shadow: 0 0 6px 2px rgba(244,143,177,0.4); }
+    .fairy-light.blue { background: #81d4fa; box-shadow: 0 0 6px 2px rgba(129,212,250,0.4); }
+
+    /* ── Lamppost ── */
+    .lamppost {
+      position: absolute;
+      bottom: 92px;
+      z-index: 15;
+    }
+
+    .lamp-pole {
+      width: 6px;
+      height: 80px;
+      background: #444;
+      margin: 0 auto;
+      border-radius: 3px;
+    }
+
+    .lamp-head {
+      width: 22px;
+      height: 16px;
+      background: #555;
+      border-radius: 4px 4px 0 0;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .lamp-glow {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(ellipse, rgba(255,213,79,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .lamp-bulb {
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ffd54f;
+      border-radius: 50%;
+      box-shadow: 0 0 10px 4px rgba(255,213,79,0.4);
+    }
+
+    /* ── Bench ── */
+    .bench {
+      position: absolute;
+      bottom: 92px;
+      z-index: 15;
+    }
+
+    .bench-seat {
+      width: 50px;
+      height: 6px;
+      background: #8b6914;
+      border-radius: 2px;
+    }
+
+    .bench-back {
+      width: 50px;
+      height: 20px;
+      background: #8b6914;
+      border-radius: 4px 4px 0 0;
+      margin-bottom: 2px;
+    }
+
+    .bench-legs {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .bench-leg {
+      width: 4px;
+      height: 12px;
+      background: #6d5210;
+      border-radius: 0 0 2px 2px;
+    }
+
+    /* ── Portal Doors ── */
+    .portal {
+      position: absolute;
+      bottom: 92px;
+      z-index: 18;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .portal:hover { transform: translateY(-3px); }
+
+    .portal-door {
+      width: 40px;
+      height: 56px;
+      background: linear-gradient(to bottom, #5c3317, #3e2210);
+      border-radius: 12px 12px 0 0;
+      position: relative;
+      border: 2px solid #8b6914;
+    }
+
+    .portal-knob {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      background: #daa520;
+      border-radius: 50%;
+    }
+
+    .portal-label {
+      font-family: 'Caveat', cursive;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    .portal-glow {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 0;
+      background: rgba(255, 213, 79, 0.08);
+      border-radius: 10px 10px 0 0;
+      animation: portal-pulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes portal-pulse {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* ── Character Sprite ── */
+    .sprite {
+      position: absolute;
+      z-index: 50;
+      transition: none;
+    }
+
+    .sprite-inner {
+      position: relative;
+      width: 32px;
+      height: 52px;
+    }
+
+    .sprite .s-hair {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 14px;
+      border-radius: 50% 50% 30% 30%;
+      z-index: 3;
+    }
+
+    .sprite .s-face {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 20px;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .sprite .s-eyes {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 4;
+    }
+
+    .sprite .s-eye {
+      width: 3px;
+      height: 3px;
+      background: #1a1a1a;
+      border-radius: 50%;
+    }
+
+    .sprite .s-body {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 16px;
+      border-radius: 5px 5px 3px 3px;
+      z-index: 1;
+    }
+
+    .sprite .s-legs {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 3px;
+    }
+
+    .sprite .s-leg {
+      width: 7px;
+      height: 14px;
+      background: #3a3a5c;
+      border-radius: 3px 3px 4px 4px;
+      transition: transform 0.15s;
+    }
+
+    /* Walking animation */
+    .sprite.walking .s-leg:first-child {
+      animation: walk-left 0.35s ease-in-out infinite alternate;
+    }
+    .sprite.walking .s-leg:last-child {
+      animation: walk-right 0.35s ease-in-out infinite alternate;
+    }
+
+    @keyframes walk-left {
+      0% { transform: rotate(-15deg); }
+      100% { transform: rotate(15deg); }
+    }
+    @keyframes walk-right {
+      0% { transform: rotate(15deg); }
+      100% { transform: rotate(-15deg); }
+    }
+
+    /* Jumping */
+    .sprite.jumping .s-leg {
+      transform: rotate(0deg) !important;
+      animation: none !important;
+    }
+
+    /* Facing */
+    .sprite.facing-left .sprite-inner {
+      transform: scaleX(-1);
+    }
+
+    .sprite-name {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Caveat', cursive;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.7);
+      white-space: nowrap;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* ── Mobile Controls ── */
+    .mobile-controls {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 0;
+      right: 0;
+      display: none;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .ctrl-group {
+      display: flex;
+      gap: 0.5rem;
+      pointer-events: auto;
+    }
+
+    .ctrl-btn {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.6);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .ctrl-btn:active {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .ctrl-btn.jump-btn {
+      width: 64px;
+      height: 64px;
+      font-size: 0.8rem;
+      font-family: 'Caveat', cursive;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Interaction Prompt ── */
+    .interact-prompt {
+      position: fixed;
+      bottom: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+      background: rgba(0,0,0,0.4);
+      padding: 0.4em 1em;
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .interact-prompt.show { opacity: 1; }
+
+    /* Show mobile controls on touch devices */
+    @media (pointer: coarse) {
+      .mobile-controls { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <a href="../" class="back-btn">&larr; back</a>
+
+  <div class="hud">
+    <div class="hud-item" id="hud-room"></div>
+  </div>
+
+  <div class="interact-prompt" id="interact-prompt">press &uarr; to enter</div>
+
+  <div class="viewport">
+    <div class="world" id="world">
+      <!-- Sky -->
+      <div class="sky" id="sky"></div>
+
+      <!-- Moon -->
+      <div class="moon"></div>
+
+      <!-- Hills -->
+      <div class="hill hill-1"></div>
+      <div class="hill hill-2"></div>
+      <div class="hill hill-3"></div>
+      <div class="hill hill-4"></div>
+
+      <!-- Ground -->
+      <div class="ground"></div>
+
+      <!-- Trees -->
+      <div class="tree" style="left:180px;">
+        <div class="tree-top"></div>
+        <div class="tree-trunk"></div>
+        <div class="fairy-light warm" style="left:10px; bottom:55px;"></div>
+        <div class="fairy-light pink" style="left:28px; bottom:65px;"></div>
+        <div class="fairy-light blue" style="left:42px; bottom:50px;"></div>
+      </div>
+
+      <div class="tree small" style="left:350px;">
+        <div class="tree-top"></div>
+        <div class="tree-trunk"></div>
+      </div>
+
+      <div class="tree" style="left:900px;">
+        <div class="tree-top"></div>
+        <div class="tree-trunk"></div>
+        <div class="fairy-light pink" style="left:12px; bottom:55px;"></div>
+        <div class="fairy-light warm" style="left:35px; bottom:60px;"></div>
+      </div>
+
+      <div class="tree small" style="left:1250px;">
+        <div class="tree-top"></div>
+        <div class="tree-trunk"></div>
+      </div>
+
+      <div class="tree" style="left:1700px;">
+        <div class="tree-top"></div>
+        <div class="tree-trunk"></div>
+        <div class="fairy-light blue" style="left:8px; bottom:52px;"></div>
+        <div class="fairy-light warm" style="left:25px; bottom:68px;"></div>
+        <div class="fairy-light pink" style="left:40px; bottom:55px;"></div>
+      </div>
+
+      <div class="tree small" style="left:2100px;">
+        <div class="tree-top"></div>
+        <div class="tree-trunk"></div>
+      </div>
+
+      <!-- Lampposts -->
+      <div class="lamppost" style="left:500px;">
+        <div class="lamp-head">
+          <div class="lamp-bulb"></div>
+          <div class="lamp-glow"></div>
+        </div>
+        <div class="lamp-pole"></div>
+      </div>
+
+      <div class="lamppost" style="left:1100px;">
+        <div class="lamp-head">
+          <div class="lamp-bulb"></div>
+          <div class="lamp-glow"></div>
+        </div>
+        <div class="lamp-pole"></div>
+      </div>
+
+      <div class="lamppost" style="left:1900px;">
+        <div class="lamp-head">
+          <div class="lamp-bulb"></div>
+          <div class="lamp-glow"></div>
+        </div>
+        <div class="lamp-pole"></div>
+      </div>
+
+      <!-- Bench -->
+      <div class="bench" style="left:700px;">
+        <div class="bench-back"></div>
+        <div class="bench-seat"></div>
+        <div class="bench-legs"><div class="bench-leg"></div><div class="bench-leg"></div></div>
+      </div>
+
+      <!-- Portals -->
+      <div class="portal" id="portal-puzzle" style="left:560px;" data-href="../puzzle/">
+        <div class="portal-door"><div class="portal-glow"></div><div class="portal-knob"></div></div>
+        <div class="portal-label">puzzles</div>
+      </div>
+
+      <div class="portal" id="portal-jar" style="left:1160px;" data-href="../intrusive/">
+        <div class="portal-door"><div class="portal-glow"></div><div class="portal-knob"></div></div>
+        <div class="portal-label">question jar</div>
+      </div>
+
+      <div class="portal" id="portal-games" style="left:1600px;" data-href="../games/">
+        <div class="portal-door"><div class="portal-glow"></div><div class="portal-knob"></div></div>
+        <div class="portal-label">games</div>
+      </div>
+
+      <div class="portal" id="portal-art" style="left:2050px;" data-href="../art/">
+        <div class="portal-door"><div class="portal-glow"></div><div class="portal-knob"></div></div>
+        <div class="portal-label">art</div>
+      </div>
+
+      <!-- Player sprite (built by JS) -->
+      <div class="sprite" id="player"></div>
+
+      <!-- Partner sprite (built by JS) -->
+      <div class="sprite" id="partner" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Controls -->
+  <div class="mobile-controls">
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btn-left">&larr;</button>
+      <button class="ctrl-btn" id="btn-right">&rarr;</button>
+    </div>
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btn-up">&uarr;</button>
+      <button class="ctrl-btn jump-btn" id="btn-jump">jump</button>
+    </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════
+    // CHARACTER DATA
+    // ══════════════════════════════════════
+    const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75' };
+    let myChar = { ...DEFAULT_CHAR };
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('my-character'));
+      if (saved) myChar = { ...myChar, ...saved };
+    } catch {}
+
+    let partnerChar = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b' };
+
+    function buildSprite(el, charData) {
+      el.innerHTML = `
+        <div class="sprite-name">${charData.name || ''}</div>
+        <div class="sprite-inner">
+          <div class="s-hair" style="background:${charData.hair}"></div>
+          <div class="s-face" style="background:${charData.skin}"></div>
+          <div class="s-eyes"><div class="s-eye"></div><div class="s-eye"></div></div>
+          <div class="s-body" style="background:${charData.shirt}"></div>
+          <div class="s-legs"><div class="s-leg"></div><div class="s-leg"></div></div>
+        </div>
+      `;
+    }
+
+    // ══════════════════════════════════════
+    // STARS
+    // ══════════════════════════════════════
+    function generateStars() {
+      const sky = document.getElementById('sky');
+      for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star' + (Math.random() > 0.6 ? ' twinkle' : '');
+        star.style.left = Math.random() * 2400 + 'px';
+        star.style.top = Math.random() * 50 + '%';
+        star.style.width = star.style.height = (2 + Math.random() * 2) + 'px';
+        star.style.animationDelay = (Math.random() * 3) + 's';
+        star.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+        sky.appendChild(star);
+      }
+    }
+
+    // ══════════════════════════════════════
+    // PHYSICS & GAME STATE
+    // ══════════════════════════════════════
+    const WORLD_WIDTH = 2400;
+    const GROUND_Y = window.innerHeight - 100 - 52; // bottom - ground height - sprite height
+    const GRAVITY = 0.6;
+    const JUMP_VEL = -11;
+    const MOVE_SPEED = 3.5;
+
+    const player = { x: 300, y: GROUND_Y, vx: 0, vy: 0, jumping: false, facing: 'right' };
+    const partner = { x: 400, y: GROUND_Y, vx: 0, vy: 0, jumping: false, facing: 'right' };
+
+    const keys = {};
+    const playerEl = document.getElementById('player');
+    const partnerEl = document.getElementById('partner');
+    const worldEl = document.getElementById('world');
+    const promptEl = document.getElementById('interact-prompt');
+
+    // Portals: { x, width, href }
+    const portals = [];
+    document.querySelectorAll('.portal').forEach(p => {
+      portals.push({
+        x: parseInt(p.style.left),
+        width: 40,
+        href: p.dataset.href,
+      });
+    });
+
+    let nearPortal = null;
+
+    // ══════════════════════════════════════
+    // INPUT
+    // ══════════════════════════════════════
+    document.addEventListener('keydown', e => {
+      keys[e.code] = true;
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+    // Mobile controls
+    function setupMobileBtn(id, code) {
+      const btn = document.getElementById(id);
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[code] = true; });
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[code] = false; });
+      btn.addEventListener('touchcancel', () => { keys[code] = false; });
+    }
+
+    setupMobileBtn('btn-left', 'ArrowLeft');
+    setupMobileBtn('btn-right', 'ArrowRight');
+    setupMobileBtn('btn-up', 'ArrowUp');
+    setupMobileBtn('btn-jump', 'Space');
+
+    // ══════════════════════════════════════
+    // GAME LOOP
+    // ══════════════════════════════════════
+    let lastPeerSend = 0;
+
+    function gameLoop() {
+      // Input
+      if (keys['ArrowLeft']) {
+        player.vx = -MOVE_SPEED;
+        player.facing = 'left';
+      } else if (keys['ArrowRight']) {
+        player.vx = MOVE_SPEED;
+        player.facing = 'right';
+      } else {
+        player.vx = 0;
+      }
+
+      if (keys['Space'] && !player.jumping) {
+        player.vy = JUMP_VEL;
+        player.jumping = true;
+      }
+
+      // Portal interaction
+      if (keys['ArrowUp'] && nearPortal) {
+        window.location.href = nearPortal.href;
+        return;
+      }
+
+      // Physics
+      player.vy += GRAVITY;
+      player.x += player.vx;
+      player.y += player.vy;
+
+      // Ground collision
+      const groundY = window.innerHeight - 100 - 52;
+      if (player.y >= groundY) {
+        player.y = groundY;
+        player.vy = 0;
+        player.jumping = false;
+      }
+
+      // World bounds
+      if (player.x < 0) player.x = 0;
+      if (player.x > WORLD_WIDTH - 32) player.x = WORLD_WIDTH - 32;
+
+      // Walking state
+      const isWalking = Math.abs(player.vx) > 0 && !player.jumping;
+      playerEl.classList.toggle('walking', isWalking);
+      playerEl.classList.toggle('jumping', player.jumping);
+      playerEl.classList.toggle('facing-left', player.facing === 'left');
+
+      // Position sprite
+      playerEl.style.left = player.x + 'px';
+      playerEl.style.top = player.y + 'px';
+
+      // Camera — follow player, centered
+      const vpWidth = window.innerWidth;
+      let camX = -(player.x - vpWidth / 2 + 16);
+      camX = Math.min(0, Math.max(camX, -(WORLD_WIDTH - vpWidth)));
+      worldEl.style.transform = `translateX(${camX}px)`;
+
+      // Check portal proximity
+      nearPortal = null;
+      for (const p of portals) {
+        const dx = Math.abs((player.x + 16) - (p.x + p.width / 2));
+        if (dx < 40) {
+          nearPortal = p;
+          break;
+        }
+      }
+      promptEl.classList.toggle('show', !!nearPortal);
+
+      // Send position to partner
+      const now = Date.now();
+      if (now - lastPeerSend > 50) {
+        lastPeerSend = now;
+        sendPeer({
+          type: 'pos',
+          x: player.x,
+          y: player.y,
+          vx: player.vx,
+          jumping: player.jumping,
+          facing: player.facing,
+        });
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // ══════════════════════════════════════
+    // RENDER PARTNER
+    // ══════════════════════════════════════
+    function updatePartner(data) {
+      partner.x = data.x;
+      partner.y = data.y;
+      partner.vx = data.vx;
+      partner.jumping = data.jumping;
+      partner.facing = data.facing;
+
+      partnerEl.style.display = '';
+      partnerEl.style.left = data.x + 'px';
+      partnerEl.style.top = data.y + 'px';
+      partnerEl.classList.toggle('walking', Math.abs(data.vx) > 0 && !data.jumping);
+      partnerEl.classList.toggle('jumping', data.jumping);
+      partnerEl.classList.toggle('facing-left', data.facing === 'left');
+    }
+
+    // ══════════════════════════════════════
+    // PEERJS
+    // ══════════════════════════════════════
+    const roomCode = sessionStorage.getItem('datenight-room');
+    const isHost = sessionStorage.getItem('datenight-host') === '1';
+    let peer = null;
+    let conn = null;
+
+    function peerIdForWorld(code) { return 'shahhub-world-' + code; }
+
+    function sendPeer(data) {
+      if (conn && conn.open) conn.send(data);
+    }
+
+    function handlePeerData(data) {
+      if (data.type === 'pos') {
+        updatePartner(data);
+      } else if (data.type === 'character') {
+        partnerChar = data.data;
+        buildSprite(partnerEl, partnerChar);
+      }
+    }
+
+    function setupPeer() {
+      if (!roomCode) return;
+
+      document.getElementById('hud-room').textContent = 'room ' + roomCode;
+
+      if (isHost) {
+        peer = new Peer(peerIdForWorld(roomCode));
+        peer.on('open', () => {
+          peer.on('connection', (c) => {
+            conn = c;
+            c.on('open', () => {
+              c.send({ type: 'character', data: myChar });
+            });
+            c.on('data', handlePeerData);
+          });
+        });
+        peer.on('error', () => {});
+      } else {
+        peer = new Peer();
+        peer.on('open', () => tryConnect(0));
+        peer.on('error', () => {});
+      }
+    }
+
+    function tryConnect(attempt) {
+      if (attempt > 15) return;
+      const c = peer.connect(peerIdForWorld(roomCode), { reliable: true });
+      c.on('open', () => {
+        conn = c;
+        c.send({ type: 'character', data: myChar });
+        c.on('data', handlePeerData);
+      });
+      c.on('error', () => {
+        setTimeout(() => tryConnect(attempt + 1), 1000);
+      });
+    }
+
+    // ══════════════════════════════════════
+    // INIT
+    // ══════════════════════════════════════
+    generateStars();
+    buildSprite(playerEl, myChar);
+    buildSprite(partnerEl, partnerChar);
+
+    // Position player
+    playerEl.style.left = player.x + 'px';
+    playerEl.style.top = player.y + 'px';
+
+    setupPeer();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
