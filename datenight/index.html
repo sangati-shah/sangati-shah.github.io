@@ -285,7 +285,7 @@
       history.replaceState(null, '', './');
     }
 
-    // Color theme toggle on title click
+    // Color theme toggle on title click (works on both gate and home)
     const themes = [
       { bg: '#faf8f5', text: '#2c2c2c', sub: '#888' },
       { bg: '#2c2c2c', text: '#ffd700', sub: '#ccc' },
@@ -296,22 +296,32 @@
       { bg: '#fce4ec', text: '#2e7d32', sub: '#e091a8' },
     ];
     let themeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
+    const roomTitle = document.querySelector('.room-title');
+    const roomHint = document.querySelector('.room-hint');
     const title = document.querySelector('.home-title');
     const sub = document.getElementById('home-sub');
 
     function applyTheme(i) {
       const t = themes[i];
       document.body.style.background = t.bg;
+      // Gate elements
+      if (roomTitle) roomTitle.style.color = t.text;
+      if (roomHint) roomHint.style.color = t.sub;
+      gate.style.background = t.bg;
+      // Home elements
       title.style.color = t.text;
       sub.style.color = t.sub;
     }
     if (themeIndex !== 0) applyTheme(themeIndex);
 
-    title.addEventListener('click', () => {
+    function cycleTheme() {
       themeIndex = (themeIndex + 1) % themes.length;
       sessionStorage.setItem('datenight-theme', themeIndex);
       applyTheme(themeIndex);
-    });
+    }
+
+    roomTitle.addEventListener('click', cycleTheme);
+    title.addEventListener('click', cycleTheme);
   </script>
 </body>
 </html>
