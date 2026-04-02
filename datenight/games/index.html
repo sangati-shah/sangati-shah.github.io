@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game night</title>
+  <link rel="stylesheet" href="games.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <a href="../" class="back-btn">&larr; back</a>
+
+  <div class="games-wrapper">
+    <h1 class="games-title">game night</h1>
+    <p class="games-sub">pick a game, loser gets the dishes</p>
+
+    <div class="game-tabs">
+      <button class="game-tab active" data-game="tictactoe">tic tac toe</button>
+      <button class="game-tab" data-game="connect4">connect 4</button>
+    </div>
+
+    <!-- Tic Tac Toe -->
+    <div class="game-panel active" id="tictactoe-panel">
+      <div class="game-status" id="ttt-status">your turn, <span class="player-x">X</span></div>
+      <div class="ttt-board" id="ttt-board">
+        <button class="ttt-cell" data-index="0"></button>
+        <button class="ttt-cell" data-index="1"></button>
+        <button class="ttt-cell" data-index="2"></button>
+        <button class="ttt-cell" data-index="3"></button>
+        <button class="ttt-cell" data-index="4"></button>
+        <button class="ttt-cell" data-index="5"></button>
+        <button class="ttt-cell" data-index="6"></button>
+        <button class="ttt-cell" data-index="7"></button>
+        <button class="ttt-cell" data-index="8"></button>
+      </div>
+      <button class="reset-btn" id="ttt-reset">play again</button>
+    </div>
+
+    <!-- Connect 4 -->
+    <div class="game-panel" id="connect4-panel">
+      <div class="game-status" id="c4-status">your turn, <span class="player-red">red</span></div>
+      <div class="c4-board" id="c4-board">
+        <!-- 7 columns x 6 rows, built by JS -->
+      </div>
+      <button class="reset-btn" id="c4-reset">play again</button>
+    </div>
+  </div>
+
+  <script src="games.js"></script>
+</body>
+</html>
