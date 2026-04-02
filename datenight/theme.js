@@ -573,18 +573,28 @@ function dnBurstSmiskis(x, y, theme) {
   }
 }
 
-// cooking — food emoji that scatter like tossed ingredients
+// cooking — little ingredient shapes that toss up and fall
 function dnBurstFood(x, y, theme) {
-  const foods = ['🍳', '🧈', '🌶️', '🍅', '🧄', '🥄', '🍕', '🥘', '🍝', '🧁', '🥐', '🫕'];
+  const colors = ['#e64a19', '#5d4037', '#ff8a65', '#d7ccc8', '#bf360c', '#8d6e63'];
+  // SVG paths for tiny food shapes: circle (tomato), leaf (herb), diamond (spice), drop (oil), star (seasoning)
+  const shapes = [
+    {w:12,h:12,svg:'<circle cx="6" cy="6" r="5" fill="COLOR"/>'},                    // tomato
+    {w:10,h:14,svg:'<path d="M5 0C2 4 0 8 5 14C10 8 8 4 5 0Z" fill="COLOR"/>'},      // herb leaf
+    {w:10,h:10,svg:'<rect x="1" y="1" width="8" height="8" rx="2" fill="COLOR"/>'},   // butter cube
+    {w:8,h:12,svg:'<path d="M4 0C1 5 0 8 4 12C8 8 7 5 4 0Z" fill="COLOR"/>'},        // oil drop
+    {w:12,h:12,svg:'<path d="M6 0l2 4h4l-3 3 1 5-4-2-4 2 1-5-3-3h4z" fill="COLOR"/>'},// star
+    {w:14,h:6,svg:'<rect x="0" y="1" width="14" height="4" rx="2" fill="COLOR"/>'},   // pasta
+  ];
   const count = 14;
   for (let i = 0; i < count; i++) {
     const el = document.createElement('div');
-    const food = foods[Math.floor(Math.random() * foods.length)];
-    const size = 16 + Math.random() * 12;
-    el.textContent = food;
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const scale = 1 + Math.random() * 0.6;
+    el.innerHTML = `<svg width="${shape.w * scale}" height="${shape.h * scale}" viewBox="0 0 ${shape.w} ${shape.h}">${shape.svg.replace('COLOR', color)}</svg>`;
     el.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
-      font-size:${size}px; line-height:1;
+      line-height:0;
       pointer-events:none; z-index:99999; opacity:0.9;
       transform:translate(-50%,-50%) rotate(0deg) scale(0.3);
       will-change:transform,opacity,left,top;
