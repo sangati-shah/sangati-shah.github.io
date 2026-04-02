@@ -6,27 +6,36 @@
   <title>date night</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
-  <!-- Password Gate -->
-  <div class="password-gate" id="password-gate">
-    <div class="password-content">
-      <span class="password-lock">🔒</span>
-      <h1 class="password-title">this is a secret place</h1>
-      <p class="password-hint">what's the magic words?</p>
-      <input
-        type="password"
-        class="password-input"
-        id="password-input"
-        placeholder="type here..."
-        autocomplete="off"
-        autofocus
-      />
-      <p class="password-error" id="password-error">hmm, try again</p>
+  <!-- Room Gate -->
+  <div class="room-gate" id="room-gate">
+    <div class="room-content">
+      <h1 class="room-title">date night</h1>
+      <p class="room-hint">enter a 4-digit code to join a room<br/>or create one and share it</p>
+
+      <div class="room-code-display" id="room-code-display">
+        <input type="text" class="room-code-input" id="room-code-input"
+          maxlength="4" placeholder="----" autocomplete="off" spellcheck="false" inputmode="numeric" autofocus />
+      </div>
+
+      <div class="room-buttons">
+        <button class="room-btn" id="join-btn">join room</button>
+        <button class="room-btn room-btn-alt" id="create-btn">create room</button>
+      </div>
+
+      <div id="room-status" class="room-status"></div>
+      <div id="room-share" class="room-share" style="display:none;">
+        <p class="room-share-text">share this code with your person:</p>
+        <div class="room-share-code" id="room-share-code"></div>
+        <button class="room-btn room-btn-small" id="copy-link-btn">copy link</button>
+        <p class="room-copied" id="room-copied">copied!</p>
+      </div>
     </div>
   </div>
 
-  <!-- Main Content (hidden until password entered) -->
+  <!-- Main Content (hidden until in a room) -->
   <div class="home-content" id="home-content" style="display:none;">
     <h1 class="home-title">date night</h1>
     <p class="home-sub" id="home-sub">a little corner of the internet, just for us</p>
@@ -41,42 +50,235 @@
         <span class="btn-icon">🖼️</span>
       </a>
     </div>
+    <p class="room-info" id="room-info"></p>
+  </div>
+
+  <!-- Partner cursor -->
+  <div class="partner-cursor" id="partner-cursor">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M5 3l14 8-6 2-3 6z" fill="#e85d75" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <span class="partner-label">them</span>
   </div>
 
   <script>
-    const gate = document.getElementById('password-gate');
+    const gate = document.getElementById('room-gate');
     const content = document.getElementById('home-content');
-    const input = document.getElementById('password-input');
-    const error = document.getElementById('password-error');
-    const PASSWORD = 'iluvumore';
+    const codeInput = document.getElementById('room-code-input');
+    const joinBtn = document.getElementById('join-btn');
+    const createBtn = document.getElementById('create-btn');
+    const statusEl = document.getElementById('room-status');
+    const shareEl = document.getElementById('room-share');
+    const shareCode = document.getElementById('room-share-code');
+    const copyBtn = document.getElementById('copy-link-btn');
+    const copiedEl = document.getElementById('room-copied');
+    const partnerCursor = document.getElementById('partner-cursor');
 
-    // Check if already authenticated this session
-    if (sessionStorage.getItem('datenight-auth') === '1') {
-      gate.style.display = 'none';
-      content.style.display = '';
+    let peer = null;
+    let conn = null;
+    let roomCode = null;
+    let isHost = false;
+
+    function peerIdFromCode(code) {
+      return 'shahhub-datenight-' + code;
     }
 
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        if (input.value.toLowerCase().replace(/\s/g, '') === PASSWORD) {
-          sessionStorage.setItem('datenight-auth', '1');
-          gate.classList.add('gate-unlock');
-          setTimeout(() => {
-            gate.style.display = 'none';
-            content.style.display = '';
-          }, 600);
-        } else {
-          error.classList.add('show');
-          input.classList.add('shake');
-          setTimeout(() => {
-            input.classList.remove('shake');
-          }, 500);
-          setTimeout(() => {
-            error.classList.remove('show');
-          }, 2000);
-        }
+    function genCode() {
+      return String(Math.floor(1000 + Math.random() * 9000));
+    }
+
+    function showStatus(msg, isError) {
+      statusEl.textContent = msg;
+      statusEl.className = 'room-status' + (isError ? ' room-error' : '');
+    }
+
+    function enterRoom(code) {
+      roomCode = code;
+      sessionStorage.setItem('datenight-room', code);
+      gate.classList.add('gate-unlock');
+      setTimeout(() => {
+        gate.style.display = 'none';
+        content.style.display = '';
+      }, 600);
+      document.getElementById('room-info').textContent = 'room ' + code;
+    }
+
+    // Auto-format code input
+    codeInput.addEventListener('input', () => {
+      codeInput.value = codeInput.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    codeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && codeInput.value.length === 4) {
+        joinBtn.click();
       }
     });
+
+    // Create room — become the host
+    createBtn.addEventListener('click', () => {
+      const code = genCode();
+      const id = peerIdFromCode(code);
+
+      createBtn.disabled = true;
+      joinBtn.disabled = true;
+      showStatus('creating room...');
+
+      peer = new Peer(id);
+
+      peer.on('open', () => {
+        isHost = true;
+        showStatus('');
+        shareEl.style.display = '';
+        shareCode.textContent = code;
+        codeInput.value = code;
+
+        // Wait for partner to join
+        peer.on('connection', (c) => {
+          conn = c;
+          c.on('open', () => {
+            c.send({ type: 'welcome' });
+            enterRoom(code);
+            setupCursorSharing();
+          });
+          c.on('data', handleData);
+          c.on('close', onPartnerDisconnect);
+        });
+      });
+
+      peer.on('error', (err) => {
+        if (err.type === 'unavailable-id') {
+          showStatus('that room already exists, try again', true);
+        } else {
+          showStatus('connection error, try again', true);
+        }
+        createBtn.disabled = false;
+        joinBtn.disabled = false;
+        peer.destroy();
+        peer = null;
+      });
+    });
+
+    // Copy link
+    copyBtn.addEventListener('click', () => {
+      const url = window.location.origin + window.location.pathname + '?room=' + codeInput.value;
+      navigator.clipboard.writeText(url).then(() => {
+        copiedEl.classList.add('show');
+        setTimeout(() => copiedEl.classList.remove('show'), 2000);
+      });
+    });
+
+    // Join room — connect to host
+    joinBtn.addEventListener('click', () => {
+      const code = codeInput.value.trim();
+      if (code.length !== 4) {
+        showStatus('enter a 4-digit code', true);
+        return;
+      }
+
+      joinBtn.disabled = true;
+      createBtn.disabled = true;
+      showStatus('joining room...');
+
+      peer = new Peer();
+
+      peer.on('open', () => {
+        const c = peer.connect(peerIdFromCode(code), { reliable: true });
+
+        c.on('open', () => {
+          conn = c;
+          c.on('data', (data) => {
+            if (data.type === 'welcome') {
+              enterRoom(code);
+              setupCursorSharing();
+            }
+            handleData(data);
+          });
+          c.on('close', onPartnerDisconnect);
+        });
+
+        // Timeout
+        setTimeout(() => {
+          if (!conn) {
+            showStatus('couldn\'t find that room', true);
+            joinBtn.disabled = false;
+            createBtn.disabled = false;
+            peer.destroy();
+            peer = null;
+          }
+        }, 8000);
+      });
+
+      peer.on('error', () => {
+        showStatus('connection error, check the code', true);
+        joinBtn.disabled = false;
+        createBtn.disabled = false;
+        peer.destroy();
+        peer = null;
+      });
+    });
+
+    // Handle incoming data
+    function handleData(data) {
+      if (data.type === 'cursor') {
+        partnerCursor.style.display = '';
+        partnerCursor.style.left = (data.x * window.innerWidth) + 'px';
+        partnerCursor.style.top = (data.y * window.innerHeight) + 'px';
+      }
+    }
+
+    // Cursor sharing
+    function setupCursorSharing() {
+      let lastSend = 0;
+      document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - lastSend < 50) return; // throttle to ~20fps
+        lastSend = now;
+        if (conn && conn.open) {
+          conn.send({
+            type: 'cursor',
+            x: e.clientX / window.innerWidth,
+            y: e.clientY / window.innerHeight,
+          });
+        }
+      });
+
+      document.addEventListener('touchmove', (e) => {
+        const now = Date.now();
+        if (now - lastSend < 50) return;
+        lastSend = now;
+        const touch = e.touches[0];
+        if (conn && conn.open) {
+          conn.send({
+            type: 'cursor',
+            x: touch.clientX / window.innerWidth,
+            y: touch.clientY / window.innerHeight,
+          });
+        }
+      });
+    }
+
+    function onPartnerDisconnect() {
+      partnerCursor.style.display = 'none';
+      document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner disconnected)';
+    }
+
+    // Check URL for room code (shared link)
+    const params = new URLSearchParams(window.location.search);
+    const urlRoom = params.get('room');
+    if (urlRoom && urlRoom.length === 4) {
+      codeInput.value = urlRoom;
+      history.replaceState(null, '', './');
+      // Auto-join after a tiny delay
+      setTimeout(() => joinBtn.click(), 300);
+    }
+
+    if (params.get('scared') === '1') {
+      // Let them in without a room (solo mode)
+      gate.style.display = 'none';
+      content.style.display = '';
+      document.getElementById('home-sub').textContent = 'phew that was scary, should we try something different?';
+      history.replaceState(null, '', './');
+    }
 
     // Color theme toggle on title click
     const themes = [
@@ -105,14 +307,6 @@
       sessionStorage.setItem('datenight-theme', themeIndex);
       applyTheme(themeIndex);
     });
-
-    // Check if coming back scared from the dark
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('scared') === '1') {
-      document.getElementById('home-sub').textContent = 'phew that was scary, should we try something different?';
-      // Clean up the URL without reloading
-      history.replaceState(null, '', './');
-    }
   </script>
 </body>
 </html>
