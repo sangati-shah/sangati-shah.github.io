@@ -151,7 +151,7 @@ body.lights-off {
   transition: background 0.5s ease;
 }
 
-.tent-switch.checked {
+.tent-switch:has(:checked) {
   background: #3a3347;
 }
 
@@ -186,7 +186,7 @@ body.lights-off {
   display: none;
 }
 
-.tent-switch.checked .tent-label {
+.tent-label:has(:checked) {
   transform: scaleX(-1);
 }
 
@@ -426,12 +426,12 @@ body.lights-off {
 
 .fire-glow {
   position: absolute;
-  bottom: -10px;
+  bottom: -30px;
   left: 50%;
   transform: translateX(-50%);
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(ellipse, rgba(255, 140, 0, 0.15) 0%, rgba(255, 69, 0, 0.05) 40%, transparent 70%);
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(ellipse, rgba(255, 140, 0, 0.2) 0%, rgba(255, 69, 0, 0.08) 40%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
   animation: glow-pulse 2s infinite alternate;
@@ -902,8 +902,8 @@ body.lights-off::after {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  height: 50%;
-  background: radial-gradient(ellipse at center bottom, rgba(255, 120, 30, 0.06) 0%, transparent 70%);
+  height: 60%;
+  background: radial-gradient(ellipse at center bottom, rgba(255, 120, 30, 0.1) 0%, transparent 70%);
   pointer-events: none;
 }
 
