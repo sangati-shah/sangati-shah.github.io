@@ -84,15 +84,22 @@
       { bg: '#e8f5e9', text: '#2e7d32', sub: '#6a9b6e' },
       { bg: '#fff3e0', text: '#e65100', sub: '#b08060' },
     ];
-    let themeIndex = 0;
+    let themeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
     const title = document.querySelector('.home-title');
     const sub = document.getElementById('home-sub');
-    title.addEventListener('click', () => {
-      themeIndex = (themeIndex + 1) % themes.length;
-      const t = themes[themeIndex];
+
+    function applyTheme(i) {
+      const t = themes[i];
       document.body.style.background = t.bg;
       title.style.color = t.text;
       sub.style.color = t.sub;
+    }
+    if (themeIndex !== 0) applyTheme(themeIndex);
+
+    title.addEventListener('click', () => {
+      themeIndex = (themeIndex + 1) % themes.length;
+      sessionStorage.setItem('datenight-theme', themeIndex);
+      applyTheme(themeIndex);
     });
 
     // Check if coming back scared from the dark

@@ -74,6 +74,26 @@
     </div>
   </div>
 
+  <script>
+    // Apply shared datenight color theme
+    (function() {
+      const themes = [
+        { bg: '#faf8f5', text: '#2c2c2c', sub: '#888' },
+        { bg: '#2c2c2c', text: '#ffd700', sub: '#ccc' },
+        { bg: '#1a1a2e', text: '#e94560', sub: '#a3a3c2' },
+        { bg: '#f0e6ef', text: '#6b2fa0', sub: '#9a7baa' },
+        { bg: '#e8f5e9', text: '#2e7d32', sub: '#6a9b6e' },
+        { bg: '#fff3e0', text: '#e65100', sub: '#b08060' },
+      ];
+      const i = parseInt(sessionStorage.getItem('datenight-theme') || '0');
+      if (i !== 0) {
+        const t = themes[i];
+        document.body.style.background = t.bg;
+        document.querySelector('.games-title').style.color = t.text;
+        document.querySelector('.games-sub').style.color = t.sub;
+      }
+    })();
+  </script>
   <script src="games.js"></script>
 </body>
 </html>
