@@ -72,21 +72,21 @@ const DN_THEMES = [
     homeBtnBorder: '#a1887f',
   },
   {
-    name: 'sunset',
-    bg: '#fff3e0',
-    text: '#d84280',
-    sub: '#ff8a65',
-    accent: '#ff6d00',
-    headingFont: "'Comfortaa', sans-serif",
-    btnBg: 'rgba(255,255,255,0.5)',
-    btnBorder: '#ffab91',
-    btnRadius: '22px',
-    btnText: '#d84280',
-    inputBg: 'rgba(255,255,255,0.4)',
-    inputBorder: '#ffab91',
-    inputText: '#d84280',
-    homeBtnBg: 'rgba(255,255,255,0.5)',
-    homeBtnBorder: '#ffab91',
+    name: 'sheet-music',
+    bg: '#faf9f6',
+    text: '#1a1a1a',
+    sub: '#888888',
+    accent: '#2a2a2a',
+    headingFont: "'Lora', serif",
+    btnBg: '#fff',
+    btnBorder: '#1a1a1a',
+    btnRadius: '2px',
+    btnText: '#1a1a1a',
+    inputBg: '#fff',
+    inputBorder: '#1a1a1a',
+    inputText: '#1a1a1a',
+    homeBtnBg: '#fff',
+    homeBtnBorder: '#1a1a1a',
   },
 ];
 
@@ -157,8 +157,8 @@ function dnCycleTheme(e) {
     case 'earth':
       flash.style.cssText = flashBase + `background:${next.sub};`;
       break;
-    case 'sunset':
-      flash.style.cssText = flashBase + `background:linear-gradient(135deg, ${next.text}, ${next.accent});`;
+    case 'sheet-music':
+      flash.style.cssText = flashBase + `background:#1a1a1a;`;
       break;
     default:
       flash.style.cssText = flashBase + `background:#fff;`;
@@ -192,7 +192,7 @@ function dnCycleTheme(e) {
 // poster → text characters (!, *, #, ~) that scatter and spin
 // neon → electric lines/bolts that crackle from click point
 // earth → falling leaf shapes with gravity + wind drift
-// sunset → radial sun rays that shoot outward and fade
+// sheet-music → music notes that float upward and fade
 
 function dnSpawnParticles(x, y, theme) {
   switch (theme.name) {
@@ -200,7 +200,7 @@ function dnSpawnParticles(x, y, theme) {
     case 'poster': return dnBurstChars(x, y, theme);
     case 'neon': return dnBurstBolts(x, y, theme);
     case 'earth': return dnBurstLeaves(x, y, theme);
-    case 'sunset': return dnBurstRays(x, y, theme);
+    case 'sheet-music': return dnBurstNotes(x, y, theme);
     default: return dnBurstRing(x, y, theme);
   }
 }
@@ -418,37 +418,37 @@ function dnBurstLeaves(x, y, theme) {
   }
 }
 
-// sunset — sun ray lines that shoot outward from click point
-function dnBurstRays(x, y, theme) {
-  const count = 14;
+// sheet-music — music notes that float upward from click point
+function dnBurstNotes(x, y, theme) {
+  const notes = ['♩', '♪', '♫', '♬', '𝅘𝅥𝅮', '𝅗𝅥'];
+  const count = 12;
   for (let i = 0; i < count; i++) {
-    const ray = document.createElement('div');
-    const angle = (Math.PI * 2 * i) / count;
-    const len = 50 + Math.random() * 80;
-    const thick = 2 + Math.random() * 3;
-    const colors = [theme.text, theme.accent, theme.sub];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    ray.style.cssText = `
+    const el = document.createElement('div');
+    const note = notes[Math.floor(Math.random() * notes.length)];
+    const size = 16 + Math.random() * 14;
+    const shade = Math.random() > 0.4 ? '#1a1a1a' : '#888';
+    el.textContent = note;
+    el.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
-      width:0px; height:${thick}px;
-      background:linear-gradient(to right, ${color}, transparent);
-      border-radius:${thick}px;
-      pointer-events:none; z-index:99999; opacity:0.8;
-      transform-origin:0 50%;
-      transform:rotate(${angle * 180 / Math.PI}deg);
-      will-change:width,opacity;
+      font-size:${size}px; color:${shade};
+      pointer-events:none; z-index:99999; opacity:0.9;
+      transform:translate(-50%,-50%) rotate(0deg) scale(0.5);
+      will-change:transform,opacity,left,top;
     `;
-    document.body.appendChild(ray);
-    const dur = 250 + Math.random() * 200;
-    const delay = (i / count) * 60;
+    document.body.appendChild(el);
+    const spreadX = (Math.random() - 0.5) * 120;
+    const floatY = -(80 + Math.random() * 100);
+    const spin = (Math.random() - 0.5) * 60;
+    const dur = 600 + Math.random() * 400;
+    const delay = Math.random() * 100;
     setTimeout(() => {
-      ray.style.transition = `width ${dur}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${dur + 100}ms ease-out`;
-      ray.style.width = len + 'px';
+      el.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, transform ${dur * 0.4}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur}ms ease-in`;
+      el.style.left = (x + spreadX) + 'px';
+      el.style.top = (y + floatY) + 'px';
+      el.style.transform = `translate(-50%,-50%) rotate(${spin}deg) scale(1)`;
     }, delay);
-    setTimeout(() => {
-      ray.style.opacity = '0';
-    }, delay + dur * 0.6);
-    setTimeout(() => ray.remove(), delay + dur + 150);
+    setTimeout(() => { el.style.opacity = '0'; }, delay + dur * 0.5);
+    setTimeout(() => el.remove(), delay + dur + 50);
   }
 }
 
