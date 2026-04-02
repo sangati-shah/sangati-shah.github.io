@@ -1,0 +1,127 @@
+/* ── Shared Character HUD ── */
+.game-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  z-index: 9000;
+  pointer-events: none;
+}
+
+.hud-player {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0.4rem 0.7rem;
+  border-radius: 12px;
+  pointer-events: auto;
+}
+
+.hud-right {
+  flex-direction: row-reverse;
+}
+
+.hud-right .hud-info {
+  text-align: right;
+}
+
+/* ── Mini Sprite ── */
+.hud-sprite {
+  position: relative;
+  width: 20px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.hud-hair {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 8px;
+  border-radius: 50% 50% 30% 30%;
+  z-index: 3;
+}
+
+.hud-face {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 11px;
+  height: 12px;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.hud-body {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 13px;
+  height: 9px;
+  border-radius: 3px 3px 2px 2px;
+  z-index: 1;
+}
+
+.hud-legs {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+}
+
+.hud-leg {
+  width: 4px;
+  height: 8px;
+  background: #3a3a5c;
+  border-radius: 2px;
+}
+
+/* ── Info ── */
+.hud-info {
+  min-width: 0;
+}
+
+.hud-name {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.8rem;
+  color: var(--dn-text, rgba(255,255,255,0.8));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+  line-height: 1.2;
+}
+
+.hud-pts {
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 0.7rem;
+  color: var(--dn-accent, #e85d75);
+  line-height: 1.2;
+}
+
+/* Dark backgrounds (world, etc.) */
+body.dark-hud .hud-player {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+body.dark-hud .hud-name {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Responsive ── */
+@media (max-width: 400px) {
+  .hud-name { max-width: 50px; }
+  .game-hud { padding: 0.6rem 0.6rem; }
+}
