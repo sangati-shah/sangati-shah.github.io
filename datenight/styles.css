@@ -179,6 +179,7 @@ body.lights-off {
   border-radius: 4px;
   cursor: pointer;
   transition: transform 0.5s ease;
+  transform: scaleX(1);
   display: block;
 }
 
@@ -287,6 +288,11 @@ body.lights-off {
   text-decoration: none;
   cursor: pointer;
   transition: color 0.3s;
+}
+
+.scared-text:visited,
+.scared-text:hover {
+  text-decoration: none;
 }
 
 .scared-text:hover {
@@ -437,45 +443,96 @@ body.lights-off {
   100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
 }
 
-/* ── DECK PICKER ── */
-.deck-picker {
-  position: absolute;
-  top: clamp(1.5rem, 8vh, 4rem);
-  left: 50%;
-  transform: translateX(-50%);
+/* ── JAR GRID (one jar per category) ── */
+.jar-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
-  z-index: 15;
+  align-items: flex-end;
+  gap: 1.2rem 1.4rem;
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
   padding: 0 1rem;
-  max-width: 420px;
+  z-index: 10;
 }
 
-.deck-pill {
-  font-family: 'Caveat', cursive;
-  font-size: 1.05rem;
-  background: rgba(255, 200, 100, 0.08);
-  color: rgba(255, 200, 100, 0.4);
-  border: 1px solid rgba(255, 200, 100, 0.12);
-  border-radius: 20px;
-  padding: 0.3em 1em;
+.deck-jar {
+  position: relative;
   cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  transition: transform 0.3s ease;
 }
 
-.deck-pill:hover {
-  color: rgba(255, 200, 100, 0.7);
-  border-color: rgba(255, 200, 100, 0.3);
+.deck-jar:hover {
+  transform: scale(1.1);
 }
 
-.deck-pill.active {
-  color: rgba(255, 200, 100, 0.95);
-  background: rgba(255, 200, 100, 0.15);
-  border-color: rgba(255, 200, 100, 0.4);
-  box-shadow: 0 0 12px rgba(255, 160, 50, 0.15);
+.deck-jar .jar {
+  width: 65px;
+  height: 88px;
 }
+
+.deck-jar .jar-lid {
+  width: 40px;
+  height: 11px;
+}
+
+.deck-jar .jar-lid::after {
+  bottom: -3px;
+  left: -4px;
+  right: -4px;
+  height: 5px;
+}
+
+.deck-jar .jar-body {
+  width: 54px;
+  height: 68px;
+  top: 13px;
+}
+
+.deck-jar .paper {
+  width: 18px;
+}
+
+.deck-jar .paper-1 { height: 32px; bottom: 6px; left: 6px; }
+.deck-jar .paper-2 { height: 28px; bottom: 5px; left: 18px; }
+.deck-jar .paper-3 { height: 30px; bottom: 8px; right: 6px; }
+
+.deck-jar.active .jar-body {
+  border-color: rgba(255, 200, 100, 0.45);
+  box-shadow: 0 0 10px rgba(255, 160, 50, 0.2);
+}
+
+/* ── MASKING TAPE LABEL ── */
+.tape-label {
+  position: absolute;
+  top: 58%;
+  left: -4px;
+  right: -4px;
+  text-align: center;
+  background: rgba(235, 225, 195, 0.82);
+  padding: 1px 2px;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #111;
+  letter-spacing: 0.02em;
+  z-index: 5;
+  transform: rotate(-2deg);
+  border-top: 1px solid rgba(210, 200, 170, 0.3);
+  border-bottom: 1px solid rgba(210, 200, 170, 0.3);
+  pointer-events: none;
+}
+
+/* Vary tape rotation per jar for organic feel */
+.deck-jar:nth-child(2) .tape-label { transform: rotate(1.5deg); }
+.deck-jar:nth-child(3) .tape-label { transform: rotate(-1deg); }
+.deck-jar:nth-child(4) .tape-label { transform: rotate(2deg); }
+.deck-jar:nth-child(5) .tape-label { transform: rotate(-0.5deg); }
+.deck-jar:nth-child(6) .tape-label { transform: rotate(1deg); }
+.deck-jar:nth-child(7) .tape-label { transform: rotate(-1.5deg); }
 
 /* ── THE JAR ── */
 .jar-container {
@@ -972,13 +1029,32 @@ body.lights-off::after {
     width: 150px;
   }
 
-  .deck-picker {
-    gap: 0.4rem;
-    max-width: 320px;
+  .jar-grid {
+    gap: 0.9rem 1rem;
+    max-width: 300px;
   }
 
-  .deck-pill {
-    font-size: 0.95rem;
-    padding: 0.25em 0.8em;
+  .deck-jar .jar {
+    width: 55px;
+    height: 75px;
+  }
+
+  .deck-jar .jar-lid {
+    width: 34px;
+    height: 9px;
+  }
+
+  .deck-jar .jar-body {
+    width: 46px;
+    height: 58px;
+    top: 11px;
+  }
+
+  .deck-jar .paper {
+    width: 15px;
+  }
+
+  .tape-label {
+    font-size: 0.7rem;
   }
 }

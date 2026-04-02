@@ -117,10 +117,15 @@ function selectDeck(deckName) {
   questionPool = shuffle(decks[currentDeck]);
   poolIndex = 0;
 
-  // Update active pill in the UI
-  document.querySelectorAll('.deck-pill').forEach((pill) => {
-    pill.classList.toggle('active', pill.dataset.deck === deckName);
+  // Update active jar in the UI
+  document.querySelectorAll('.deck-jar').forEach((jar) => {
+    jar.classList.toggle('active', jar.dataset.deck === deckName);
   });
+}
+
+function selectDeckAndDraw(deckName) {
+  selectDeck(deckName);
+  drawQuestion();
 }
 
 function getNextQuestion() {
