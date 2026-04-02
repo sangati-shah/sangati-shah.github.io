@@ -22,6 +22,92 @@ body.lights-off {
   background: #0a0a12;
 }
 
+/* ── PASSWORD GATE ── */
+.password-gate {
+  position: fixed;
+  inset: 0;
+  background: #faf8f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.password-gate.gate-unlock {
+  opacity: 0;
+  transform: scale(1.05);
+}
+
+.password-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.password-lock {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.password-title {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 600;
+  color: #2c2c2c;
+  margin-bottom: 0.3em;
+}
+
+.password-hint {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: #aaa;
+  font-weight: 300;
+  margin-bottom: 2em;
+  letter-spacing: 0.02em;
+}
+
+.password-input {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  text-align: center;
+  border: none;
+  border-bottom: 2px solid #e0dbd6;
+  background: transparent;
+  padding: 0.5em 1em;
+  outline: none;
+  color: #2c2c2c;
+  width: min(300px, 80vw);
+  transition: border-color 0.3s ease;
+}
+
+.password-input:focus {
+  border-bottom-color: #c4a882;
+}
+
+.password-input.shake {
+  animation: shake 0.4s ease;
+}
+
+.password-error {
+  font-size: 0.85rem;
+  color: #d4726a;
+  margin-top: 1em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.password-error.show {
+  opacity: 1;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
 /* ── HOME SCREEN ── */
 .home-content {
   text-align: center;
