@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>azulejos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../hud.css" />
+  <script src="../../theme.js"></script>
+  <script src="../../hud.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100dvh;
+      background: var(--dn-bg);
+      color: var(--dn-text);
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    /* -- Top bar -- */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 1.5rem; z-index: 100;
+    }
+    .back-link {
+      font-family: var(--dn-heading-font, 'Caveat', cursive); font-size: 1.2rem;
+      color: var(--dn-sub); text-decoration: none; transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--dn-text); }
+    .pts-display {
+      font-family: var(--dn-heading-font, 'Caveat', cursive); font-size: 1.1rem;
+      color: var(--dn-sub);
+    }
+    .pts-num { color: var(--dn-accent); font-weight: 600; transition: transform 0.3s; }
+    .pts-num.bump { transform: scale(1.4); display: inline-block; }
+
+    /* -- Main -- */
+    .mystery-app {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 580px;
+      padding: 1rem 1.2rem;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1rem;
+      margin-top: 3.5rem;
+    }
+
+    .page-title {
+      font-family: var(--dn-heading-font, 'Abril Fatface', serif);
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      color: var(--dn-text); letter-spacing: 0.02em;
+      cursor: pointer; user-select: none;
+      transition: color 0.5s ease;
+    }
+    .page-sub {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--dn-sub); text-align: center;
+      line-height: 1.5; margin-bottom: 0.2rem;
+      transition: color 0.5s ease;
+    }
+
+    /* -- How to play -- */
+    .how-to-play {
+      width: 100%; max-width: 400px;
+      background: color-mix(in srgb, var(--dn-accent) 6%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent) 15%, transparent);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      transition: background 0.5s ease, border-color 0.5s ease;
+    }
+    .how-to-play-title {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1rem; color: var(--dn-accent);
+      margin-bottom: 0.5rem; font-weight: 600;
+    }
+    .how-to-play ol {
+      list-style: none; counter-reset: steps; padding: 0; margin: 0;
+    }
+    .how-to-play li {
+      counter-increment: steps;
+      font-size: 0.85rem; color: var(--dn-text);
+      line-height: 1.5; padding: 0.2rem 0;
+      padding-left: 1.5rem; position: relative; opacity: 0.75;
+    }
+    .how-to-play li::before {
+      content: counter(steps) '.';
+      position: absolute; left: 0;
+      color: var(--dn-accent); font-weight: 600;
+    }
+
+    /* -- Turn indicator -- */
+    .turn-indicator {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.15rem; color: var(--dn-sub);
+      text-align: center; transition: color 0.3s;
+      min-height: 1.5em;
+    }
+    .turn-indicator.your-turn { color: #1565c0; font-weight: 600; }
+    .turn-indicator.their-turn { color: var(--dn-sub); }
+
+    /* -- Score row -- */
+    .score-row {
+      display: flex; gap: 2rem; justify-content: center;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.1rem; color: var(--dn-sub);
+    }
+    .score-row .score-label { opacity: 0.7; }
+    .score-row .score-val { color: #1565c0; font-weight: 600; }
+    .score-row .score-val.partner { color: #c0392b; }
+
+    /* -- Tile grid -- */
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 480px;
+      perspective: 800px;
+    }
+
+    @media (max-width: 420px) {
+      .tile-grid { gap: 5px; }
+    }
+
+    /* -- Individual tile -- */
+    .tile {
+      aspect-ratio: 1;
+      position: relative;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      border-radius: 8px;
+    }
+    .tile.flipped { transform: rotateY(180deg); }
+    .tile.matched {
+      transform: rotateY(180deg);
+      cursor: default;
+    }
+    .tile.matched .tile-front,
+    .tile.matched .tile-back {
+      box-shadow: 0 0 12px rgba(21, 101, 192, 0.4);
+    }
+    .tile.matched .tile-back {
+      opacity: 0.85;
+    }
+    .tile.locked { pointer-events: none; }
+
+    .tile-front, .tile-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+
+    .tile-front {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 50%, #1565c0 100%);
+      border: 2px solid rgba(255,255,255,0.2);
+      z-index: 2;
+    }
+
+    .tile-front-pattern {
+      width: 100%; height: 100%;
+      opacity: 0.25;
+    }
+
+    .tile-back {
+      background: #fafafa;
+      border: 2px solid #1565c0;
+      transform: rotateY(180deg);
+    }
+
+    .tile-back svg {
+      width: 85%; height: 85%;
+    }
+
+    /* -- Match flash -- */
+    @keyframes matchFlash {
+      0% { box-shadow: 0 0 0 0 rgba(21,101,192,0.6); }
+      50% { box-shadow: 0 0 20px 8px rgba(21,101,192,0.4); }
+      100% { box-shadow: 0 0 12px 2px rgba(21,101,192,0.2); }
+    }
+    .tile.match-flash { animation: matchFlash 0.6s ease; }
+
+    /* -- Controls -- */
+    .controls {
+      display: flex; gap: 0.8rem; align-items: center;
+      flex-wrap: wrap; justify-content: center;
+      margin-top: 0.5rem;
+    }
+    .ctrl-btn {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.1rem; padding: 0.6rem 1.5rem;
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent) 30%, transparent);
+      border-radius: 30px; background: transparent;
+      color: var(--dn-text); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .ctrl-btn:hover {
+      background: color-mix(in srgb, var(--dn-accent) 10%, transparent);
+      border-color: var(--dn-accent);
+    }
+    .ctrl-btn-small {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.95rem; padding: 0.4rem 1rem;
+      border: 1px solid color-mix(in srgb, var(--dn-sub) 20%, transparent);
+      border-radius: 20px; background: transparent;
+      color: var(--dn-sub); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .ctrl-btn-small:hover {
+      color: var(--dn-text);
+      border-color: var(--dn-sub);
+    }
+
+    /* -- Victory overlay -- */
+    .victory-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.6s ease;
+      backdrop-filter: blur(4px);
+    }
+    .victory-overlay.visible { opacity: 1; pointer-events: auto; }
+    .victory-card {
+      background: var(--dn-bg); border-radius: 20px;
+      padding: 2.5rem 3rem; text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      transform: scale(0.9); transition: transform 0.4s ease;
+    }
+    .victory-overlay.visible .victory-card { transform: scale(1); }
+    .victory-icon {
+      width: 56px; height: 56px; margin: 0 auto 1rem;
+      color: #1565c0;
+    }
+    .victory-icon svg { width: 100%; height: 100%; stroke: currentColor; }
+    .victory-title {
+      font-family: var(--dn-heading-font, 'Abril Fatface', serif);
+      font-size: 1.8rem; color: var(--dn-text); margin-bottom: 0.5rem;
+    }
+    .victory-sub {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.1rem; color: var(--dn-sub); margin-bottom: 0.3rem;
+    }
+    .victory-pts {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.3rem; color: #1565c0; margin-bottom: 1.2rem;
+    }
+    .victory-btn {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.15rem; color: #1565c0;
+      text-decoration: none; padding: 0.6rem 2rem;
+      border: 1.5px solid #1565c0; border-radius: 30px;
+      transition: all 0.3s;
+    }
+    .victory-btn:hover { background: #1565c0; color: #fff; }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <div class="top-bar">
+    <a href="../../world/?after=mystery" class="back-link">&larr; back to adventure</a>
+    <div class="pts-display">points <span class="pts-num" id="pts-num">0</span></div>
+  </div>
+
+  <!-- Main app -->
+  <div class="mystery-app">
+    <h1 class="page-title" data-dn-cycle>azulejos</h1>
+    <p class="page-sub" id="page-sub">flip tiles and find matching pairs together</p>
+
+    <!-- How to play -->
+    <div class="how-to-play">
+      <div class="how-to-play-title">how to play</div>
+      <ol>
+        <li>Take turns flipping two tiles at a time</li>
+        <li>Try to remember where each pattern is</li>
+        <li>If both tiles match, you score a point!</li>
+        <li>The player with the most matches wins</li>
+      </ol>
+    </div>
+
+    <!-- Turn / score -->
+    <div class="turn-indicator your-turn" id="turn-indicator">your turn</div>
+    <div class="score-row">
+      <div><span class="score-label">you </span><span class="score-val" id="my-score">0</span></div>
+      <div><span class="score-label">them </span><span class="score-val partner" id="their-score">0</span></div>
+    </div>
+
+    <!-- Tile grid -->
+    <div class="tile-grid" id="tile-grid"></div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="ctrl-btn" id="restart-btn">new game</button>
+      <button class="ctrl-btn-small" id="skip-btn">skip &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Victory overlay -->
+  <div class="victory-overlay" id="victory-overlay">
+    <div class="victory-card">
+      <div class="victory-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      </div>
+      <div class="victory-title" id="victory-title">beautiful!</div>
+      <div class="victory-sub" id="victory-sub"></div>
+      <div class="victory-pts" id="victory-pts">+60 pts</div>
+      <a href="../../world/?after=mystery" class="victory-btn">back to map &rarr;</a>
+    </div>
+  </div>
+
+  <script>
+    // ======================================
+    // AZULEJO TILE PATTERNS (12 unique Portuguese-inspired SVGs)
+    // ======================================
+    const AZULEJO_PATTERNS = [
+      // 1 - Classic star
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <path d="M40 8L50 30H72L54 44L62 68L40 52L18 68L26 44L8 30H30Z" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="8" fill="#1565c0" opacity="0.25" stroke="#1565c0" stroke-width="1"/>
+      </svg>`,
+      // 2 - Diamond cross
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <path d="M40 6L74 40L40 74L6 40Z" fill="none" stroke="#1565c0" stroke-width="2"/>
+        <line x1="40" y1="6" x2="40" y2="74" stroke="#1565c0" stroke-width="1.5"/>
+        <line x1="6" y1="40" x2="74" y2="40" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="10" fill="#1565c0" opacity="0.12" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="4" fill="#1565c0" opacity="0.3"/>
+      </svg>`,
+      // 3 - Flower petals
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <circle cx="40" cy="25" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
+        <circle cx="40" cy="55" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
+        <circle cx="25" cy="40" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
+        <circle cx="55" cy="40" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
+        <circle cx="40" cy="40" r="6" fill="#1565c0" opacity="0.3" stroke="#1565c0" stroke-width="1"/>
+      </svg>`,
+      // 4 - Concentric arches
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <path d="M10 70 A30 30 0 0 1 70 70" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M18 70 A22 22 0 0 1 62 70" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M26 70 A14 14 0 0 1 54 70" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M10 10 A30 30 0 0 0 70 10" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M18 10 A22 22 0 0 0 62 10" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="5" fill="#1565c0" opacity="0.25"/>
+      </svg>`,
+      // 5 - Geometric lattice
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <line x1="10" y1="10" x2="70" y2="70" stroke="#1565c0" stroke-width="1.2"/>
+        <line x1="70" y1="10" x2="10" y2="70" stroke="#1565c0" stroke-width="1.2"/>
+        <line x1="40" y1="6" x2="40" y2="74" stroke="#1565c0" stroke-width="1.2"/>
+        <line x1="6" y1="40" x2="74" y2="40" stroke="#1565c0" stroke-width="1.2"/>
+        <rect x="25" y="25" width="30" height="30" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.2"/>
+        <rect x="32" y="32" width="16" height="16" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1"/>
+      </svg>`,
+      // 6 - Swirl rosette
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <circle cx="40" cy="40" r="22" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M40 18 Q55 30 40 40 Q25 50 40 62" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M18 40 Q30 25 40 40 Q50 55 62 40" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="5" fill="#1565c0" opacity="0.3"/>
+        <circle cx="40" cy="18" r="3" fill="#1565c0" opacity="0.2"/>
+        <circle cx="40" cy="62" r="3" fill="#1565c0" opacity="0.2"/>
+        <circle cx="18" cy="40" r="3" fill="#1565c0" opacity="0.2"/>
+        <circle cx="62" cy="40" r="3" fill="#1565c0" opacity="0.2"/>
+      </svg>`,
+      // 7 - Pointed arch window
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <path d="M20 70V35 Q20 10 40 10 Q60 10 60 35V70" fill="#1565c0" opacity="0.08" stroke="#1565c0" stroke-width="1.5"/>
+        <path d="M28 70V38 Q28 18 40 18 Q52 18 52 38V70" fill="#1565c0" opacity="0.08" stroke="#1565c0" stroke-width="1.2"/>
+        <line x1="40" y1="10" x2="40" y2="70" stroke="#1565c0" stroke-width="1" opacity="0.5"/>
+        <circle cx="40" cy="35" r="6" fill="none" stroke="#1565c0" stroke-width="1.2"/>
+        <circle cx="40" cy="35" r="2.5" fill="#1565c0" opacity="0.3"/>
+      </svg>`,
+      // 8 - Compass rose
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <polygon points="40,8 46,34 72,34 50,50 58,74 40,56 22,74 30,50 8,34 34,34" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.2"/>
+        <polygon points="40,20 44,36 60,36 47,46 52,62 40,52 28,62 33,46 20,36 36,36" fill="#1565c0" opacity="0.12" stroke="#1565c0" stroke-width="0.8"/>
+        <circle cx="40" cy="40" r="4" fill="#1565c0" opacity="0.35"/>
+      </svg>`,
+      // 9 - Wave scales
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <path d="M0 20 Q20 0 40 20 Q60 40 80 20" fill="none" stroke="#1565c0" stroke-width="1.3"/>
+        <path d="M0 35 Q20 15 40 35 Q60 55 80 35" fill="none" stroke="#1565c0" stroke-width="1.3"/>
+        <path d="M0 50 Q20 30 40 50 Q60 70 80 50" fill="none" stroke="#1565c0" stroke-width="1.3"/>
+        <path d="M0 65 Q20 45 40 65 Q60 85 80 65" fill="#1565c0" opacity="0.08" stroke="#1565c0" stroke-width="1.3"/>
+        <circle cx="40" cy="40" r="6" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1"/>
+      </svg>`,
+      // 10 - Quatrefoil
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <circle cx="40" cy="24" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
+        <circle cx="40" cy="56" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
+        <circle cx="24" cy="40" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
+        <circle cx="56" cy="40" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
+        <rect x="30" y="30" width="20" height="20" rx="10" fill="#1565c0" opacity="0.2" stroke="#1565c0" stroke-width="1"/>
+      </svg>`,
+      // 11 - Chevron zigzag
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <polyline points="8,25 24,12 40,25 56,12 72,25" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <polyline points="8,40 24,27 40,40 56,27 72,40" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <polyline points="8,55 24,42 40,55 56,42 72,55" fill="#1565c0" opacity="0.06" stroke="#1565c0" stroke-width="1.5"/>
+        <polyline points="8,70 24,57 40,70 56,57 72,70" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="5" fill="#1565c0" opacity="0.2"/>
+      </svg>`,
+      // 12 - Interlocking rings
+      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" fill="#fafafa"/>
+        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
+        <circle cx="30" cy="30" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="50" cy="30" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="30" cy="50" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="8" fill="#1565c0" opacity="0.15"/>
+      </svg>`,
+    ];
+
+    // Back-of-tile pattern (decorative azulejo motif)
+    const BACK_PATTERN = `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="80" height="80" fill="none"/>
+      <path d="M40 10L50 30H70L54 42L60 62L40 50L20 62L26 42L10 30H30Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+      <circle cx="40" cy="38" r="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+    </svg>`;
+
+    // ======================================
+    // GAME STATE
+    // ======================================
+    const TOTAL_PAIRS = 12;
+    const TOTAL_TILES = TOTAL_PAIRS * 2; // 24 tiles, 6x4 grid
+    let tiles = [];       // { id, patternIndex, matched, element }
+    let flipped = [];     // currently flipped tile indices (max 2)
+    let myScore = 0;
+    let theirScore = 0;
+    let myTurn = true;
+    let locked = false;   // prevent clicks during animations
+    let gameOver = false;
+    let soloMode = false;
+
+    // Points
+    function getPoints() { return parseInt(sessionStorage.getItem('puzzle-points') || '0'); }
+    function addPoints(n) {
+      const total = getPoints() + n;
+      sessionStorage.setItem('puzzle-points', total);
+      const el = document.getElementById('pts-num');
+      if (el) { el.textContent = total; el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 300); }
+      if (window.hudUpdatePoints) window.hudUpdatePoints();
+      return total;
+    }
+    document.getElementById('pts-num').textContent = getPoints();
+
+    function markCompleted(id) {
+      let completed;
+      try { completed = JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]'); } catch { completed = []; }
+      if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
+    }
+
+    // ======================================
+    // SHUFFLE (Fisher-Yates)
+    // ======================================
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Seeded shuffle so both players get the same board
+    function seededShuffle(arr, seed) {
+      let s = seed;
+      function next() { s = (s * 16807 + 0) % 2147483647; return (s - 1) / 2147483646; }
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(next() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // ======================================
+    // BUILD BOARD
+    // ======================================
+    function buildBoard(seed) {
+      const grid = document.getElementById('tile-grid');
+      grid.innerHTML = '';
+      tiles = [];
+      flipped = [];
+      myScore = 0;
+      theirScore = 0;
+      locked = false;
+      gameOver = false;
+      updateScores();
+
+      // Create pairs
+      let indices = [];
+      for (let i = 0; i < TOTAL_PAIRS; i++) {
+        indices.push(i, i);
+      }
+
+      if (seed !== undefined) {
+        seededShuffle(indices, seed);
+      } else {
+        shuffle(indices);
+      }
+
+      indices.forEach((patternIndex, i) => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.dataset.index = i;
+
+        const front = document.createElement('div');
+        front.className = 'tile-front';
+        front.innerHTML = `<div class="tile-front-pattern">${BACK_PATTERN}</div>`;
+
+        const back = document.createElement('div');
+        back.className = 'tile-back';
+        back.innerHTML = AZULEJO_PATTERNS[patternIndex];
+
+        tile.appendChild(front);
+        tile.appendChild(back);
+        tile.addEventListener('click', () => onTileClick(i));
+        grid.appendChild(tile);
+
+        tiles.push({ id: i, patternIndex, matched: false, element: tile });
+      });
+
+      updateTurnIndicator();
+    }
+
+    // ======================================
+    // TILE CLICK
+    // ======================================
+    function onTileClick(index) {
+      if (locked || gameOver) return;
+      if (!soloMode && !myTurn) return;
+      if (tiles[index].matched) return;
+      if (flipped.includes(index)) return;
+      if (flipped.length >= 2) return;
+
+      flipTile(index);
+      sendPeerData({ type: 'flip', index });
+
+      if (flipped.length === 2) {
+        locked = true;
+        checkMatch();
+      }
+    }
+
+    function flipTile(index) {
+      tiles[index].element.classList.add('flipped');
+      flipped.push(index);
+    }
+
+    function unflipTile(index) {
+      tiles[index].element.classList.remove('flipped');
+    }
+
+    function checkMatch() {
+      const [a, b] = flipped;
+      const isMatch = tiles[a].patternIndex === tiles[b].patternIndex;
+
+      if (isMatch) {
+        setTimeout(() => {
+          tiles[a].matched = true;
+          tiles[b].matched = true;
+          tiles[a].element.classList.add('matched', 'match-flash');
+          tiles[b].element.classList.add('matched', 'match-flash');
+
+          if (myTurn || soloMode) {
+            myScore++;
+          } else {
+            theirScore++;
+          }
+          updateScores();
+
+          // Points for finding a match
+          if (myTurn || soloMode) {
+            addPoints(10);
+          }
+
+          flipped = [];
+          locked = false;
+
+          // Check if game is over
+          if (tiles.every(t => t.matched)) {
+            endGame();
+          }
+          // Same player goes again on a match (no turn switch)
+        }, 600);
+      } else {
+        setTimeout(() => {
+          unflipTile(a);
+          unflipTile(b);
+          flipped = [];
+          locked = false;
+
+          // Switch turns
+          if (!soloMode) {
+            myTurn = !myTurn;
+            updateTurnIndicator();
+            sendPeerData({ type: 'turn-switch' });
+          }
+        }, 900);
+      }
+    }
+
+    // ======================================
+    // UI UPDATES
+    // ======================================
+    function updateScores() {
+      document.getElementById('my-score').textContent = myScore;
+      document.getElementById('their-score').textContent = theirScore;
+    }
+
+    function updateTurnIndicator() {
+      const el = document.getElementById('turn-indicator');
+      if (soloMode) {
+        el.textContent = 'find all the pairs!';
+        el.className = 'turn-indicator your-turn';
+        return;
+      }
+      if (myTurn) {
+        el.textContent = 'your turn';
+        el.className = 'turn-indicator your-turn';
+      } else {
+        el.textContent = 'their turn';
+        el.className = 'turn-indicator their-turn';
+      }
+    }
+
+    function endGame() {
+      gameOver = true;
+      markCompleted('mystery');
+
+      let title, sub;
+      if (soloMode) {
+        title = 'beautiful!';
+        sub = `you matched all ${TOTAL_PAIRS} pairs`;
+      } else if (myScore > theirScore) {
+        title = 'you win!';
+        sub = `${myScore} - ${theirScore}`;
+      } else if (theirScore > myScore) {
+        title = 'they win!';
+        sub = `${theirScore} - ${myScore}`;
+      } else {
+        title = 'it\'s a tie!';
+        sub = `${myScore} - ${theirScore}`;
+      }
+
+      const bonus = soloMode ? 50 : (myScore >= theirScore ? 60 : 30);
+      addPoints(bonus);
+
+      document.getElementById('victory-title').textContent = title;
+      document.getElementById('victory-sub').textContent = sub;
+      document.getElementById('victory-pts').textContent = '+' + bonus + ' pts';
+
+      setTimeout(() => {
+        document.getElementById('victory-overlay').classList.add('visible');
+      }, 800);
+
+      sendPeerData({ type: 'game-over' });
+    }
+
+    // ======================================
+    // PEERJS
+    // ======================================
+    const roomCode = sessionStorage.getItem('datenight-room');
+    const isHost = sessionStorage.getItem('datenight-host') === '1';
+    let peer = null, conn = null;
+
+    function peerIdForPuzzle(code) { return 'shahhub-puzzle-mystery-' + code; }
+    function sendPeerData(data) { if (conn && conn.open) conn.send(data); }
+
+    function setupPeer() {
+      if (!roomCode) return;
+      if (isHost) {
+        peer = new Peer(peerIdForPuzzle(roomCode));
+        peer.on('open', () => {
+          peer.on('connection', c => {
+            conn = c;
+            c.on('data', handlePeerData);
+            c.on('close', () => { conn = null; });
+            // Host sends the seed so both boards match
+            const seed = Math.floor(Math.random() * 2147483646) + 1;
+            buildBoard(seed);
+            myTurn = true;
+            updateTurnIndicator();
+            c.on('open', () => {
+              c.send({ type: 'init', seed, hostStarts: true });
+            });
+          });
+        });
+        peer.on('error', () => {});
+      } else {
+        peer = new Peer();
+        peer.on('open', () => tryConnect(0));
+        peer.on('error', () => {});
+      }
+    }
+
+    function tryConnect(attempt) {
+      if (attempt > 15) return;
+      const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
+      c.on('open', () => { conn = c; c.on('data', handlePeerData); });
+      c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
+    }
+
+    function handlePeerData(data) {
+      if (data.type === 'init') {
+        // Guest receives the seed and builds the same board
+        buildBoard(data.seed);
+        myTurn = !data.hostStarts; // guest goes second
+        updateTurnIndicator();
+      } else if (data.type === 'flip') {
+        // Partner flipped a tile
+        flipTile(data.index);
+        if (flipped.length === 2) {
+          locked = true;
+          checkMatch();
+        }
+      } else if (data.type === 'turn-switch') {
+        myTurn = !myTurn;
+        updateTurnIndicator();
+      } else if (data.type === 'restart') {
+        buildBoard(data.seed);
+        myTurn = !data.hostStarts;
+        updateTurnIndicator();
+      } else if (data.type === 'game-over') {
+        if (!gameOver) {
+          gameOver = true;
+          markCompleted('mystery');
+          // The other player's endGame handles their own victory screen
+        }
+      }
+    }
+
+    // ======================================
+    // CONTROLS
+    // ======================================
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      const seed = Math.floor(Math.random() * 2147483646) + 1;
+      buildBoard(seed);
+      myTurn = isHost || soloMode;
+      updateTurnIndicator();
+      if (!soloMode) {
+        sendPeerData({ type: 'restart', seed, hostStarts: true });
+      }
+    });
+
+    document.getElementById('skip-btn').addEventListener('click', () => {
+      markCompleted('mystery');
+      window.location.href = '../../world/?after=mystery';
+    });
+
+    // ======================================
+    // SOLO MODE
+    // ======================================
+    function enterSoloMode() {
+      soloMode = true;
+      myTurn = true;
+      document.getElementById('page-sub').textContent = 'flip tiles and find all the matching pairs';
+      document.querySelector('.score-row').style.display = 'none';
+      const howToPlay = document.querySelector('.how-to-play ol');
+      howToPlay.innerHTML = `
+        <li>Click any tile to flip it over</li>
+        <li>Flip a second tile to try for a match</li>
+        <li>If they match, they stay revealed!</li>
+        <li>Find all ${TOTAL_PAIRS} pairs to win</li>
+      `;
+      buildBoard();
+    }
+
+    // ======================================
+    // CLICK ANYWHERE PARTICLES
+    // ======================================
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button, a, input, .tile, [data-dn-cycle]')) return;
+      if (typeof DN_THEMES !== 'undefined' && typeof dnThemeIndex !== 'undefined' && typeof dnSpawnParticles !== 'undefined') {
+        const theme = DN_THEMES[dnThemeIndex];
+        dnSpawnParticles(e.clientX, e.clientY, theme);
+      }
+    });
+
+    // ======================================
+    // INIT
+    // ======================================
+    if (roomCode) {
+      setupPeer();
+      // Board will be built when peer connects and seed is shared
+      // Show a waiting state
+      if (isHost) {
+        document.getElementById('turn-indicator').textContent = 'waiting for partner...';
+      } else {
+        document.getElementById('turn-indicator').textContent = 'connecting...';
+      }
+    } else {
+      enterSoloMode();
+    }
+  </script>
+</body>
+</html>
