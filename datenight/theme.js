@@ -332,105 +332,111 @@ function dnBurstRing(x, y, theme) {
   }
 }
 
-// poster — ink splatter / paint splash with dripping blobs
+// poster — vintage sunburst rays with spinning retro stars
 function dnBurstChars(x, y, theme) {
   const colors = [theme.accent, theme.text, '#ff9100', '#ffcc02', '#e65100'];
 
-  // Main splatter blobs — irregular shapes that burst outward like thrown paint
-  const blobCount = 10;
-  for (let i = 0; i < blobCount; i++) {
-    const blob = document.createElement('div');
-    const angle = (Math.PI * 2 * i) / blobCount + (Math.random() - 0.5) * 0.6;
-    const dist = 40 + Math.random() * 120;
-    const size = 12 + Math.random() * 30;
+  // Sunburst rays — radial lines that shoot outward like a classic poster
+  const rayCount = 14;
+  for (let i = 0; i < rayCount; i++) {
+    const ray = document.createElement('div');
+    const angle = (Math.PI * 2 * i) / rayCount + (Math.random() - 0.5) * 0.2;
+    const len = 60 + Math.random() * 80;
+    const width = 2 + Math.random() * 3;
     const color = colors[Math.floor(Math.random() * colors.length)];
-    // Irregular border-radius for organic splatter shape
-    const r1 = 30 + Math.random() * 40;
-    const r2 = 30 + Math.random() * 40;
-    const r3 = 30 + Math.random() * 40;
-    const r4 = 30 + Math.random() * 40;
-    blob.style.cssText = `
+    const deg = (angle * 180) / Math.PI;
+    ray.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
-      width:${size}px; height:${size * (0.7 + Math.random() * 0.6)}px;
-      background:${color};
-      border-radius:${r1}% ${r2}% ${r3}% ${r4}%;
+      width:0; height:${width}px;
+      background:linear-gradient(to right, ${color}, transparent);
+      border-radius:${width}px;
       pointer-events:none; z-index:99999; opacity:0;
-      transform:translate(-50%,-50%) scale(0) rotate(${Math.random() * 360}deg);
-      will-change:transform,opacity,left,top;
+      transform-origin:0 50%;
+      transform:rotate(${deg}deg);
+      will-change:width,opacity;
     `;
-    document.body.appendChild(blob);
-    const dur = 300 + Math.random() * 200;
-    const delay = i * 15;
+    document.body.appendChild(ray);
+    const dur = 250 + Math.random() * 150;
+    const delay = i * 12;
     setTimeout(() => {
-      blob.style.transition = `left ${dur}ms cubic-bezier(0.22,1,0.36,1), top ${dur}ms cubic-bezier(0.22,1,0.36,1), transform ${dur * 0.5}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.3}ms ease`;
-      blob.style.left = (x + Math.cos(angle) * dist) + 'px';
-      blob.style.top = (y + Math.sin(angle) * dist) + 'px';
-      blob.style.transform = `translate(-50%,-50%) scale(1) rotate(${Math.random() * 360}deg)`;
-      blob.style.opacity = '0.85';
+      ray.style.transition = `width ${dur}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.4}ms ease`;
+      ray.style.width = len + 'px';
+      ray.style.opacity = '0.8';
     }, delay);
     setTimeout(() => {
-      blob.style.transition = `opacity 250ms ease-out, transform 250ms ease-in`;
-      blob.style.opacity = '0';
-      blob.style.transform += ' scale(0.6)';
-    }, delay + dur * 0.6);
-    setTimeout(() => blob.remove(), delay + dur + 100);
+      ray.style.transition = `opacity 200ms ease-out, width 200ms ease-in`;
+      ray.style.opacity = '0';
+      ray.style.width = (len * 0.5) + 'px';
+    }, delay + dur * 0.65);
+    setTimeout(() => ray.remove(), delay + dur + 150);
   }
 
-  // Paint drips — thin streaks that stretch downward from splatters
-  const dripCount = 6;
-  for (let i = 0; i < dripCount; i++) {
-    const drip = document.createElement('div');
-    const offsetX = (Math.random() - 0.5) * 160;
+  // Spinning retro stars — 4-point stars that scale up and rotate
+  const starCount = 8;
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement('div');
+    const angle = (Math.PI * 2 * i) / starCount + (Math.random() - 0.5) * 0.5;
+    const dist = 50 + Math.random() * 100;
+    const size = 8 + Math.random() * 16;
     const color = colors[Math.floor(Math.random() * colors.length)];
-    const width = 2 + Math.random() * 4;
-    drip.style.cssText = `
-      position:fixed; left:${x + offsetX}px; top:${y}px;
-      width:${width}px; height:0;
-      background:linear-gradient(to bottom, ${color}, transparent);
-      border-radius:0 0 ${width}px ${width}px;
-      pointer-events:none; z-index:99998; opacity:0.7;
-      will-change:height,opacity,top;
-    `;
-    document.body.appendChild(drip);
-    const dur = 400 + Math.random() * 300;
-    const delay = 80 + Math.random() * 120;
-    const dripLen = 30 + Math.random() * 60;
-    setTimeout(() => {
-      drip.style.transition = `height ${dur}ms cubic-bezier(0.4,0,0.2,1), top ${dur * 0.5}ms ease-out, opacity ${dur}ms ease`;
-      drip.style.height = dripLen + 'px';
-      drip.style.top = (y + 10 + Math.random() * 40) + 'px';
-    }, delay);
-    setTimeout(() => { drip.style.opacity = '0'; }, delay + dur * 0.7);
-    setTimeout(() => drip.remove(), delay + dur + 50);
-  }
-
-  // Tiny specks — fine mist around the splatter for texture
-  const speckCount = 15;
-  for (let i = 0; i < speckCount; i++) {
-    const speck = document.createElement('div');
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 20 + Math.random() * 140;
-    const size = 2 + Math.random() * 4;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    speck.style.cssText = `
+    const spin = 90 + Math.random() * 270;
+    // 4-point star using clip-path
+    star.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
       width:${size}px; height:${size}px;
-      background:${color}; border-radius:50%;
-      pointer-events:none; z-index:99997; opacity:0;
-      transform:translate(-50%,-50%);
-      will-change:opacity,left,top;
+      background:${color};
+      clip-path:polygon(50% 0%, 60% 35%, 100% 50%, 60% 65%, 50% 100%, 40% 65%, 0% 50%, 40% 35%);
+      pointer-events:none; z-index:99998; opacity:0;
+      transform:translate(-50%,-50%) scale(0) rotate(0deg);
+      will-change:transform,opacity,left,top;
     `;
-    document.body.appendChild(speck);
-    const dur = 200 + Math.random() * 200;
-    const delay = Math.random() * 100;
+    document.body.appendChild(star);
+    const dur = 350 + Math.random() * 200;
+    const delay = 30 + i * 20;
     setTimeout(() => {
-      speck.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, opacity ${dur * 0.5}ms ease`;
-      speck.style.left = (x + Math.cos(angle) * dist) + 'px';
-      speck.style.top = (y + Math.sin(angle) * dist) + 'px';
-      speck.style.opacity = '0.6';
+      star.style.transition = `left ${dur}ms cubic-bezier(0.22,1,0.36,1), top ${dur}ms cubic-bezier(0.22,1,0.36,1), transform ${dur}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.3}ms ease`;
+      star.style.left = (x + Math.cos(angle) * dist) + 'px';
+      star.style.top = (y + Math.sin(angle) * dist) + 'px';
+      star.style.transform = `translate(-50%,-50%) scale(1) rotate(${spin}deg)`;
+      star.style.opacity = '0.9';
     }, delay);
-    setTimeout(() => { speck.style.opacity = '0'; }, delay + dur * 0.7);
-    setTimeout(() => speck.remove(), delay + dur + 50);
+    setTimeout(() => {
+      star.style.transition = `opacity 200ms ease-out, transform 200ms ease-in`;
+      star.style.opacity = '0';
+      star.style.transform += ' scale(0.3)';
+    }, delay + dur * 0.6);
+    setTimeout(() => star.remove(), delay + dur + 100);
+  }
+
+  // Diamond confetti — small rotating diamonds that scatter outward
+  const diamondCount = 12;
+  for (let i = 0; i < diamondCount; i++) {
+    const diamond = document.createElement('div');
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 30 + Math.random() * 130;
+    const size = 4 + Math.random() * 6;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const spin = 180 + Math.random() * 360;
+    diamond.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      background:${color};
+      transform:translate(-50%,-50%) rotate(45deg) scale(0);
+      pointer-events:none; z-index:99997; opacity:0;
+      will-change:transform,opacity,left,top;
+    `;
+    document.body.appendChild(diamond);
+    const dur = 300 + Math.random() * 200;
+    const delay = Math.random() * 80;
+    setTimeout(() => {
+      diamond.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, transform ${dur}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.4}ms ease`;
+      diamond.style.left = (x + Math.cos(angle) * dist) + 'px';
+      diamond.style.top = (y + Math.sin(angle) * dist) + 'px';
+      diamond.style.transform = `translate(-50%,-50%) rotate(${spin}deg) scale(1)`;
+      diamond.style.opacity = '0.7';
+    }, delay);
+    setTimeout(() => { diamond.style.opacity = '0'; }, delay + dur * 0.7);
+    setTimeout(() => diamond.remove(), delay + dur + 50);
   }
 }
 
