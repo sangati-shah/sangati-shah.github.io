@@ -163,6 +163,23 @@ body.lights-off {
   margin-top: 2rem;
 }
 
+/* ── CONGRATS BANNER ── */
+.room-congrats {
+  margin-bottom: 1.2em;
+  padding: 0.8em 1.5em;
+  background: color-mix(in srgb, var(--dn-accent) 8%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--dn-accent) 20%, transparent);
+  border-radius: 14px;
+  display: inline-block;
+}
+
+.congrats-text {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--dn-accent);
+  font-style: italic;
+}
+
 /* ── PARTNER CURSOR ── */
 .partner-cursor {
   position: fixed;
@@ -189,32 +206,6 @@ body.lights-off {
   40% { transform: translateX(8px); }
   60% { transform: translateX(-6px); }
   80% { transform: translateX(6px); }
-}
-
-/* ── HOME SCREEN ── */
-.home-content {
-  text-align: center;
-  position: relative;
-  padding: 0 1.5rem;
-}
-
-.home-title {
-  font-family: var(--dn-heading-font);
-  font-size: clamp(3rem, 9vw, 5rem);
-  font-weight: 600;
-  color: var(--dn-text);
-  margin-bottom: 0.1em;
-  cursor: pointer;
-  transition: color 0.6s ease, font-family 0.3s ease;
-  user-select: none;
-}
-
-.home-flavor {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  color: var(--dn-sub);
-  font-style: italic;
-  margin-bottom: 1.5em;
 }
 
 /* ── Waiting Banner ── */

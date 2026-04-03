@@ -12,8 +12,9 @@
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
-  <!-- Room Gate -->
+  <!-- One unified component — steps revealed progressively -->
   <div class="room-gate" id="room-gate">
+
     <!-- Step 1: Choose join or new -->
     <div class="room-content" id="gate-step-1">
       <h1 class="room-title" data-dn-cycle>our corner</h1>
@@ -25,7 +26,7 @@
       </div>
     </div>
 
-    <!-- Step 2a: Join — enter code to join existing room -->
+    <!-- Step 2a: Join — enter code -->
     <div class="room-content" id="gate-step-join" style="display:none;">
       <h1 class="room-title" data-dn-cycle>our corner</h1>
       <p class="room-hint">enter the room code</p>
@@ -43,7 +44,7 @@
       <div id="join-status" class="room-status"></div>
     </div>
 
-    <!-- Step 2b: New — enter a code for your new room -->
+    <!-- Step 2b: New — pick a code -->
     <div class="room-content" id="gate-step-new" style="display:none;">
       <h1 class="room-title" data-dn-cycle>our corner</h1>
       <p class="room-hint">pick a code for your room</p>
@@ -60,35 +61,42 @@
 
       <div id="new-status" class="room-status"></div>
     </div>
-  </div>
 
-  <!-- Main Content (hidden until in a room) -->
-  <div class="home-content" id="home-content" style="display:none;">
+    <!-- Step 3: Home — same component, more stuff visible -->
+    <div class="room-content" id="gate-step-home" style="display:none;">
+      <h1 class="room-title" data-dn-cycle>our corner</h1>
+      <p class="room-hint" id="home-flavor">every love story needs an adventure</p>
 
-    <h1 class="home-title" data-dn-cycle>our corner</h1>
-    <p class="home-flavor" id="home-flavor">every love story needs an adventure</p>
+      <!-- Congrats banner (hidden by default, shown after completing adventure) -->
+      <div class="room-congrats" id="room-congrats" style="display:none;">
+        <p class="congrats-text" id="congrats-text"></p>
+      </div>
 
-    <!-- Character preview (shown once created) -->
-    <div class="home-char-preview" id="home-char-preview" style="display:none;">
-      <div class="home-char" id="home-char-sprite"></div>
-      <div class="home-char-name" id="home-char-name"></div>
+      <!-- Character preview (shown once created) -->
+      <div class="home-char-preview" id="home-char-preview" style="display:none;">
+        <div class="home-char" id="home-char-sprite"></div>
+        <div class="home-char-name" id="home-char-name"></div>
+      </div>
+
+      <p class="waiting-banner" id="waiting-banner" style="display:none;">waiting for partner &middot; <span id="waiting-code"></span></p>
+
+      <div class="room-buttons" style="flex-direction:column;align-items:center;">
+        <div class="home-actions">
+          <a href="character/" class="home-action-btn home-action-create">
+            <span class="ha-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="2"/></svg></span>
+            <span class="ha-label">create me</span>
+          </a>
+          <a href="#" class="home-action-btn home-action-go" id="start-adventure-btn">
+            <span class="ha-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76l-6.36 2.12-2.12 6.36 6.36-2.12z"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span>
+            <span class="ha-label" id="adventure-label">start adventure</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="home-sparkles" id="home-sparkles"></div>
+      <p class="room-info" id="room-info"></p>
     </div>
 
-    <p class="waiting-banner" id="waiting-banner" style="display:none;">waiting for partner &middot; <span id="waiting-code"></span></p>
-
-    <div class="home-actions">
-      <a href="character/" class="home-action-btn home-action-create">
-        <span class="ha-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="2"/></svg></span>
-        <span class="ha-label">create me</span>
-      </a>
-      <a href="#" class="home-action-btn home-action-go" id="start-adventure-btn">
-        <span class="ha-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76l-6.36 2.12-2.12 6.36 6.36-2.12z"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span>
-        <span class="ha-label">start adventure</span>
-      </a>
-    </div>
-
-    <div class="home-sparkles" id="home-sparkles"></div>
-    <p class="room-info" id="room-info"></p>
   </div>
 
   <!-- Partner cursor -->
@@ -101,13 +109,13 @@
 
   <script>
     const gate = document.getElementById('room-gate');
-    const content = document.getElementById('home-content');
     const partnerCursor = document.getElementById('partner-cursor');
 
     // Gate steps
     const step1 = document.getElementById('gate-step-1');
     const stepJoin = document.getElementById('gate-step-join');
     const stepNew = document.getElementById('gate-step-new');
+    const stepHome = document.getElementById('gate-step-home');
     const joinCodeInput = document.getElementById('join-code-input');
     const newCodeInput = document.getElementById('new-code-input');
     const joinBtn = document.getElementById('join-btn');
@@ -126,8 +134,8 @@
       step1.style.display = 'none';
       stepJoin.style.display = 'none';
       stepNew.style.display = 'none';
+      stepHome.style.display = 'none';
       step.style.display = '';
-      // Focus the input if present
       const input = step.querySelector('.room-code-input');
       if (input) setTimeout(() => input.focus(), 50);
     }
@@ -148,15 +156,15 @@
       roomCode = code;
       sessionStorage.setItem('datenight-room', code);
       sessionStorage.setItem('datenight-host', isHost ? '1' : '0');
-      gate.classList.add('gate-unlock');
-      setTimeout(() => {
-        gate.style.display = 'none';
-        content.style.display = '';
-      }, 600);
+
+      // Smooth transition to home step (same component, no overlay shift)
+      showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + code;
+      showHomeChar();
+      showCongrats();
     }
 
-    // Auto-format inputs (letters only, uppercase)
+    // Auto-format inputs
     function formatInput(input) {
       input.addEventListener('input', () => {
         input.value = input.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4);
@@ -165,13 +173,12 @@
     formatInput(joinCodeInput);
     formatInput(newCodeInput);
 
-    // ── Step navigation ──
+    // Step navigation
     document.getElementById('goto-join-btn').addEventListener('click', () => showStep(stepJoin));
     document.getElementById('goto-new-btn').addEventListener('click', () => showStep(stepNew));
     document.getElementById('join-back-btn').addEventListener('click', () => showStep(step1));
     document.getElementById('new-back-btn').addEventListener('click', () => showStep(step1));
 
-    // Enter on input → submit
     joinCodeInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && joinCodeInput.value.length === 4) joinBtn.click();
     });
@@ -197,12 +204,10 @@
         isHost = true;
         enterRoom(code);
 
-        // Show waiting banner
         const banner = document.getElementById('waiting-banner');
         banner.style.display = '';
         document.getElementById('waiting-code').textContent = code;
 
-        // Listen for partner to join later
         peer.on('connection', (c) => {
           conn = c;
           c.on('open', () => {
@@ -310,6 +315,36 @@
       document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner disconnected)';
     }
 
+    // ── Congrats & journey progress ──
+    function showCongrats() {
+      const congratsEl = document.getElementById('room-congrats');
+      const congratsText = document.getElementById('congrats-text');
+      const flavorEl = document.getElementById('home-flavor');
+      const labelEl = document.getElementById('adventure-label');
+
+      let completed = [];
+      try { completed = JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch {}
+      let heartCount = 0;
+      try { heartCount = JSON.parse(sessionStorage.getItem('datenight-hearts') || '[]').length; } catch {}
+
+      const allDone = completed.length >= 3;
+      const someDone = completed.length > 0;
+
+      if (allDone) {
+        congratsEl.style.display = '';
+        congratsText.textContent = 'you finished the adventure together!';
+        flavorEl.textContent = 'your journey doesn\'t end here — there\'s always more to explore';
+        labelEl.textContent = 'continue journey';
+      } else if (someDone) {
+        const progress = completed.length === 1 ? 'one adventure down' : completed.length + ' adventures down';
+        const heartsMsg = heartCount > 0 ? ' \u00b7 ' + heartCount + ' hearts found' : '';
+        congratsEl.style.display = '';
+        congratsText.textContent = progress + heartsMsg + ' — keep going!';
+        flavorEl.textContent = 'your adventure continues...';
+        labelEl.textContent = 'continue adventure';
+      }
+    }
+
     // ── URL params ──
     const params = new URLSearchParams(window.location.search);
     const urlRoom = params.get('room');
@@ -320,31 +355,30 @@
       setTimeout(() => joinBtn.click(), 300);
     }
 
-    // Coming back from character creator — skip gate, show home
+    // Coming back from character creator
     if (params.get('from') === 'character' && sessionStorage.getItem('datenight-room')) {
-      gate.style.display = 'none';
-      content.style.display = '';
       roomCode = sessionStorage.getItem('datenight-room');
       isHost = sessionStorage.getItem('datenight-host') === '1';
+      showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + roomCode;
       history.replaceState(null, '', './');
       showHomeChar();
+      showCongrats();
     }
 
-    // Coming back from map — skip gate, show home
+    // Coming back from map
     if (params.get('from') === 'map' && sessionStorage.getItem('datenight-room')) {
-      gate.style.display = 'none';
-      content.style.display = '';
       roomCode = sessionStorage.getItem('datenight-room');
       isHost = sessionStorage.getItem('datenight-host') === '1';
+      showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + roomCode;
       history.replaceState(null, '', './');
       showHomeChar();
+      showCongrats();
     }
 
     if (params.get('scared') === '1') {
-      gate.style.display = 'none';
-      content.style.display = '';
+      showStep(stepHome);
       document.getElementById('home-flavor').textContent = 'phew that was scary, should we try something different?';
       history.replaceState(null, '', './');
     }
@@ -369,23 +403,28 @@
           </div>`;
         nameEl.textContent = c.name;
         preview.style.display = '';
-        // Update flavor text
-        const greetings = [
-          'ready for an adventure, ' + c.name + '?',
-          'looking good, ' + c.name + '!',
-          'let\'s make some memories, ' + c.name,
-          c.name + '! our story awaits...',
-        ];
-        document.getElementById('home-flavor').textContent =
-          greetings[Math.floor(Math.random() * greetings.length)];
+
+        // Only update flavor if no congrats is showing
+        let completed = [];
+        try { completed = JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch {}
+        if (completed.length === 0) {
+          const greetings = [
+            'ready for an adventure, ' + c.name + '?',
+            'looking good, ' + c.name + '!',
+            'let\'s make some memories, ' + c.name,
+            c.name + '! our story awaits...',
+          ];
+          document.getElementById('home-flavor').textContent =
+            greetings[Math.floor(Math.random() * greetings.length)];
+        }
       } catch {}
     }
 
     showHomeChar();
+    showCongrats();
 
-    // ── Click anywhere → particle burst ──
+    // ── Click → particle burst ──
     document.addEventListener('click', (e) => {
-      // Don't fire on interactive elements
       if (e.target.closest('button, a, input, [data-dn-cycle]')) return;
       const theme = DN_THEMES[dnThemeIndex];
       dnSpawnParticles(e.clientX, e.clientY, theme);
@@ -398,7 +437,7 @@
       for (let i = 0; i < 12; i++) {
         const s = document.createElement('div');
         s.className = 'sparkle';
-        s.textContent = ['✦', '·', '✧', '˚', '⊹'][Math.floor(Math.random() * 5)];
+        s.textContent = ['\u2726', '\u00b7', '\u2727', '\u02da', '\u2239'][Math.floor(Math.random() * 5)];
         s.style.left = (10 + Math.random() * 80) + '%';
         s.style.animationDelay = (Math.random() * 4) + 's';
         s.style.animationDuration = (3 + Math.random() * 3) + 's';
@@ -414,23 +453,19 @@
 
       const charPreview = document.getElementById('home-char-preview');
       const charSprite = document.getElementById('home-char-sprite');
-
-      // Get character's current screen position
       const charRect = charSprite ? charSprite.getBoundingClientRect() : null;
 
-      // 1) Zoom away all content EXCEPT the character sprite
-      const allContent = content.querySelectorAll('.home-title, .home-flavor, .home-actions, .home-sparkles, .room-info, .waiting-banner, .home-char-name');
+      // Zoom away all content except character
+      const allContent = stepHome.querySelectorAll('.room-title, .room-hint, .room-congrats, .room-buttons, .home-sparkles, .room-info, .waiting-banner, .home-char-name');
       allContent.forEach(el => {
         el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 1, 1), opacity 0.4s ease';
         el.style.transform = 'scale(2.5)';
         el.style.opacity = '0';
       });
 
-      // 2) Move character to fixed center of screen
+      // Move character to center
       if (charSprite && charRect) {
-        // Stop the idle bounce
         charSprite.style.animation = 'none';
-        // Move preview to fixed positioning
         charPreview.style.transition = 'none';
         charPreview.style.position = 'fixed';
         charPreview.style.top = charRect.top + 'px';
@@ -439,7 +474,6 @@
         charPreview.style.zIndex = '10000';
         charPreview.style.margin = '0';
 
-        // Animate to center
         requestAnimationFrame(() => {
           charPreview.style.transition = 'top 0.5s ease, left 0.5s ease';
           charPreview.style.top = (window.innerHeight / 2 - charRect.height / 2) + 'px';
@@ -447,11 +481,10 @@
         });
       }
 
-      // 3) After zoom-out, fade background and navigate
+      // Fade and navigate
       setTimeout(() => {
         document.body.style.transition = 'opacity 0.25s ease';
         document.body.style.opacity = '0';
-        // Tell the world page to do the drop-in animation
         sessionStorage.setItem('datenight-drop-in', '1');
         setTimeout(() => { window.location.href = 'world/'; }, 280);
       }, 550);
