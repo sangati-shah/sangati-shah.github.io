@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>flameboi & lavagirl</title>
+  <title>flameboi & aguagurl</title>
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../hud.css" />
   <script src="../../theme.js"></script>
@@ -420,7 +420,7 @@
       100% { transform: scaleX(1.08) scaleY(1.05); }
     }
 
-    /* Lavagirl — flowing lava/magenta body */
+    /* Aguagurl — flowing lava/magenta body */
     .player-water .p-lava-head {
       width: 16px; height: 14px;
       background: linear-gradient(180deg, #dd66ff, #9933cc);
@@ -665,9 +665,9 @@
     </div>
   </div>
 
-  <!-- Lavagirl -->
+  <!-- Aguagurl -->
   <div class="player player-water" id="player-water">
-    <div class="player-label" id="water-label">lavagirl</div>
+    <div class="player-label" id="water-label">aguagurl</div>
     <div class="player-inner" id="water-inner">
       <div class="p-lava-head"></div>
       <div class="p-face">
@@ -683,7 +683,7 @@
     <div class="victory-card">
       <div class="victory-emoji">&#x1F525;&#x1F30B;</div>
       <div class="victory-title">temple cleared!</div>
-      <div class="victory-sub">flameboi & lavagirl, unstoppable</div>
+      <div class="victory-sub">flameboi & aguagurl, unstoppable</div>
       <div class="victory-pts" id="victory-pts">+100 pts</div>
       <a href="../../world/?after=elements" class="victory-btn">back to map &rarr;</a>
     </div>
@@ -691,8 +691,8 @@
 
   <!-- Waiting for partner -->
   <div class="waiting-overlay" id="waiting-overlay">
-    <div class="waiting-title">flameboi & lavagirl</div>
-    <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + lava = unstoppable</div>
+    <div class="waiting-title">flameboi & aguagurl</div>
+    <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + water = unstoppable</div>
     <button class="solo-btn" id="solo-btn">play solo</button>
   </div>
 
@@ -987,7 +987,7 @@ function applyCharColors() {
   const fireChar = isHost ? myChar : partnerChar;
   const waterChar = isHost ? partnerChar : myChar;
   document.getElementById('fire-label').textContent = fireChar.name || 'flameboi';
-  document.getElementById('water-label').textContent = waterChar.name || 'lavagirl';
+  document.getElementById('water-label').textContent = waterChar.name || 'aguagurl';
 }
 applyCharColors();
 
@@ -1201,7 +1201,7 @@ function updateSwitchHint() {
   const hint = document.getElementById('switch-hint');
   if (soloMode) {
     const isMobile = window.matchMedia('(pointer: coarse)').matches;
-    const label = soloActiveRole === 'fire' ? 'flameboi' : 'lavagirl';
+    const label = soloActiveRole === 'fire' ? 'flameboi' : 'aguagurl';
     const cls = soloActiveRole === 'fire' ? 'active-fire' : 'active-water';
     const switchKey = isMobile ? 'tap switch' : 'press tab to switch';
     hint.innerHTML = switchKey + ' <span class="active-indicator ' + cls + '">' + label + '</span>';
