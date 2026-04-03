@@ -37,6 +37,7 @@
       width: 100%; height: 3px;
       background: var(--dn-accent, #e85d75);
       z-index: 10;
+      transition: opacity 2s ease;
     }
 
     /* ── Obstacles: simple boxes ── */
@@ -178,20 +179,54 @@
       opacity: 0.55;
     }
 
-    /* ── Skip Button ── */
-    .skip-btn {
-      position: fixed; top: 1.2rem;
-      right: 1.2rem;
+    /* ── Skip / Nav Menu ── */
+    .nav-menu-btn {
+      position: fixed; top: 1.2rem; right: 1.2rem;
       font-family: var(--dn-heading-font, 'Caveat', cursive);
       font-size: 0.95rem; color: var(--dn-sub, #999);
-      text-decoration: none; z-index: 300;
       cursor: pointer; border: none; background: none;
-      opacity: 0.6;
+      z-index: 310;
+      opacity: 0.7;
       transition: opacity 0.3s, color 0.3s;
+      padding: 4px 8px;
     }
-    .skip-btn:hover { opacity: 1; color: var(--dn-text, #555); }
-    .heart-counter.visible ~ .skip-btn,
-    .skip-btn.with-hearts { top: 2.8rem; }
+    .nav-menu-btn:hover { opacity: 1; color: var(--dn-text, #555); }
+    .heart-counter.visible ~ .nav-menu-btn { top: 2.6rem; }
+
+    .nav-dropdown {
+      position: fixed; top: 2.6rem; right: 1.2rem;
+      font-family: 'Caveat', cursive;
+      background: var(--dn-bg, #f7f2e7);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+      border-radius: 10px;
+      padding: 6px 0;
+      z-index: 310;
+      min-width: 140px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: none;
+    }
+    .nav-dropdown.open { display: block; }
+    .heart-counter.visible ~ .nav-dropdown { top: 4rem; }
+    .nav-dropdown button {
+      display: block; width: 100%;
+      background: none; border: none;
+      padding: 7px 16px;
+      text-align: left;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--dn-sub, #999);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-dropdown button:hover {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 10%, transparent);
+      color: var(--dn-text, #555);
+    }
+    .nav-dropdown .nav-sep {
+      height: 1px;
+      margin: 4px 12px;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 15%, transparent);
+    }
 
     /* ── Glowing Adventure Box ── */
     .adventure-box {
@@ -372,45 +407,17 @@
       display: flex; align-items: center; justify-content: center;
       transition: opacity 0.4s ease;
     }
-    .drop-in-overlay.fade-out {
-      opacity: 0; pointer-events: none;
-    }
-    .drop-in-char {
-      position: relative;
-      width: 72px; height: 108px;
-    }
-    .drop-in-char .dc-hair {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 42px; height: 24px; border-radius: 50% 50% 30% 30%; z-index: 3;
-    }
-    .drop-in-char .dc-face {
-      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
-      width: 34px; height: 36px; border-radius: 50%; z-index: 2;
-    }
-    .drop-in-char .dc-eyes {
-      position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
-      width: 20px; display: flex; justify-content: space-between; z-index: 4;
-    }
+    .drop-in-overlay.fade-out { opacity: 0; pointer-events: none; }
+    .drop-in-char { position: relative; width: 72px; height: 108px; }
+    .drop-in-char .dc-hair { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 42px; height: 24px; border-radius: 50% 50% 30% 30%; z-index: 3; }
+    .drop-in-char .dc-face { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 34px; height: 36px; border-radius: 50%; z-index: 2; }
+    .drop-in-char .dc-eyes { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); width: 20px; display: flex; justify-content: space-between; z-index: 4; }
     .drop-in-char .dc-eye { width: 5px; height: 6px; background: #1a1a1a; border-radius: 50%; }
-    .drop-in-char .dc-mouth {
-      position: absolute; top: 35px; left: 50%; transform: translateX(-50%);
-      width: 10px; height: 5px; border-bottom: 2px solid #c0756b; border-radius: 0 0 50% 50%; z-index: 4;
-    }
-    .drop-in-char .dc-body {
-      position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
-      width: 36px; height: 30px; border-radius: 8px 8px 4px 4px; z-index: 1;
-    }
-    .drop-in-char .dc-legs {
-      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 5px;
-    }
-    .drop-in-char .dc-leg {
-      width: 12px; height: 24px; border-radius: 4px 4px 6px 6px;
-    }
-
-    .drop-in-wrapper {
-      transition: transform 0.6s cubic-bezier(0.22, 1.2, 0.36, 1);
-    }
+    .drop-in-char .dc-mouth { position: absolute; top: 35px; left: 50%; transform: translateX(-50%); width: 10px; height: 5px; border-bottom: 2px solid #c0756b; border-radius: 0 0 50% 50%; z-index: 4; }
+    .drop-in-char .dc-body { position: absolute; top: 45px; left: 50%; transform: translateX(-50%); width: 36px; height: 30px; border-radius: 8px 8px 4px 4px; z-index: 1; }
+    .drop-in-char .dc-legs { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+    .drop-in-char .dc-leg { width: 12px; height: 24px; border-radius: 4px 4px 6px 6px; }
+    .drop-in-wrapper { transition: transform 0.6s cubic-bezier(0.22, 1.2, 0.36, 1); }
 
     @keyframes squish-land {
       0% { transform: scaleY(1) scaleX(1); }
@@ -418,15 +425,153 @@
       60% { transform: scaleY(1.05) scaleX(0.97); }
       100% { transform: scaleY(1) scaleX(1); }
     }
-    .drop-in-char.landed {
-      animation: squish-land 0.35s ease forwards;
-      transform-origin: bottom center;
+    .drop-in-char.landed { animation: squish-land 0.35s ease forwards; transform-origin: bottom center; }
+
+    /* ── Ending Overlay ── */
+    .ending-overlay {
+      position: fixed; inset: 0;
+      z-index: 7000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2s ease;
+      overflow: hidden;
+    }
+    .ending-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .ending-sky {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, #0a0a2e 0%, #1a1a4e 40%, #2d1b4e 70%, #3d1b3e 100%);
+    }
+
+    .ending-star {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 2s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.3; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .ending-ground {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 100px;
+      background: linear-gradient(to bottom, transparent, #0a0a2e);
+    }
+
+    .ending-chars {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 8px;
+      z-index: 10;
+    }
+
+    .ending-message {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      line-height: 1.8;
+      white-space: pre-line;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+    .ending-message.visible { opacity: 1; }
+
+    .ending-stats {
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .ending-stats.visible { opacity: 1; }
+
+    .ending-actions {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 24px;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .ending-actions.visible { opacity: 1; }
+    .ending-actions a {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .ending-actions a:hover { color: rgba(255,255,255,0.9); }
+
+    .firework {
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      opacity: 0;
+      animation: firework-burst 1.2s ease-out forwards;
+    }
+    @keyframes firework-burst {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      50% { opacity: 0.8; }
+      100% { opacity: 0; transform: translate(var(--fw-dx), var(--fw-dy)) scale(0.3); }
+    }
+
+    .ending-heart-float {
+      position: absolute;
+      width: 12px; height: 12px;
+      opacity: 0;
+      animation: heart-float-up 4s ease-in-out forwards;
+    }
+    .ending-heart-float::before,
+    .ending-heart-float::after {
+      content: '';
+      position: absolute;
+      width: 7px; height: 10px;
+      border-radius: 50% 50% 0 0;
+    }
+    .ending-heart-float::before { left: 0; top: 0; transform: rotate(-45deg); transform-origin: bottom right; }
+    .ending-heart-float::after { right: 0; top: 0; transform: rotate(45deg); transform-origin: bottom left; }
+    @keyframes heart-float-up {
+      0% { opacity: 0; transform: translateY(0) scale(0.5); }
+      15% { opacity: 0.7; }
+      85% { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-200px) scale(1) rotate(15deg); }
+    }
+
+    /* ── Gauntlet section marker ── */
+    .gauntlet-gate {
+      position: absolute;
+      z-index: 15;
+      font-family: 'Caveat', cursive;
+      font-size: 0.8rem;
+      color: var(--dn-sub, #999);
+      opacity: 0.4;
+      text-align: center;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- Drop-in overlay (shown when transitioning from home) -->
+  <!-- Drop-in overlay -->
   <div class="drop-in-overlay" id="drop-in-overlay" style="display:none;">
     <div class="drop-in-wrapper" id="drop-in-wrapper">
       <div class="drop-in-char" id="drop-in-char"></div>
@@ -437,6 +582,19 @@
   <div class="enter-vortex" id="enter-vortex"></div>
   <div class="enter-flash" id="enter-flash"></div>
 
+  <!-- Ending overlay -->
+  <div class="ending-overlay" id="ending-overlay">
+    <div class="ending-sky" id="ending-sky"></div>
+    <div class="ending-ground"></div>
+    <div class="ending-chars" id="ending-chars"></div>
+    <div class="ending-message" id="ending-message"></div>
+    <div class="ending-stats" id="ending-stats"></div>
+    <div class="ending-actions" id="ending-actions">
+      <a id="ending-replay">play again</a>
+      <a id="ending-home">home</a>
+    </div>
+  </div>
+
   <a href="#" class="back-btn" id="back-home-btn">&larr; home</a>
 
   <!-- Heart counter -->
@@ -445,36 +603,22 @@
     <span id="heart-count">0</span>
   </div>
 
-  <!-- Skip to next adventure -->
-  <button class="skip-btn" id="skip-btn" style="display:none;">skip &rarr;</button>
+  <!-- Nav menu -->
+  <button class="nav-menu-btn" id="nav-menu-btn">skip</button>
+  <div class="nav-dropdown" id="nav-dropdown"></div>
 
   <div class="intro-text" id="intro-text"></div>
 
   <div class="viewport">
     <div class="world" id="world">
-      <div class="ground-line"></div>
-
-      <!-- Obstacles built by JS -->
+      <div class="ground-line" id="ground-line"></div>
       <div id="obstacles"></div>
-
-      <!-- Bounce pads built by JS -->
       <div id="bounce-pads"></div>
-
-      <!-- Speed zones built by JS -->
       <div id="speed-zones"></div>
-
-      <!-- Hearts built by JS -->
       <div id="hearts"></div>
-
-      <!-- Moving platforms built by JS -->
       <div id="moving-platforms"></div>
-
-      <!-- Adventure boxes built by JS -->
       <div id="adventure-boxes"></div>
-
-      <!-- Player -->
       <div class="sprite" id="player"></div>
-      <!-- Partner -->
       <div class="sprite" id="partner" style="display:none;"></div>
     </div>
   </div>
@@ -495,7 +639,7 @@
     // ══════════════════════════════════════
     // CONFIG
     // ══════════════════════════════════════
-    const WORLD_W = 8400;
+    const WORLD_W = 12400;
     const LINE_BOTTOM = 80;
     const SPRITE_W = 32;
     const SPRITE_H = 52;
@@ -505,11 +649,12 @@
     const DUCK_H = 30;
     const BOX_SIZE = 50;
     const BOUNCE_VEL = -14;
+    const ENDING_X = 11900;
 
     function groundY() { return window.innerHeight - LINE_BOTTOM - 3 - SPRITE_H; }
 
     // ══════════════════════════════════════
-    // OBSTACLES — one continuous map
+    // OBSTACLES
     // ══════════════════════════════════════
     function ob(x, w, h, type) {
       return { x, w, h, type: type || 'ground' };
@@ -550,10 +695,34 @@
       ob(7350, 150, 18, 'float'),
       ob(7550, 40, 28),
       ob(7750, 35, 28),
+      // Section 4 — THE GAUNTLET (after 3rd orb)
+      // Staircase climb
+      ob(8500, 60, 20),
+      ob(8620, 60, 40),
+      ob(8740, 60, 60),
+      ob(8860, 60, 80),
+      ob(8980, 80, 18, 'float'),  // high float — need stacking + jump
+      // Bounce chain valley
+      ob(9300, 30, 45),           // wall before bounce zone
+      ob(9700, 30, 45),           // wall after bounce zone
+      // Floating obstacle course
+      ob(9900, 100, 18, 'float'),
+      ob(10100, 80, 18, 'float'),
+      ob(10300, 100, 18, 'float'),
+      ob(10500, 80, 18, 'float'),
+      // Final push — duck-under barriers + tall walls
+      ob(10750, 100, 18, 'float'),  // duck under this
+      ob(10900, 30, 50),            // tall wall
+      ob(11050, 120, 18, 'float'),  // duck under
+      ob(11200, 30, 50),            // tall wall
+      ob(11350, 100, 18, 'float'),  // duck under
+      // Victory run-up
+      ob(11550, 40, 28),
+      ob(11700, 40, 28),
     ];
 
     // ══════════════════════════════════════
-    // BOUNCE PADS — springy pads that launch you high
+    // BOUNCE PADS
     // ══════════════════════════════════════
     const BOUNCE_DEFS = [
       // Section 1
@@ -567,10 +736,18 @@
       { x: 5800, w: 30, h: 10 },
       { x: 6450, w: 30, h: 10 },
       { x: 7050, w: 30, h: 10 },
+      // Section 4 — bounce chain (3 in a row!)
+      { x: 9400, w: 30, h: 10 },
+      { x: 9500, w: 30, h: 10 },
+      { x: 9600, w: 30, h: 10 },
+      // After obstacle course
+      { x: 10650, w: 30, h: 10 },
+      // Victory bounce
+      { x: 11850, w: 40, h: 10 },
     ];
 
     // ══════════════════════════════════════
-    // SPEED ZONES — wind gusts that boost you forward
+    // SPEED ZONES
     // ══════════════════════════════════════
     const SPEED_ZONE_DEFS = [
       // Section 1
@@ -582,42 +759,61 @@
       // Section 3
       { x: 6200, w: 120 },
       { x: 7400, w: 130 },
+      // Section 4
+      { x: 8400, w: 80 },    // boost into staircase
+      { x: 9800, w: 80 },    // boost into float course
+      { x: 11450, w: 100 },  // victory sprint
     ];
     const SPEED_BOOST = 1.8;
 
     // ══════════════════════════════════════
-    // FLOATING HEARTS — cute collectibles
+    // FLOATING HEARTS
     // ══════════════════════════════════════
     const HEART_DEFS = [
-      // Section 1 — some easy, some need bouncing
+      // Section 1
       { x: 300, elevation: 30 },
-      { x: 720, elevation: 110 },   // above bounce pad — need to bounce
-      { x: 900, elevation: 55 },    // on float platform
+      { x: 720, elevation: 110 },
+      { x: 900, elevation: 55 },
       { x: 1250, elevation: 30 },
       { x: 1600, elevation: 55 },
-      { x: 1720, elevation: 120 },  // above bounce pad
+      { x: 1720, elevation: 120 },
       { x: 2150, elevation: 55 },
       { x: 2600, elevation: 30 },
       // Section 2
-      { x: 3120, elevation: 110 },  // above bounce pad
+      { x: 3120, elevation: 110 },
       { x: 3300, elevation: 30 },
       { x: 3650, elevation: 55 },
-      { x: 4070, elevation: 120 },  // above bounce pad
+      { x: 4070, elevation: 120 },
       { x: 4400, elevation: 55 },
       { x: 4650, elevation: 30 },
-      { x: 4920, elevation: 110 },  // above bounce pad
+      { x: 4920, elevation: 110 },
       // Section 3
-      { x: 5820, elevation: 110 },  // above bounce pad
+      { x: 5820, elevation: 110 },
       { x: 6150, elevation: 55 },
-      { x: 6470, elevation: 120 },  // above bounce pad
+      { x: 6470, elevation: 120 },
       { x: 6800, elevation: 55 },
-      { x: 7070, elevation: 110 },  // above bounce pad
+      { x: 7070, elevation: 110 },
       { x: 7400, elevation: 55 },
       { x: 7600, elevation: 30 },
+      // Section 4 — Gauntlet hearts (hard to get!)
+      { x: 8650, elevation: 90 },   // on staircase
+      { x: 8900, elevation: 120 },  // top of stairs
+      { x: 9010, elevation: 160 },  // above high float — HARD
+      { x: 9450, elevation: 130 },  // above bounce chain
+      { x: 9550, elevation: 140 },  // above bounce chain
+      { x: 9950, elevation: 75 },   // on float course
+      { x: 10150, elevation: 75 },  // on float course
+      { x: 10350, elevation: 75 },  // on float course
+      { x: 10550, elevation: 75 },  // on float course
+      { x: 10800, elevation: 30 },  // duck section
+      { x: 11100, elevation: 30 },  // duck section
+      { x: 11400, elevation: 30 },  // duck section
+      // Grand finale heart
+      { x: 11870, elevation: 150 }, // above final bounce — the last heart
     ];
 
     // ══════════════════════════════════════
-    // MOVING PLATFORMS — slide back and forth
+    // MOVING PLATFORMS
     // ══════════════════════════════════════
     const MOVING_PLAT_DEFS = [
       // Section 1
@@ -628,10 +824,15 @@
       // Section 3
       { x: 6000, w: 80, h: 14, range: 130, speed: 0.85, elevation: 50 },
       { x: 7200, w: 90, h: 14, range: 110, speed: 0.75, elevation: 55 },
+      // Section 4 — gauntlet moving platforms (faster, trickier)
+      { x: 9150, w: 70, h: 14, range: 80, speed: 1.2, elevation: 65 },   // between staircase and bounce chain
+      { x: 10000, w: 70, h: 14, range: 90, speed: 1.0, elevation: 80 },  // gap filler in float course
+      { x: 10200, w: 70, h: 14, range: 90, speed: 1.1, elevation: 80 },  // gap filler
+      { x: 10400, w: 70, h: 14, range: 90, speed: 0.9, elevation: 80 },  // gap filler
     ];
 
     // ══════════════════════════════════════
-    // ADVENTURE BOXES — the glowing orbs on the map
+    // ADVENTURE BOXES
     // ══════════════════════════════════════
     const ADVENTURES = [
       { id: 'music',    x: 2850, elevation: 70,  url: '../puzzle/music/',    hint: 'reach the light to begin your first adventure', color: '#d49b3c' },
@@ -640,18 +841,28 @@
     ];
 
     // ══════════════════════════════════════
-    // SPAWN POSITION — based on which adventure was just completed
+    // NAV SKIP TARGETS
+    // ══════════════════════════════════════
+    const NAV_TARGETS = [
+      { label: 'orb 1 — music',    x: 2750 },
+      { label: 'orb 2 — elements',  x: 5200 },
+      { label: 'orb 3 — mystery',   x: 8000 },
+      { label: 'the gauntlet',      x: 8400 },
+      { label: 'the ending',        x: ENDING_X - 200 },
+    ];
+
+    // ══════════════════════════════════════
+    // SPAWN POSITION
     // ══════════════════════════════════════
     const urlParams = new URLSearchParams(window.location.search);
-    const spawnAfter = urlParams.get('after'); // e.g. "music" — spawn near that box
+    const spawnAfter = urlParams.get('after');
     if (spawnAfter) history.replaceState(null, '', window.location.pathname);
 
     function getSpawnX() {
       if (spawnAfter) {
         const adv = ADVENTURES.find(a => a.id === spawnAfter);
-        if (adv) return adv.x + 80; // just past the box
+        if (adv) return adv.x + 80;
       }
-      // Resume from saved position (coming back from home)
       const savedX = sessionStorage.getItem('datenight-map-x');
       if (savedX) {
         sessionStorage.removeItem('datenight-map-x');
@@ -669,7 +880,7 @@
       if (!c.includes(id)) { c.push(id); sessionStorage.setItem('datenight-completed', JSON.stringify(c)); }
     }
 
-    // Track collected hearts (persisted per session)
+    // Track collected hearts
     function getCollectedHearts() {
       try { return JSON.parse(sessionStorage.getItem('datenight-hearts') || '[]'); } catch { return []; }
     }
@@ -678,7 +889,7 @@
     }
 
     // ══════════════════════════════════════
-    // COMPUTED OBSTACLES & BOXES
+    // COMPUTED STATE
     // ══════════════════════════════════════
     let obstacles = [];
     let bouncePads = [];
@@ -686,6 +897,7 @@
     let hearts = [];
     let movingPlats = [];
     let collectedHearts = getCollectedHearts();
+    let endingTriggered = false;
 
     function computeObstacles() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
@@ -744,7 +956,6 @@
         const el = document.createElement('div');
         el.className = 'speed-zone';
         el.style.cssText = `left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px;`;
-        // Add little arrow indicators
         const arrowCount = Math.floor(s.w / 30);
         for (let i = 0; i < arrowCount; i++) {
           const arrow = document.createElement('div');
@@ -867,81 +1078,57 @@
     function collideDuck(px, py, ph) {
       const pw = SPRITE_W;
 
-      // Static obstacles
       for (const o of obstacles) {
         if (px + pw <= o.x || px >= o.x + o.w || py + ph <= o.y || py >= o.y + o.h) continue;
-
         const overlapL = (px + pw) - o.x;
         const overlapR = (o.x + o.w) - px;
         const overlapT = (py + ph) - o.y;
         const overlapB = (o.y + o.h) - py;
         const min = Math.min(overlapL, overlapR, overlapT, overlapB);
 
-        if (min === overlapT) {
-          player.y = o.y - SPRITE_H;
-          player.vy = 0;
-          player.jumping = false;
-        } else if (min === overlapB) {
-          player.y = o.y + o.h - (SPRITE_H - ph);
-          player.vy = 1;
-        } else if (min === overlapL) {
-          player.x = o.x - pw;
-          player.vx = 0;
-        } else {
-          player.x = o.x + o.w;
-          player.vx = 0;
-        }
+        if (min === overlapT) { player.y = o.y - SPRITE_H; player.vy = 0; player.jumping = false; }
+        else if (min === overlapB) { player.y = o.y + o.h - (SPRITE_H - ph); player.vy = 1; }
+        else if (min === overlapL) { player.x = o.x - pw; player.vx = 0; }
+        else { player.x = o.x + o.w; player.vx = 0; }
       }
 
-      // Moving platforms
       for (const m of movingPlats) {
         if (px + pw <= m.x || px >= m.x + m.w || py + ph <= m.y || py >= m.y + m.h) continue;
-
         const overlapT = (py + ph) - m.y;
         const overlapB = (m.y + m.h) - py;
-
         if (overlapT < overlapB && player.vy >= 0) {
-          player.y = m.y - SPRITE_H;
-          player.vy = 0;
-          player.jumping = false;
-          // Carry player with platform
+          player.y = m.y - SPRITE_H; player.vy = 0; player.jumping = false;
           player.x += m.dx || 0;
         }
       }
     }
 
     // ══════════════════════════════════════
-    // BOUNCE PADS — check landing
+    // BOUNCE PADS
     // ══════════════════════════════════════
     function checkBouncePads() {
       const pw = SPRITE_W;
       const pFeetY = player.y + SPRITE_H;
-
       for (let i = 0; i < bouncePads.length; i++) {
         const b = bouncePads[i];
         if (player.x + pw > b.x && player.x < b.x + b.w &&
             pFeetY >= b.y && pFeetY <= b.y + b.h + 6 && player.vy >= 0) {
           player.vy = BOUNCE_VEL;
           player.jumping = true;
-          // Squish animation
           const el = document.querySelector(`.bounce-pad[data-idx="${i}"]`);
-          if (el) {
-            el.classList.add('squish');
-            setTimeout(() => el.classList.remove('squish'), 150);
-          }
+          if (el) { el.classList.add('squish'); setTimeout(() => el.classList.remove('squish'), 150); }
           return;
         }
       }
     }
 
     // ══════════════════════════════════════
-    // SPEED ZONES — check if player is in one
+    // SPEED ZONES
     // ══════════════════════════════════════
     function checkSpeedZones() {
       const px = player.x + SPRITE_W / 2;
       const py = player.y + SPRITE_H;
       player.speedBoost = 0;
-
       for (const s of speedZones) {
         if (px > s.x && px < s.x + s.w && py > s.y && py < s.y + s.h + 10) {
           player.speedBoost = SPEED_BOOST;
@@ -951,7 +1138,7 @@
     }
 
     // ══════════════════════════════════════
-    // HEARTS — check collection
+    // HEARTS
     // ══════════════════════════════════════
     function checkHearts() {
       const pw = SPRITE_W;
@@ -962,23 +1149,20 @@
           h.collected = true;
           collectedHearts.push(h.idx);
           saveCollectedHearts(collectedHearts);
-          // Animate collection
           const el = document.querySelector(`.heart-pickup[data-idx="${h.idx}"]`);
           if (el) el.classList.add('collected');
-          // Bump counter
           updateHeartCounter();
           const counter = document.getElementById('heart-counter');
           counter.classList.remove('bump');
           void counter.offsetWidth;
           counter.classList.add('bump');
-          // Notify partner
           sendPeer({ type: 'heart', idx: h.idx });
         }
       }
     }
 
     // ══════════════════════════════════════
-    // MOVING PLATFORMS — update positions
+    // MOVING PLATFORMS
     // ══════════════════════════════════════
     function updateMovingPlatforms() {
       const container = document.getElementById('moving-platforms');
@@ -993,7 +1177,7 @@
     }
 
     // ══════════════════════════════════════
-    // ADVENTURE BOX — check proximity + enter animation
+    // ADVENTURE BOX
     // ══════════════════════════════════════
     function checkAdventureBoxes() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
@@ -1009,90 +1193,221 @@
     function enterAdventure(adv) {
       if (entering) return;
       entering = true;
-
       markCompleted(adv.id);
       sendPeer({ type: 'enter', id: adv.id });
 
-      // Calculate box screen position
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
       const boxWorldX = adv.x + BOX_SIZE / 2;
       const boxWorldY = lineY - BOX_SIZE - adv.elevation + BOX_SIZE / 2;
-
       const vpW = window.innerWidth;
       let camX = -(player.x - vpW / 2 + 16);
       camX = Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
       const boxScreenX = boxWorldX + camX;
       const boxScreenY = boxWorldY;
 
-      // 1) Pull player sprite toward the box
       const dx = adv.x + BOX_SIZE / 2 - player.x - SPRITE_W / 2;
       const dy = (lineY - BOX_SIZE - adv.elevation + BOX_SIZE / 2) - player.y - SPRITE_H / 2;
       playerEl.classList.add('entering');
       playerEl.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
 
-      // 2) Spawn vortex rings collapsing toward the box
       const vortex = document.getElementById('enter-vortex');
       vortex.classList.add('active');
-
       const orbColor = adv.color || 'var(--dn-accent, #e85d75)';
       for (let i = 0; i < 5; i++) {
         const ring = document.createElement('div');
         ring.className = 'enter-ring';
         const size = 80 + i * 60;
-        ring.style.cssText = `
-          width: ${size}px; height: ${size}px;
-          left: ${boxScreenX}px; top: ${boxScreenY}px;
-          border-color: ${orbColor};
-          animation: ring-collapse ${0.5 + i * 0.08}s ease-in ${i * 0.08}s forwards;
-        `;
+        ring.style.cssText = `width:${size}px;height:${size}px;left:${boxScreenX}px;top:${boxScreenY}px;border-color:${orbColor};animation:ring-collapse ${0.5 + i * 0.08}s ease-in ${i * 0.08}s forwards;`;
         vortex.appendChild(ring);
       }
 
-      // 3) Flash and navigate
       setTimeout(() => {
         const flash = document.getElementById('enter-flash');
         flash.style.background = orbColor;
         flash.classList.add('show');
-        setTimeout(() => {
-          window.location.href = adv.url;
-        }, 500);
+        setTimeout(() => { window.location.href = adv.url; }, 500);
       }, 600);
     }
 
     // ══════════════════════════════════════
-    // SKIP TO NEXT ADVENTURE
+    // ENDING — stargazing celebration
     // ══════════════════════════════════════
-    function getNextAdventure() {
-      const completed = getCompleted();
-      return ADVENTURES.find(a => !completed.includes(a.id));
+    function triggerEnding() {
+      if (endingTriggered) return;
+      endingTriggered = true;
+      sendPeer({ type: 'ending' });
+
+      const overlay = document.getElementById('ending-overlay');
+      const sky = document.getElementById('ending-sky');
+      const charsContainer = document.getElementById('ending-chars');
+      const msgEl = document.getElementById('ending-message');
+      const statsEl = document.getElementById('ending-stats');
+      const actionsEl = document.getElementById('ending-actions');
+
+      // Hide game UI
+      document.querySelector('.mobile-controls').style.display = 'none';
+      document.getElementById('nav-menu-btn').style.display = 'none';
+      document.getElementById('nav-dropdown').classList.remove('open');
+
+      // Generate stars
+      for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'ending-star';
+        star.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 60}%;width:${2 + Math.random() * 3}px;height:${2 + Math.random() * 3}px;animation-delay:${Math.random() * 3}s;animation-duration:${1.5 + Math.random() * 2}s;`;
+        sky.appendChild(star);
+      }
+
+      // Build characters in ending scene
+      function makeEndingChar(c) {
+        return `<div style="position:relative;width:32px;height:52px;">
+          <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:14px;border-radius:50% 50% 30% 30%;background:${c.hair};z-index:3;"></div>
+          <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:18px;height:20px;border-radius:50%;background:${c.skin};z-index:2;"></div>
+          <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:10px;display:flex;justify-content:space-between;z-index:4;"><div style="width:3px;height:3px;background:#1a1a1a;border-radius:50%;"></div><div style="width:3px;height:3px;background:#1a1a1a;border-radius:50%;"></div></div>
+          <div style="position:absolute;top:24px;left:50%;transform:translateX(-50%);width:20px;height:16px;border-radius:5px 5px 3px 3px;background:${c.shirt};z-index:1;"></div>
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:3px;"><div style="width:7px;height:14px;border-radius:3px 3px 4px 4px;background:${c.pants || '#3a3a5c'};"></div><div style="width:7px;height:14px;border-radius:3px 3px 4px 4px;background:${c.pants || '#3a3a5c'};"></div></div>
+        </div>`;
+      }
+      charsContainer.innerHTML = makeEndingChar(myChar) + makeEndingChar(partnerChar);
+
+      // Fade in
+      overlay.classList.add('active');
+
+      // Fireworks sequence
+      const colors = [myChar.shirt, partnerChar.shirt, '#d49b3c', '#4fc3f7', '#b388ff', '#e85d75'];
+      function spawnFirework(cx, cy) {
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const particles = 12;
+        for (let i = 0; i < particles; i++) {
+          const angle = (Math.PI * 2 / particles) * i;
+          const dist = 40 + Math.random() * 60;
+          const fw = document.createElement('div');
+          fw.className = 'firework';
+          fw.style.cssText = `left:${cx}px;top:${cy}px;background:${color};--fw-dx:${Math.cos(angle) * dist}px;--fw-dy:${Math.sin(angle) * dist}px;animation-delay:${Math.random() * 0.1}s;`;
+          sky.appendChild(fw);
+          setTimeout(() => fw.remove(), 1500);
+        }
+      }
+
+      // Launch fireworks over time
+      let fwCount = 0;
+      const fwInterval = setInterval(() => {
+        const x = 20 + Math.random() * 60;
+        const y = 10 + Math.random() * 40;
+        spawnFirework(window.innerWidth * x / 100, window.innerHeight * y / 100);
+        fwCount++;
+        if (fwCount > 20) clearInterval(fwInterval);
+      }, 600);
+
+      // Float hearts up from characters
+      let heartCount = 0;
+      const heartInterval = setInterval(() => {
+        const heart = document.createElement('div');
+        heart.className = 'ending-heart-float';
+        const hColor = colors[Math.floor(Math.random() * colors.length)];
+        heart.style.cssText = `left:${window.innerWidth / 2 + (Math.random() - 0.5) * 100}px;bottom:160px;animation-delay:${Math.random() * 0.5}s;`;
+        heart.style.setProperty('--heart-color', hColor);
+        heart.querySelectorAll('::before, ::after'); // CSS handles the color via accent
+        sky.appendChild(heart);
+        setTimeout(() => heart.remove(), 4500);
+        heartCount++;
+        if (heartCount > 30) clearInterval(heartInterval);
+      }, 400);
+
+      // Type out message
+      setTimeout(() => {
+        const lines = [
+          "thanks for adventuring together",
+          "",
+          "every step was better with you"
+        ];
+        msgEl.textContent = lines.join('\n');
+        msgEl.classList.add('visible');
+      }, 2500);
+
+      // Show stats
+      setTimeout(() => {
+        const completed = getCompleted();
+        const heartsFound = collectedHearts.length;
+        const totalHearts = HEART_DEFS.length;
+        statsEl.textContent = `${completed.length} adventures completed  \u00b7  ${heartsFound} / ${totalHearts} hearts found`;
+        statsEl.classList.add('visible');
+      }, 5000);
+
+      // Show actions
+      setTimeout(() => {
+        actionsEl.classList.add('visible');
+      }, 6500);
+
+      // Action handlers
+      document.getElementById('ending-replay').onclick = () => {
+        sessionStorage.removeItem('datenight-completed');
+        sessionStorage.removeItem('datenight-hearts');
+        window.location.reload();
+      };
+      document.getElementById('ending-home').onclick = () => {
+        window.location.href = '../?from=map';
+      };
     }
 
-    function setupSkipButton() {
-      const skipBtn = document.getElementById('skip-btn');
-      const next = getNextAdventure();
-      if (!next) { skipBtn.style.display = 'none'; return; }
+    // ══════════════════════════════════════
+    // NAV MENU
+    // ══════════════════════════════════════
+    function setupNavMenu() {
+      const btn = document.getElementById('nav-menu-btn');
+      const dropdown = document.getElementById('nav-dropdown');
+      dropdown.innerHTML = '';
 
-      skipBtn.style.display = '';
-      skipBtn.textContent = `skip to ${next.id} \u2192`;
-      if (collectedHearts.length > 0) skipBtn.classList.add('with-hearts');
+      NAV_TARGETS.forEach(t => {
+        const b = document.createElement('button');
+        b.textContent = t.label;
+        b.onclick = () => {
+          dropdown.classList.remove('open');
+          if (t.label === 'the ending') {
+            teleportTo(t.x);
+            setTimeout(triggerEnding, 500);
+            return;
+          }
+          teleportTo(t.x);
+        };
+        dropdown.appendChild(b);
+      });
 
-      skipBtn.onclick = () => {
-        // Smooth teleport: flash, move, unflash
-        const flash = document.getElementById('enter-flash');
-        flash.style.background = next.color || 'var(--dn-accent)';
-        flash.style.opacity = '1';
-        flash.style.transition = 'opacity 0.3s ease';
+      // Separator
+      const sep = document.createElement('div');
+      sep.className = 'nav-sep';
+      dropdown.appendChild(sep);
 
-        setTimeout(() => {
-          player.x = next.x - 100;
-          player.y = groundY();
-          player.vx = 0;
-          player.vy = 0;
-          player.jumping = false;
-          flash.style.opacity = '0';
-          setTimeout(() => { flash.style.transition = ''; }, 300);
-        }, 250);
+      // Home
+      const homeBtn = document.createElement('button');
+      homeBtn.textContent = '\u2190 home';
+      homeBtn.onclick = () => {
+        sessionStorage.setItem('datenight-map-x', Math.round(player.x));
+        window.location.href = '../?from=map';
       };
+      dropdown.appendChild(homeBtn);
+
+      btn.onclick = () => dropdown.classList.toggle('open');
+
+      // Close dropdown when clicking elsewhere
+      document.addEventListener('click', e => {
+        if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.classList.remove('open');
+        }
+      });
+    }
+
+    function teleportTo(targetX) {
+      const flash = document.getElementById('enter-flash');
+      flash.style.background = 'var(--dn-accent, #e85d75)';
+      flash.style.opacity = '1';
+      flash.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        player.x = targetX;
+        player.y = groundY();
+        player.vx = 0; player.vy = 0; player.jumping = false;
+        flash.style.opacity = '0';
+        setTimeout(() => { flash.style.transition = ''; }, 300);
+      }, 250);
     }
 
     // ══════════════════════════════════════
@@ -1101,7 +1416,7 @@
     let lastPeerSend = 0;
 
     function gameLoop() {
-      if (entering) { requestAnimationFrame(gameLoop); return; }
+      if (entering || endingTriggered) { requestAnimationFrame(gameLoop); return; }
 
       // Track player movement for intro fade
       if (!introPlayerMoved && (keys['ArrowLeft'] || keys['ArrowRight'] || keys['Space'] || keys['ArrowDown'])) {
@@ -1109,37 +1424,45 @@
         fadeIntroIfReady();
       }
 
-      // After passing first orb (music at x=2850), show second hint
+      // Contextual hints as player progresses
       if (!passedFirstOrb && !firstOrbDone && introPhase === 1 && player.x > 2900) {
         passedFirstOrb = true;
-        // Reset and show second message
         introEl.classList.remove('fade');
         introEl.style.whiteSpace = '';
         introEl.textContent = "this one's a little tall...";
-        introFaded = false;
-        introTimerDone = false;
-        introPlayerMoved = true; // already moving
+        introFaded = false; introTimerDone = false; introPlayerMoved = true;
         setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 15000);
         introPhase = 2;
       }
 
-      // After passing second orb (elements at x=5300), show third hint
       if (!passedSecondOrb && !secondOrbDone && introPhase === 2 && player.x > 5400) {
         passedSecondOrb = true;
         introEl.classList.remove('fade');
         introEl.style.whiteSpace = '';
         introEl.textContent = 'one more light ahead...';
-        introFaded = false;
-        introTimerDone = false;
-        introPlayerMoved = true;
+        introFaded = false; introTimerDone = false; introPlayerMoved = true;
         setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 15000);
         introPhase = 3;
+      }
+
+      if (!passedThirdOrb && introPhase === 3 && player.x > 8200) {
+        passedThirdOrb = true;
+        introEl.classList.remove('fade');
+        introEl.style.whiteSpace = '';
+        introEl.textContent = 'the final stretch... are you ready?';
+        introFaded = false; introTimerDone = false; introPlayerMoved = true;
+        setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 12000);
+        introPhase = 4;
+      }
+
+      // Check for ending trigger
+      if (player.x >= ENDING_X) {
+        triggerEnding();
       }
 
       // Ducking
       player.ducking = !!(keys['ArrowDown'] && !player.jumping);
 
-      // Speed zones
       checkSpeedZones();
       const effectiveSpeed = SPEED + player.speedBoost;
 
@@ -1157,39 +1480,27 @@
       player.y += player.vy;
 
       const gy = groundY();
-      if (player.y >= gy) {
-        player.y = gy;
-        player.vy = 0;
-        player.jumping = false;
-      }
-
+      if (player.y >= gy) { player.y = gy; player.vy = 0; player.jumping = false; }
       if (player.x < 0) player.x = 0;
       if (player.x > WORLD_W - SPRITE_W) player.x = WORLD_W - SPRITE_W;
 
-      // ── Stacking mechanic: land on partner's head ──
+      // Stacking
       if (partnerEl.style.display !== 'none' && !partner.jumping && player.vy >= 0) {
         const pFeetY = player.y + SPRITE_H;
         const partnerTopY = partner.y;
         const xOverlap = player.x + SPRITE_W > partner.x && player.x < partner.x + SPRITE_W;
         if (xOverlap && pFeetY >= partnerTopY && pFeetY <= partnerTopY + 8) {
-          player.y = partner.y - SPRITE_H;
-          player.vy = 0;
-          player.jumping = false;
+          player.y = partner.y - SPRITE_H; player.vy = 0; player.jumping = false;
         }
       }
 
-      // Bounce pads
       checkBouncePads();
 
-      // Use shorter hitbox when ducking
       const effectiveH = player.ducking ? DUCK_H : SPRITE_H;
       const effectiveY = player.ducking ? (player.y + SPRITE_H - DUCK_H) : player.y;
       collideDuck(player.x, effectiveY, effectiveH);
 
-      // Hearts
       checkHearts();
-
-      // Moving platforms
       updateMovingPlatforms();
 
       const walking = Math.abs(player.vx) > 0 && !player.jumping;
@@ -1255,22 +1566,19 @@
         if (adv) enterAdventure(adv);
       }
       else if (data.type === 'heart') {
-        // Partner collected a heart — sync it
         const h = hearts.find(h => h.idx === data.idx);
         if (h && !h.collected) {
           h.collected = true;
-          if (!collectedHearts.includes(data.idx)) {
-            collectedHearts.push(data.idx);
-            saveCollectedHearts(collectedHearts);
-          }
+          if (!collectedHearts.includes(data.idx)) { collectedHearts.push(data.idx); saveCollectedHearts(collectedHearts); }
           const el = document.querySelector(`.heart-pickup[data-idx="${data.idx}"]`);
           if (el) el.classList.add('collected');
           updateHeartCounter();
           const counter = document.getElementById('heart-counter');
-          counter.classList.remove('bump');
-          void counter.offsetWidth;
-          counter.classList.add('bump');
+          counter.classList.remove('bump'); void counter.offsetWidth; counter.classList.add('bump');
         }
+      }
+      else if (data.type === 'ending') {
+        triggerEnding();
       }
     }
 
@@ -1307,7 +1615,6 @@
     // ══════════════════════════════════════
     // INIT
     // ══════════════════════════════════════
-    // ── Intro text — contextual hints that fade after movement + time ──
     const completed = getCompleted();
     const introEl = document.getElementById('intro-text');
     const firstOrbDone = completed.includes('music');
@@ -1315,7 +1622,7 @@
     const thirdOrbDone = completed.includes('mystery');
 
     if (thirdOrbDone) {
-      introEl.textContent = 'explore freely...';
+      introEl.textContent = 'the final stretch... are you ready?';
     } else if (secondOrbDone) {
       introEl.textContent = 'one more light ahead...';
     } else if (firstOrbDone) {
@@ -1325,27 +1632,22 @@
       introEl.style.whiteSpace = 'pre-line';
     }
 
-    // Fade logic: wait for BOTH player movement AND 15 seconds, whichever is later
     let introTimerDone = false;
     let introPlayerMoved = false;
     let introFaded = false;
-    let introPhase = thirdOrbDone ? 0 : (secondOrbDone ? 3 : (firstOrbDone ? 2 : 1)); // 1 = first msg, 2 = second msg, 3 = third msg, 0 = done
+    let introPhase = thirdOrbDone ? 4 : (secondOrbDone ? 3 : (firstOrbDone ? 2 : 1));
 
     function fadeIntroIfReady() {
       if (introFaded) return;
-      if (introTimerDone && introPlayerMoved) {
-        introEl.classList.add('fade');
-        introFaded = true;
-      }
+      if (introTimerDone && introPlayerMoved) { introEl.classList.add('fade'); introFaded = true; }
     }
 
     setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 15000);
 
-    // After passing the first orb, show the second hint
     let passedFirstOrb = false;
     let passedSecondOrb = false;
+    let passedThirdOrb = false;
 
-    // ── Set world width ──
     worldEl.style.width = WORLD_W + 'px';
 
     computeObstacles();
@@ -1355,7 +1657,7 @@
     renderHearts();
     renderMovingPlatforms();
     renderAdventureBoxes();
-    setupSkipButton();
+    setupNavMenu();
 
     player.y = groundY();
     partner.y = groundY();
@@ -1365,9 +1667,8 @@
     playerEl.style.left = player.x + 'px';
     playerEl.style.top = player.y + 'px';
 
-    // ── Drop-in animation from home page ──
+    // Drop-in animation
     const dropIn = sessionStorage.getItem('datenight-drop-in') === '1';
-
     if (dropIn) {
       sessionStorage.removeItem('datenight-drop-in');
       playerEl.style.opacity = '0';
@@ -1415,7 +1716,6 @@
       }, 300);
     }
 
-    // ── Back to home — save position so we can resume ──
     document.getElementById('back-home-btn').addEventListener('click', (e) => {
       e.preventDefault();
       sessionStorage.setItem('datenight-map-x', Math.round(player.x));
