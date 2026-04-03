@@ -1,18 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
+
 :root {
-    --orange: rgba(249, 117, 22, 1);
-    --burgundy: rgba(121, 41, 44, 1);
-    --navy: rgba(15, 51, 84, 1);
-    --magenta: rgba(224, 1, 115, 1);
-    --olive: rgba(168, 181, 69, 1);
-    --green: rgba(64, 96, 45, 1);
-    --gold: rgba(248, 183, 36, 1);
+    --saffron: rgba(232, 131, 58, 1);
+    --terracotta: rgba(180, 87, 72, 1);
+    --peacock: rgba(0, 115, 130, 1);
+    --rose: rgba(207, 76, 126, 1);
+    --sage: rgba(139, 168, 104, 1);
+    --green: rgba(85, 120, 65, 1);
+    --marigold: rgba(243, 176, 43, 1);
+    --cream: #fdf6ee;
+    --warm-white: #fefcf8;
 }
 
 body {
-    font-family: system-ui, sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     margin: 0;
     padding: 0;
-    background: #fafafa;
+    background: var(--cream);
+    color: #4a3f36;
 }
 
 main {
@@ -29,11 +34,11 @@ a {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
+    background: rgba(253, 246, 238, 0.95);
+    backdrop-filter: blur(12px);
     padding: 1rem 2rem;
     z-index: 1000;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 20px rgba(180, 87, 72, 0.06);
 }
 
 .nav-content {
@@ -45,32 +50,36 @@ a {
 }
 
 .nav-logo {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 1.5rem;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--orange), var(--magenta));
+    background: linear-gradient(45deg, var(--saffron), var(--rose));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 h2 {
+    font-family: 'Playfair Display', Georgia, serif;
     text-align: center;
     margin-top: 4rem;
     margin-bottom: 3rem;
     font-size: 2rem;
+    color: var(--peacock);
 }
 
 .project-card {
     display: flex;
     flex-direction: column;
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px var(--orange);
+    background: var(--warm-white);
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(232, 131, 58, 0.12);
     overflow: hidden;
     margin-bottom: 3rem;
     opacity: 0;
     transform: translateY(40px);
     transition: all 0.7s ease;
+    border: 1px solid rgba(232, 131, 58, 0.08);
 }
 
 .project-card.visible {
@@ -89,14 +98,15 @@ h2 {
 }
 
 .project-info h3 {
+    font-family: 'Playfair Display', Georgia, serif;
     margin: 0 0 0.75rem;
-    color: var(--navy);
+    color: var(--peacock);
     font-size: 1.6rem;
 }
 
 .project-info p {
     margin: 0 0 1rem;
-    color: #555;
+    color: #6b5b50;
     line-height: 1.5;
 }
 
@@ -108,28 +118,30 @@ h2 {
 }
 
 .tech-pill {
-    background: var(--olive);
-    color: #eee;
+    background: var(--sage);
+    color: white;
     border-radius: 999px;
     padding: 0.35rem 0.9rem;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .view-btn {
     display: inline-block;
-    background: var(--magenta);
+    background: linear-gradient(135deg, var(--rose), var(--saffron));
     color: white;
     padding: 0.6rem 1.2rem;
     border-radius: 999px;
     text-decoration: none;
     font-size: 0.9rem;
-    transition: background 0.2s ease;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-right: 0.5rem;
 }
 
 .view-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(249, 117, 22, 0.4);
+    box-shadow: 0 8px 25px rgba(207, 76, 126, 0.25);
 }
 
 .wip {
@@ -139,12 +151,12 @@ h2 {
 
 footer {
   display: flex;
-  justify-content: center;   /* centers both items horizontally */
-  align-items: center;       /* vertically aligns them */
-  gap: 10px;                 /* space between date and name */
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   padding: 10px;
-  font-family: sans-serif;
-  color: #E00173;
+  font-family: 'Nunito', sans-serif;
+  color: var(--rose);
   font-size: 1rem;
   margin-top: 3em;
 }
