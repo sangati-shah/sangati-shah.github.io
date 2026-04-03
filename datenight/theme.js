@@ -332,104 +332,105 @@ function dnBurstRing(x, y, theme) {
   }
 }
 
-// poster — retro halftone burst with bold typographic fragments
+// poster — ink splatter / paint splash with dripping blobs
 function dnBurstChars(x, y, theme) {
   const colors = [theme.accent, theme.text, '#ff9100', '#ffcc02', '#e65100'];
-  const words = ['WOW', 'BAM', 'POP', 'YES', 'HEY', 'GO', 'OH', 'YO', '!', '!!', '*', '&', '#'];
 
-  // Starburst — thick rays radiating from center like a comic panel
-  const rays = 12;
-  for (let i = 0; i < rays; i++) {
-    const ray = document.createElement('div');
-    const angle = (Math.PI * 2 * i) / rays;
-    const len = 100 + Math.random() * 60;
-    const thick = 4 + Math.random() * 6;
-    const color = i % 2 === 0 ? theme.accent : '#ffcc02';
-    ray.style.cssText = `
-      position:fixed; left:${x}px; top:${y}px;
-      width:0; height:${thick}px;
-      background:${color};
-      pointer-events:none; z-index:99997; opacity:0.8;
-      transform-origin:0 50%;
-      transform:translate(0,-50%) rotate(${angle * 180 / Math.PI}deg);
-      will-change:width,opacity;
-    `;
-    document.body.appendChild(ray);
-    const dur = 250 + Math.random() * 100;
-    requestAnimationFrame(() => {
-      ray.style.transition = `width ${dur}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur + 150}ms ease-out`;
-      ray.style.width = len + 'px';
-    });
-    setTimeout(() => { ray.style.opacity = '0'; }, dur * 0.7);
-    setTimeout(() => ray.remove(), dur + 200);
-  }
-
-  // Bold word fragments — big text that bursts out and fades
-  const wordCount = 7;
-  for (let i = 0; i < wordCount; i++) {
-    const el = document.createElement('div');
-    const word = words[Math.floor(Math.random() * words.length)];
-    const angle = (Math.PI * 2 * i) / wordCount + (Math.random() - 0.5) * 0.5;
-    const dist = 50 + Math.random() * 100;
-    const size = 14 + Math.random() * 22;
+  // Main splatter blobs — irregular shapes that burst outward like thrown paint
+  const blobCount = 10;
+  for (let i = 0; i < blobCount; i++) {
+    const blob = document.createElement('div');
+    const angle = (Math.PI * 2 * i) / blobCount + (Math.random() - 0.5) * 0.6;
+    const dist = 40 + Math.random() * 120;
+    const size = 12 + Math.random() * 30;
     const color = colors[Math.floor(Math.random() * colors.length)];
-    const rot = (Math.random() - 0.5) * 40;
-    el.textContent = word;
-    el.style.cssText = `
+    // Irregular border-radius for organic splatter shape
+    const r1 = 30 + Math.random() * 40;
+    const r2 = 30 + Math.random() * 40;
+    const r3 = 30 + Math.random() * 40;
+    const r4 = 30 + Math.random() * 40;
+    blob.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
-      font-family:'Abril Fatface',serif; font-size:${size}px;
-      color:${color}; font-weight:900; letter-spacing:1px;
+      width:${size}px; height:${size * (0.7 + Math.random() * 0.6)}px;
+      background:${color};
+      border-radius:${r1}% ${r2}% ${r3}% ${r4}%;
       pointer-events:none; z-index:99999; opacity:0;
-      transform:translate(-50%,-50%) scale(0) rotate(${rot}deg);
-      text-shadow:2px 2px 0 rgba(0,0,0,0.3);
-      white-space:nowrap;
+      transform:translate(-50%,-50%) scale(0) rotate(${Math.random() * 360}deg);
       will-change:transform,opacity,left,top;
     `;
-    document.body.appendChild(el);
-    const dur = 350 + Math.random() * 200;
-    const delay = i * 25;
+    document.body.appendChild(blob);
+    const dur = 300 + Math.random() * 200;
+    const delay = i * 15;
     setTimeout(() => {
-      el.style.transition = `left ${dur}ms cubic-bezier(0.22,1,0.36,1), top ${dur}ms cubic-bezier(0.22,1,0.36,1), transform ${dur * 0.6}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.4}ms ease`;
-      el.style.left = (x + Math.cos(angle) * dist) + 'px';
-      el.style.top = (y + Math.sin(angle) * dist) + 'px';
-      el.style.transform = `translate(-50%,-50%) scale(1) rotate(${rot}deg)`;
-      el.style.opacity = '1';
+      blob.style.transition = `left ${dur}ms cubic-bezier(0.22,1,0.36,1), top ${dur}ms cubic-bezier(0.22,1,0.36,1), transform ${dur * 0.5}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.3}ms ease`;
+      blob.style.left = (x + Math.cos(angle) * dist) + 'px';
+      blob.style.top = (y + Math.sin(angle) * dist) + 'px';
+      blob.style.transform = `translate(-50%,-50%) scale(1) rotate(${Math.random() * 360}deg)`;
+      blob.style.opacity = '0.85';
     }, delay);
     setTimeout(() => {
-      el.style.transition = `opacity ${200}ms ease-out`;
-      el.style.opacity = '0';
-    }, delay + dur * 0.65);
-    setTimeout(() => el.remove(), delay + dur + 50);
+      blob.style.transition = `opacity 250ms ease-out, transform 250ms ease-in`;
+      blob.style.opacity = '0';
+      blob.style.transform += ' scale(0.6)';
+    }, delay + dur * 0.6);
+    setTimeout(() => blob.remove(), delay + dur + 100);
   }
 
-  // Halftone dots — small circles in a scattered ring for retro print feel
-  const dots = 20;
-  for (let i = 0; i < dots; i++) {
-    const dot = document.createElement('div');
-    const angle = (Math.PI * 2 * i) / dots + (Math.random() - 0.5) * 0.4;
-    const dist = 30 + Math.random() * 90;
-    const size = 3 + Math.random() * 6;
+  // Paint drips — thin streaks that stretch downward from splatters
+  const dripCount = 6;
+  for (let i = 0; i < dripCount; i++) {
+    const drip = document.createElement('div');
+    const offsetX = (Math.random() - 0.5) * 160;
     const color = colors[Math.floor(Math.random() * colors.length)];
-    dot.style.cssText = `
+    const width = 2 + Math.random() * 4;
+    drip.style.cssText = `
+      position:fixed; left:${x + offsetX}px; top:${y}px;
+      width:${width}px; height:0;
+      background:linear-gradient(to bottom, ${color}, transparent);
+      border-radius:0 0 ${width}px ${width}px;
+      pointer-events:none; z-index:99998; opacity:0.7;
+      will-change:height,opacity,top;
+    `;
+    document.body.appendChild(drip);
+    const dur = 400 + Math.random() * 300;
+    const delay = 80 + Math.random() * 120;
+    const dripLen = 30 + Math.random() * 60;
+    setTimeout(() => {
+      drip.style.transition = `height ${dur}ms cubic-bezier(0.4,0,0.2,1), top ${dur * 0.5}ms ease-out, opacity ${dur}ms ease`;
+      drip.style.height = dripLen + 'px';
+      drip.style.top = (y + 10 + Math.random() * 40) + 'px';
+    }, delay);
+    setTimeout(() => { drip.style.opacity = '0'; }, delay + dur * 0.7);
+    setTimeout(() => drip.remove(), delay + dur + 50);
+  }
+
+  // Tiny specks — fine mist around the splatter for texture
+  const speckCount = 15;
+  for (let i = 0; i < speckCount; i++) {
+    const speck = document.createElement('div');
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 20 + Math.random() * 140;
+    const size = 2 + Math.random() * 4;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    speck.style.cssText = `
       position:fixed; left:${x}px; top:${y}px;
       width:${size}px; height:${size}px;
       background:${color}; border-radius:50%;
-      pointer-events:none; z-index:99998; opacity:0;
-      transform:translate(-50%,-50%) scale(0);
-      will-change:transform,opacity,left,top;
+      pointer-events:none; z-index:99997; opacity:0;
+      transform:translate(-50%,-50%);
+      will-change:opacity,left,top;
     `;
-    document.body.appendChild(dot);
-    const dur = 300 + Math.random() * 150;
-    const delay = Math.random() * 80;
+    document.body.appendChild(speck);
+    const dur = 200 + Math.random() * 200;
+    const delay = Math.random() * 100;
     setTimeout(() => {
-      dot.style.transition = `left ${dur}ms cubic-bezier(0.22,1,0.36,1), top ${dur}ms cubic-bezier(0.22,1,0.36,1), transform ${dur * 0.4}ms ease-out, opacity ${dur * 0.3}ms ease`;
-      dot.style.left = (x + Math.cos(angle) * dist) + 'px';
-      dot.style.top = (y + Math.sin(angle) * dist) + 'px';
-      dot.style.transform = `translate(-50%,-50%) scale(1)`;
-      dot.style.opacity = '0.7';
+      speck.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, opacity ${dur * 0.5}ms ease`;
+      speck.style.left = (x + Math.cos(angle) * dist) + 'px';
+      speck.style.top = (y + Math.sin(angle) * dist) + 'px';
+      speck.style.opacity = '0.6';
     }, delay);
-    setTimeout(() => { dot.style.opacity = '0'; }, delay + dur * 0.6);
-    setTimeout(() => dot.remove(), delay + dur + 50);
+    setTimeout(() => { speck.style.opacity = '0'; }, delay + dur * 0.7);
+    setTimeout(() => speck.remove(), delay + dur + 50);
   }
 }
 
