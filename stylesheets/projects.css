@@ -165,29 +165,6 @@ h2 {
     transform: scale(1.05);
 }
 
-/* ── emoji badge ── */
-.card-emoji {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 2rem;
-    z-index: 2;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    transition: transform 0.3s ease;
-}
-
-.project-card:hover .card-emoji {
-    transform: scale(1.3) rotate(12deg);
-    animation: wiggle 0.5s ease;
-}
-
-@keyframes wiggle {
-    0%, 100% { transform: scale(1.3) rotate(12deg); }
-    25% { transform: scale(1.3) rotate(-8deg); }
-    50% { transform: scale(1.3) rotate(16deg); }
-    75% { transform: scale(1.3) rotate(-4deg); }
-}
-
 /* ── card info ── */
 .project-info {
     padding: 1.2rem 1.4rem 1.4rem;
