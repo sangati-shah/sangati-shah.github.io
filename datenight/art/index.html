@@ -121,50 +121,124 @@
       50% { opacity: 0.7; }
     }
 
-    /* Guess form */
+    /* Guess section */
     .guess-section {
-      width: min(90vw, 460px);
+      width: min(90vw, 520px);
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-    }
-    .guess-row {
-      display: flex;
+      gap: 1rem;
       align-items: center;
-      gap: 0.5rem;
     }
-    .guess-label {
+
+    .guess-heading {
       font-family: var(--dn-heading-font);
-      font-size: 1.1rem;
-      min-width: 90px;
-      text-align: right;
+      font-size: 1.15rem;
       color: var(--dn-text);
+      opacity: 0.6;
+      margin: 0;
+    }
+
+    /* World map */
+    .map-container {
+      width: 100%;
+      position: relative;
+    }
+    .world-map {
+      width: 100%;
+      height: auto;
+    }
+    .world-map .region {
+      fill: var(--dn-input-bg, #e8e0d4);
+      stroke: var(--dn-btn-border, #999);
+      stroke-width: 0.5;
+      cursor: pointer;
+      transition: fill 0.2s, opacity 0.2s;
+      opacity: 0.6;
+    }
+    .world-map .region:hover {
+      opacity: 0.9;
+      fill: var(--dn-accent, #c9a84c);
+    }
+    .world-map .region.selected {
+      fill: var(--dn-accent, #c9a84c);
+      opacity: 1;
+      stroke-width: 1.5;
+    }
+    .world-map .region-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 3.2px;
+      fill: var(--dn-text, #333);
+      pointer-events: none;
+      text-anchor: middle;
       opacity: 0.7;
     }
-    .guess-input {
-      flex: 1;
+    .selected-region-label {
       font-family: 'Inter', sans-serif;
       font-size: 0.85rem;
-      padding: 0.5rem 0.7rem;
-      border: 1.5px solid var(--dn-input-border);
-      border-radius: var(--dn-btn-radius);
-      background: var(--dn-input-bg);
-      color: var(--dn-input-text);
+      color: var(--dn-accent);
+      min-height: 1.2em;
+      text-align: center;
+    }
+
+    /* Year scrubber */
+    .year-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .year-display {
+      font-family: var(--dn-heading-font);
+      font-size: 1.6rem;
+      color: var(--dn-text);
+      min-height: 1.5em;
+    }
+    .year-slider {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--dn-input-border, #ccc);
       outline: none;
-      transition: border-color 0.3s;
+      cursor: pointer;
     }
-    .guess-input:focus {
-      border-color: var(--dn-accent);
+    .year-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--dn-accent, #c9a84c);
+      border: 2px solid var(--dn-btn-border, #999);
+      cursor: grab;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    .guess-input::placeholder {
-      opacity: 0.35;
+    .year-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--dn-accent, #c9a84c);
+      border: 2px solid var(--dn-btn-border, #999);
+      cursor: grab;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .year-ticks {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      color: var(--dn-sub);
+      opacity: 0.5;
     }
 
     /* Buttons */
     .art-buttons {
       display: flex;
       gap: 0.6rem;
-      margin-top: 0.4rem;
+      margin-top: 0.2rem;
       justify-content: center;
       flex-wrap: wrap;
     }
@@ -183,10 +257,16 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
+    .art-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
     /* Reveal card */
     .reveal-card {
-      width: min(90vw, 460px);
+      width: min(90vw, 520px);
       background: var(--dn-input-bg);
       border: 1.5px solid var(--dn-btn-border);
       border-radius: var(--dn-btn-radius);
@@ -201,13 +281,13 @@
     .reveal-row {
       display: flex;
       gap: 0.5rem;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
       align-items: baseline;
     }
     .reveal-label {
       font-family: var(--dn-heading-font);
       font-size: 1.05rem;
-      min-width: 80px;
+      min-width: 70px;
       text-align: right;
       color: var(--dn-text);
       opacity: 0.5;
@@ -220,6 +300,31 @@
     .reveal-match {
       color: #4caf50;
       font-weight: 600;
+    }
+    .reveal-close {
+      color: #ff9800;
+      font-weight: 500;
+    }
+    .reveal-miss {
+      color: var(--dn-text);
+      opacity: 0.6;
+    }
+    .score-summary {
+      margin-top: 0.8rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--dn-btn-border);
+      text-align: center;
+    }
+    .score-big {
+      font-family: var(--dn-heading-font);
+      font-size: 1.8rem;
+      color: var(--dn-accent);
+    }
+    .score-detail {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      opacity: 0.5;
+      margin-top: 0.2rem;
     }
 
     /* Fade in for artwork */
@@ -297,7 +402,7 @@
   <a href="../" class="back-btn">← back</a>
 
   <h1 class="art-title" id="art-title" data-dn-cycle>art gallery</h1>
-  <p class="art-sub" id="art-sub">guess everything about this artwork</p>
+  <p class="art-sub" id="art-sub">guess when and where</p>
 
   <div id="loading" class="loading">finding a masterpiece...</div>
 
@@ -310,64 +415,180 @@
   </div>
 
   <div id="guess-section" class="guess-section" style="display:none;">
-    <div class="guess-row">
-      <span class="guess-label">artist</span>
-      <input class="guess-input" id="guess-artist" placeholder="who made this?" autocomplete="off" />
+
+    <!-- Region: clickable world map -->
+    <p class="guess-heading">where is it from?</p>
+    <div class="map-container">
+      <svg class="world-map" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- North America -->
+        <path class="region" data-region="North America"
+          d="M10,12 L55,12 L58,18 L55,28 L50,38 L42,42 L35,40 L25,38 L18,32 L12,22 Z" />
+        <text class="region-label" x="34" y="28">N. America</text>
+
+        <!-- Central America & Caribbean -->
+        <path class="region" data-region="Central America"
+          d="M25,42 L42,42 L44,48 L40,54 L32,52 L26,48 Z" />
+        <text class="region-label" x="35" y="48">C. America</text>
+
+        <!-- South America -->
+        <path class="region" data-region="South America"
+          d="M32,54 L48,52 L54,58 L56,68 L52,80 L46,88 L38,90 L32,82 L28,70 L30,60 Z" />
+        <text class="region-label" x="42" y="72">S. America</text>
+
+        <!-- Western Europe -->
+        <path class="region" data-region="Western Europe"
+          d="M82,14 L96,12 L100,18 L98,28 L94,34 L86,36 L80,30 L78,22 Z" />
+        <text class="region-label" x="89" y="24">W. Europe</text>
+
+        <!-- Eastern Europe -->
+        <path class="region" data-region="Eastern Europe"
+          d="M96,12 L116,10 L120,18 L118,28 L112,34 L100,32 L98,28 L100,18 Z" />
+        <text class="region-label" x="108" y="22">E. Europe</text>
+
+        <!-- North Africa / Middle East -->
+        <path class="region" data-region="Middle East"
+          d="M86,36 L94,34 L112,34 L118,38 L126,40 L128,48 L120,52 L108,50 L96,48 L86,44 Z" />
+        <text class="region-label" x="106" y="44">Middle East</text>
+
+        <!-- Sub-Saharan Africa -->
+        <path class="region" data-region="Africa"
+          d="M82,44 L96,48 L108,50 L112,56 L110,68 L106,78 L98,84 L90,80 L84,70 L80,58 Z" />
+        <text class="region-label" x="96" y="66">Africa</text>
+
+        <!-- South Asia -->
+        <path class="region" data-region="South Asia"
+          d="M126,40 L138,36 L144,42 L142,52 L136,56 L128,52 L128,48 Z" />
+        <text class="region-label" x="136" y="47">S. Asia</text>
+
+        <!-- East Asia -->
+        <path class="region" data-region="East Asia"
+          d="M138,12 L164,10 L170,18 L168,28 L160,34 L148,36 L138,36 L134,28 L136,18 Z" />
+        <text class="region-label" x="152" y="24">E. Asia</text>
+
+        <!-- Southeast Asia -->
+        <path class="region" data-region="Southeast Asia"
+          d="M144,42 L160,38 L168,42 L172,52 L166,58 L156,60 L148,56 L142,52 Z" />
+        <text class="region-label" x="156" y="50">SE Asia</text>
+
+        <!-- Oceania -->
+        <path class="region" data-region="Oceania"
+          d="M158,64 L180,60 L190,66 L188,78 L178,84 L166,82 L158,76 Z" />
+        <text class="region-label" x="174" y="74">Oceania</text>
+      </svg>
     </div>
-    <div class="guess-row">
-      <span class="guess-label">title</span>
-      <input class="guess-input" id="guess-title" placeholder="what's it called?" autocomplete="off" />
-    </div>
-    <div class="guess-row">
-      <span class="guess-label">time period</span>
-      <input class="guess-input" id="guess-period" placeholder="when was it made?" autocomplete="off" />
-    </div>
-    <div class="guess-row">
-      <span class="guess-label">country</span>
-      <input class="guess-input" id="guess-country" placeholder="where's it from?" autocomplete="off" />
-    </div>
-    <div class="guess-row">
-      <span class="guess-label">meaning</span>
-      <input class="guess-input" id="guess-meaning" placeholder="what do you think it means?" autocomplete="off" />
+    <div class="selected-region-label" id="selected-region"></div>
+
+    <!-- Year scrubber -->
+    <p class="guess-heading">when was it made?</p>
+    <div class="year-section">
+      <div class="year-display" id="year-display">1500</div>
+      <input type="range" class="year-slider" id="year-slider"
+        min="-3000" max="2025" value="1500" step="5" />
+      <div class="year-ticks">
+        <span>3000 BCE</span>
+        <span>1000 BCE</span>
+        <span>1 CE</span>
+        <span>1000</span>
+        <span>2025</span>
+      </div>
     </div>
 
     <div class="art-buttons">
-      <button class="art-btn" id="reveal-btn" onclick="revealAnswers()">reveal answers</button>
-      <button class="art-btn" id="next-btn" onclick="loadNewArtwork()">next artwork</button>
+      <button class="art-btn" id="reveal-btn">submit guess</button>
+      <button class="art-btn" id="next-btn" style="display:none;">next artwork</button>
     </div>
 
     <div id="reveal-card" class="reveal-card" style="display:none;"></div>
-    <a id="art-link" class="art-info-link" href="#" target="_blank">view on art institute of chicago →</a>
+    <a id="art-link" class="art-info-link" href="#" target="_blank" style="display:none;">view on art institute of chicago →</a>
   </div>
 
   <script>
-    // Theme is handled by theme.js (loaded in <head>)
-
-    // Frame styles
     const frameClasses = [
       'frame-baroque', 'frame-ornate', 'frame-modern', 'frame-classic',
       'frame-rustic', 'frame-gallery', 'frame-velvet', 'frame-gilt'
     ];
 
-    // Current artwork data
     let currentArtwork = null;
+    let selectedRegion = null;
 
-    // Art Institute of Chicago API (no key needed)
     const API_BASE = 'https://api.artic.edu/api/v1/artworks';
-    const FIELDS = 'id,title,artist_display,date_display,place_of_origin,image_id,thumbnail';
-    const TOTAL_PAGES = 12000; // safe upper bound for artworks with images
+    const FIELDS = 'id,title,artist_display,date_display,date_start,date_end,place_of_origin,image_id,thumbnail';
+    const TOTAL_PAGES = 12000;
 
+    // --- Region mapping ---
+    const REGION_MAP = {
+      'North America': ['united states', 'canada', 'mexico', 'american', 'u.s.a', 'usa'],
+      'Central America': ['guatemala', 'honduras', 'el salvador', 'nicaragua', 'costa rica', 'panama', 'belize', 'caribbean', 'cuba', 'haiti', 'dominican', 'jamaica', 'puerto rico', 'mesoamerica', 'maya', 'aztec', 'olmec'],
+      'South America': ['brazil', 'argentina', 'chile', 'peru', 'colombia', 'venezuela', 'ecuador', 'bolivia', 'uruguay', 'paraguay', 'inca', 'andes', 'andean'],
+      'Western Europe': ['france', 'french', 'italy', 'italian', 'spain', 'spanish', 'germany', 'german', 'netherlands', 'dutch', 'belgium', 'belgian', 'england', 'english', 'british', 'britain', 'portugal', 'portuguese', 'austria', 'austrian', 'switzerland', 'swiss', 'ireland', 'irish', 'scotland', 'scottish', 'scandinavia', 'sweden', 'swedish', 'norway', 'norwegian', 'denmark', 'danish', 'finland', 'flemish', 'greek', 'greece', 'roman', 'rome', 'florence', 'venice', 'paris', 'london', 'european'],
+      'Eastern Europe': ['russia', 'russian', 'poland', 'polish', 'czech', 'bohemia', 'hungary', 'hungarian', 'romania', 'romanian', 'ukraine', 'ukrainian', 'bulgaria', 'serbian', 'serbia', 'croatia', 'byzantine', 'constantinople', 'ottoman'],
+      'Middle East': ['egypt', 'egyptian', 'iran', 'iranian', 'persian', 'persia', 'iraq', 'iraqi', 'syria', 'syrian', 'turkey', 'turkish', 'israel', 'arab', 'arabia', 'saudi', 'mesopotamia', 'assyria', 'babylon', 'sumerian', 'islamic', 'morocco', 'tunisia', 'algeria', 'libya', 'levant', 'phoenicia', 'anatolia'],
+      'Africa': ['nigeria', 'nigerian', 'ghana', 'kenya', 'ethiopia', 'ethiopian', 'congo', 'mali', 'senegal', 'tanzania', 'south africa', 'african', 'yoruba', 'benin', 'ivory coast', 'cameroon', 'zimbabwe', 'mozambique', 'madagascar', 'akan', 'kongo', 'luba', 'dogon', 'nok'],
+      'South Asia': ['india', 'indian', 'pakistan', 'pakistan', 'bangladesh', 'sri lanka', 'nepal', 'nepalese', 'tibet', 'tibetan', 'mughal', 'gandhara', 'rajput'],
+      'East Asia': ['china', 'chinese', 'japan', 'japanese', 'korea', 'korean', 'mongolia', 'mongolian', 'tang', 'song', 'ming', 'qing', 'edo', 'meiji', 'heian', 'kamakura', 'joseon', 'han dynasty'],
+      'Southeast Asia': ['thailand', 'thai', 'vietnam', 'vietnamese', 'cambodia', 'cambodian', 'indonesia', 'indonesian', 'philippines', 'filipino', 'myanmar', 'burma', 'burmese', 'laos', 'malaysia', 'khmer', 'javanese', 'bali'],
+      'Oceania': ['australia', 'australian', 'new zealand', 'polynesia', 'polynesian', 'melanesia', 'micronesia', 'aboriginal', 'maori', 'pacific islands', 'hawaiian', 'hawaii', 'samoa', 'fiji', 'tonga', 'papua'],
+    };
+
+    function classifyOrigin(origin) {
+      if (!origin || origin === 'Unknown') return null;
+      const lower = origin.toLowerCase();
+      for (const [region, keywords] of Object.entries(REGION_MAP)) {
+        for (const kw of keywords) {
+          if (lower.includes(kw)) return region;
+        }
+      }
+      return null;
+    }
+
+    function extractYear(artwork) {
+      if (artwork.date_start && typeof artwork.date_start === 'number') {
+        if (artwork.date_end && typeof artwork.date_end === 'number') {
+          return Math.round((artwork.date_start + artwork.date_end) / 2);
+        }
+        return artwork.date_start;
+      }
+      // Fallback: try to parse from date_display string
+      const match = artwork.date?.match(/(-?\d{3,4})/);
+      return match ? parseInt(match[1], 10) : null;
+    }
+
+    function formatYear(y) {
+      if (y < 0) return `${Math.abs(y)} BCE`;
+      if (y === 0) return '1 BCE';
+      return `${y} CE`;
+    }
+
+    // --- Year slider ---
+    const yearSlider = document.getElementById('year-slider');
+    const yearDisplay = document.getElementById('year-display');
+    yearSlider.addEventListener('input', () => {
+      yearDisplay.textContent = formatYear(parseInt(yearSlider.value, 10));
+    });
+
+    // --- Map interaction ---
+    const regions = document.querySelectorAll('.world-map .region');
+    const selectedRegionLabel = document.getElementById('selected-region');
+
+    regions.forEach(r => {
+      r.addEventListener('click', () => {
+        regions.forEach(el => el.classList.remove('selected'));
+        r.classList.add('selected');
+        selectedRegion = r.dataset.region;
+        selectedRegionLabel.textContent = selectedRegion;
+      });
+    });
+
+    // --- Fetch artwork ---
     async function fetchRandomArtwork() {
       const page = Math.floor(Math.random() * TOTAL_PAGES) + 1;
       const url = `${API_BASE}?limit=12&page=${page}&fields=${FIELDS}`;
       const res = await fetch(url);
       const json = await res.json();
 
-      // Filter to artworks that have an image
       const withImages = json.data.filter(a => a.image_id);
       if (withImages.length === 0) return null;
 
-      // Pick a random one from the batch
       const artwork = withImages[Math.floor(Math.random() * withImages.length)];
       const iiifBase = json.config.iiif_url;
       return {
@@ -375,35 +596,48 @@
         title: artwork.title || 'Unknown',
         artist: artwork.artist_display || 'Unknown artist',
         date: artwork.date_display || 'Unknown period',
+        date_start: artwork.date_start,
+        date_end: artwork.date_end,
         origin: artwork.place_of_origin || 'Unknown',
         imageUrl: `${iiifBase}/${artwork.image_id}/full/843,/0/default.jpg`,
         description: artwork.thumbnail?.alt_text || '',
       };
     }
 
+    let imageRetries = 0;
+    const MAX_IMAGE_RETRIES = 3;
+
     async function loadNewArtwork() {
       const loading = document.getElementById('loading');
       const artArea = document.getElementById('art-area');
       const guessSection = document.getElementById('guess-section');
       const revealCard = document.getElementById('reveal-card');
+      const revealBtn = document.getElementById('reveal-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const artLink = document.getElementById('art-link');
 
+      loading.textContent = 'finding a masterpiece...';
       loading.style.display = '';
       artArea.style.display = 'none';
       guessSection.style.display = 'none';
       revealCard.style.display = 'none';
+      nextBtn.style.display = 'none';
+      artLink.style.display = 'none';
+      revealBtn.disabled = false;
+      revealBtn.style.display = '';
 
-      // Clear inputs
-      document.querySelectorAll('.guess-input').forEach(el => el.value = '');
+      // Reset guesses
+      selectedRegion = null;
+      regions.forEach(el => el.classList.remove('selected'));
+      selectedRegionLabel.textContent = '';
+      yearSlider.value = 1500;
+      yearDisplay.textContent = formatYear(1500);
 
-      // Try fetching until we get one with an image
       let artwork = null;
       let attempts = 0;
       while (!artwork && attempts < 5) {
-        try {
-          artwork = await fetchRandomArtwork();
-        } catch (e) {
-          console.error('Fetch failed:', e);
-        }
+        try { artwork = await fetchRandomArtwork(); }
+        catch (e) { console.error('Fetch failed:', e); }
         attempts++;
       }
 
@@ -413,81 +647,140 @@
       }
 
       currentArtwork = artwork;
+      currentArtwork.actualYear = extractYear(artwork);
+      currentArtwork.actualRegion = classifyOrigin(artwork.origin);
+      imageRetries = 0;
 
-      // Set random frame
       const frame = document.getElementById('artwork-frame');
       frameClasses.forEach(c => frame.classList.remove(c));
       frame.classList.add(frameClasses[Math.floor(Math.random() * frameClasses.length)]);
 
-      // Load image
       const img = document.getElementById('artwork-img');
       img.onload = () => {
         loading.style.display = 'none';
         artArea.style.display = '';
         artArea.classList.remove('fade-in');
-        void artArea.offsetWidth; // force reflow
+        void artArea.offsetWidth;
         artArea.classList.add('fade-in');
         guessSection.style.display = '';
       };
       img.onerror = () => {
-        // If image fails, try another
-        loadNewArtwork();
+        imageRetries++;
+        if (imageRetries < MAX_IMAGE_RETRIES) loadNewArtwork();
+        else loading.textContent = 'images aren\'t loading right now, try again later';
       };
       img.src = artwork.imageUrl;
 
-      // Set info link
       document.getElementById('art-link').href = `https://www.artic.edu/artworks/${artwork.id}`;
     }
 
+    // --- Scoring & reveal ---
     function revealAnswers() {
       if (!currentArtwork) return;
-      const card = document.getElementById('reveal-card');
-      const guesses = {
-        artist: document.getElementById('guess-artist').value.trim(),
-        title: document.getElementById('guess-title').value.trim(),
-        period: document.getElementById('guess-period').value.trim(),
-        country: document.getElementById('guess-country').value.trim(),
-        meaning: document.getElementById('guess-meaning').value.trim(),
-      };
 
-      const rows = [
-        { label: 'artist', guess: guesses.artist, answer: currentArtwork.artist },
-        { label: 'title', guess: guesses.title, answer: currentArtwork.title },
-        { label: 'period', guess: guesses.period, answer: currentArtwork.date },
-        { label: 'country', guess: guesses.country, answer: currentArtwork.origin },
-      ];
+      const guessedYear = parseInt(yearSlider.value, 10);
+      const guessedRegion = selectedRegion;
+      const actualYear = currentArtwork.actualYear;
+      const actualRegion = currentArtwork.actualRegion;
 
-      let html = '';
-      for (const r of rows) {
-        const match = r.guess && r.answer.toLowerCase().includes(r.guess.toLowerCase());
-        html += `<div class="reveal-row">
-          <span class="reveal-label">${r.label}</span>
-          <span class="reveal-value ${match ? 'reveal-match' : ''}">${r.answer}</span>
-        </div>`;
+      // Score year (0-100): full marks within 25 years, partial up to 500 years off
+      let yearScore = 0;
+      let yearDiff = null;
+      if (actualYear !== null) {
+        yearDiff = Math.abs(guessedYear - actualYear);
+        if (yearDiff <= 25) yearScore = 100;
+        else if (yearDiff <= 500) yearScore = Math.round(100 * (1 - (yearDiff - 25) / 475));
+        else yearScore = 0;
       }
 
-      // Add meaning/description if available
+      // Score region (0 or 100)
+      const regionCorrect = guessedRegion && actualRegion && guessedRegion === actualRegion;
+      const regionScore = regionCorrect ? 100 : 0;
+
+      // Build reveal card
+      const card = document.getElementById('reveal-card');
+      let html = '';
+
+      // Year result
+      html += `<div class="reveal-row">
+        <span class="reveal-label">year</span>
+        <span class="reveal-value">`;
+      if (actualYear !== null) {
+        const cls = yearScore === 100 ? 'reveal-match' : yearScore > 0 ? 'reveal-close' : 'reveal-miss';
+        html += `<span class="${cls}">${currentArtwork.date}</span>`;
+        if (yearDiff !== null && yearDiff > 25) {
+          html += ` <span style="opacity:0.5;font-size:0.75rem;">(you guessed ${formatYear(guessedYear)}, off by ${yearDiff} years)</span>`;
+        } else if (yearDiff !== null) {
+          html += ` <span style="opacity:0.5;font-size:0.75rem;">(nailed it!)</span>`;
+        }
+      } else {
+        html += `<span class="reveal-miss">${currentArtwork.date}</span> <span style="opacity:0.4;font-size:0.75rem;">(couldn't score this one)</span>`;
+      }
+      html += `</span></div>`;
+
+      // Region result
+      html += `<div class="reveal-row">
+        <span class="reveal-label">region</span>
+        <span class="reveal-value">`;
+      if (actualRegion) {
+        const cls = regionCorrect ? 'reveal-match' : 'reveal-miss';
+        html += `<span class="${cls}">${currentArtwork.origin}</span>`;
+        if (!regionCorrect && guessedRegion) {
+          html += ` <span style="opacity:0.5;font-size:0.75rem;">(you guessed ${guessedRegion})</span>`;
+        } else if (regionCorrect) {
+          html += ` <span style="opacity:0.5;font-size:0.75rem;">(correct!)</span>`;
+        }
+      } else {
+        html += `<span class="reveal-miss">${currentArtwork.origin}</span> <span style="opacity:0.4;font-size:0.75rem;">(couldn't classify region)</span>`;
+      }
+      html += `</span></div>`;
+
+      // Divider then full artwork info
+      html += `<div style="border-top:1px solid var(--dn-btn-border);margin:0.8rem 0;"></div>`;
+
+      html += `<div class="reveal-row">
+        <span class="reveal-label">title</span>
+        <span class="reveal-value">${currentArtwork.title}</span>
+      </div>`;
+      html += `<div class="reveal-row">
+        <span class="reveal-label">artist</span>
+        <span class="reveal-value">${currentArtwork.artist}</span>
+      </div>`;
+
       if (currentArtwork.description) {
-        html += `<div class="reveal-row" style="margin-top:0.6rem;">
+        html += `<div class="reveal-row">
           <span class="reveal-label">about</span>
           <span class="reveal-value" style="font-size:0.8rem;opacity:0.7;">${currentArtwork.description}</span>
         </div>`;
       }
 
-      if (guesses.meaning) {
-        html += `<div class="reveal-row" style="margin-top:0.4rem;">
-          <span class="reveal-label">your take</span>
-          <span class="reveal-value" style="font-style:italic;opacity:0.6;">"${guesses.meaning}"</span>
-        </div>`;
+      // Score summary
+      const totalParts = (actualYear !== null ? 1 : 0) + (actualRegion ? 1 : 0);
+      if (totalParts > 0) {
+        const totalScore = Math.round(((actualYear !== null ? yearScore : 0) + (actualRegion ? regionScore : 0)) / totalParts);
+        html += `<div class="score-summary">
+          <div class="score-big">${totalScore}/100</div>
+          <div class="score-detail">`;
+        if (actualYear !== null) html += `year: ${yearScore}/100`;
+        if (actualYear !== null && actualRegion) html += ` · `;
+        if (actualRegion) html += `region: ${regionScore}/100`;
+        html += `</div></div>`;
       }
 
       card.innerHTML = html;
       card.style.display = '';
       card.classList.remove('fadeUp');
       void card.offsetWidth;
+
+      // Show next button and link, hide submit
+      document.getElementById('reveal-btn').style.display = 'none';
+      document.getElementById('next-btn').style.display = '';
+      document.getElementById('art-link').style.display = '';
     }
 
-    // Load first artwork on page load
+    document.getElementById('reveal-btn').addEventListener('click', revealAnswers);
+    document.getElementById('next-btn').addEventListener('click', loadNewArtwork);
+
     loadNewArtwork();
   </script>
 </body>

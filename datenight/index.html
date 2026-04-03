@@ -140,14 +140,8 @@
       if (input) setTimeout(() => input.focus(), 50);
     }
 
-    function showJoinStatus(msg, isError) {
-      const el = document.getElementById('join-status');
-      el.textContent = msg;
-      el.className = 'room-status' + (isError ? ' room-error' : '');
-    }
-
-    function showNewStatus(msg, isError) {
-      const el = document.getElementById('new-status');
+    function showStatus(elementId, msg, isError) {
+      const el = document.getElementById(elementId);
       el.textContent = msg;
       el.className = 'room-status' + (isError ? ' room-error' : '');
     }
@@ -190,13 +184,13 @@
     createBtn.addEventListener('click', () => {
       const code = newCodeInput.value.trim().toUpperCase();
       if (code.length !== 4) {
-        showNewStatus('enter exactly 4 letters', true);
+        showStatus('new-status', 'enter exactly 4 letters', true);
         return;
       }
 
       const id = peerIdFromCode(code);
       createBtn.disabled = true;
-      showNewStatus('creating room...');
+      showStatus('new-status', 'creating room...');
 
       peer = new Peer(id);
 
@@ -223,9 +217,9 @@
 
       peer.on('error', (err) => {
         if (err.type === 'unavailable-id') {
-          showNewStatus('that code is taken, try another', true);
+          showStatus('new-status', 'that code is taken, try another', true);
         } else {
-          showNewStatus('connection error, try again', true);
+          showStatus('new-status', 'connection error, try again', true);
         }
         createBtn.disabled = false;
         peer.destroy();
@@ -237,19 +231,22 @@
     joinBtn.addEventListener('click', () => {
       const code = joinCodeInput.value.trim().toUpperCase();
       if (code.length !== 4) {
-        showJoinStatus('enter exactly 4 letters', true);
+        showStatus('join-status', 'enter exactly 4 letters', true);
         return;
       }
 
       joinBtn.disabled = true;
-      showJoinStatus('joining room...');
+      showStatus('join-status', 'joining room...');
 
       peer = new Peer();
+
+      let joinTimeout;
 
       peer.on('open', () => {
         const c = peer.connect(peerIdFromCode(code), { reliable: true });
 
         c.on('open', () => {
+          clearTimeout(joinTimeout);
           conn = c;
           c.on('data', (data) => {
             if (data.type === 'welcome') {
@@ -261,9 +258,9 @@
           c.on('close', onPartnerDisconnect);
         });
 
-        setTimeout(() => {
+        joinTimeout = setTimeout(() => {
           if (!conn) {
-            showJoinStatus('couldn\'t find that room', true);
+            showStatus('join-status', 'couldn\'t find that room', true);
             joinBtn.disabled = false;
             peer.destroy();
             peer = null;
@@ -272,7 +269,8 @@
       });
 
       peer.on('error', () => {
-        showJoinStatus('connection error, check the code', true);
+        clearTimeout(joinTimeout);
+        showStatus('join-status', 'connection error, check the code', true);
         joinBtn.disabled = false;
         peer.destroy();
         peer = null;
@@ -348,15 +346,14 @@
     // ── URL params ──
     const params = new URLSearchParams(window.location.search);
     const urlRoom = params.get('room');
+    const fromParam = params.get('from');
+
     if (urlRoom && urlRoom.length === 4) {
       showStep(stepJoin);
       joinCodeInput.value = urlRoom;
       history.replaceState(null, '', './');
       setTimeout(() => joinBtn.click(), 300);
-    }
-
-    // Coming back from character creator
-    if (params.get('from') === 'character' && sessionStorage.getItem('datenight-room')) {
+    } else if ((fromParam === 'character' || fromParam === 'map') && sessionStorage.getItem('datenight-room')) {
       roomCode = sessionStorage.getItem('datenight-room');
       isHost = sessionStorage.getItem('datenight-host') === '1';
       showStep(stepHome);
@@ -364,20 +361,7 @@
       history.replaceState(null, '', './');
       showHomeChar();
       showCongrats();
-    }
-
-    // Coming back from map
-    if (params.get('from') === 'map' && sessionStorage.getItem('datenight-room')) {
-      roomCode = sessionStorage.getItem('datenight-room');
-      isHost = sessionStorage.getItem('datenight-host') === '1';
-      showStep(stepHome);
-      document.getElementById('room-info').textContent = 'room ' + roomCode;
-      history.replaceState(null, '', './');
-      showHomeChar();
-      showCongrats();
-    }
-
-    if (params.get('scared') === '1') {
+    } else if (params.get('scared') === '1') {
       showStep(stepHome);
       document.getElementById('home-flavor').textContent = 'phew that was scary, should we try something different?';
       history.replaceState(null, '', './');

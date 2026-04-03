@@ -86,17 +86,6 @@ const decks = {
   ],
 };
 
-// Deck labels for the UI
-const deckLabels = {
-  deep: "deep",
-  dreams: "dreams",
-  memories: "memories",
-  vulnerable: "vulnerable",
-  gratitude: "gratitude",
-  spicy: "spicy",
-  silly: "silly",
-};
-
 // Shuffle helper (Fisher-Yates)
 function shuffle(arr) {
   const a = [...arr];
@@ -178,16 +167,38 @@ function spawnFireflies() {
   const container = document.getElementById('fireflies');
   container.innerHTML = '';
 
+  // Remove previously injected firefly keyframes
+  document.querySelectorAll('style[data-firefly]').forEach(s => s.remove());
+
   const count = window.innerWidth < 500 ? 12 : 20;
+
+  // Build all keyframes in a single style element
+  let keyframeCSS = '';
+  for (let i = 0; i < count; i++) {
+    const midX1 = (Math.random() - 0.5) * 150;
+    const midY1 = (Math.random() - 0.5) * 150;
+    const midX2 = (Math.random() - 0.5) * 180;
+    const midY2 = (Math.random() - 0.5) * 180;
+    keyframeCSS += `
+      @keyframes firefly-${i} {
+        0% { transform: translate(0, 0); }
+        25% { transform: translate(${midX1}px, ${midY1}px); }
+        50% { transform: translate(${midX2}px, ${midY2}px); }
+        75% { transform: translate(${midX1 * -0.5}px, ${midY2 * 0.7}px); }
+        100% { transform: translate(0, 0); }
+      }`;
+  }
+  const styleEl = document.createElement('style');
+  styleEl.dataset.firefly = 'true';
+  styleEl.textContent = keyframeCSS;
+  document.head.appendChild(styleEl);
 
   for (let i = 0; i < count; i++) {
     const firefly = document.createElement('div');
     firefly.className = 'firefly';
 
-    const x = Math.random() * 100;
-    const y = Math.random() * 100;
-    firefly.style.left = x + '%';
-    firefly.style.top = y + '%';
+    firefly.style.left = (Math.random() * 100) + '%';
+    firefly.style.top = (Math.random() * 100) + '%';
 
     const duration = 6 + Math.random() * 10;
     const delay = Math.random() * 5;
@@ -198,27 +209,7 @@ function spawnFireflies() {
     firefly.style.height = size + 'px';
     firefly.style.animationDuration = `${duration}s, ${glowDuration}s`;
     firefly.style.animationDelay = `${delay}s, ${delay * 0.5}s`;
-
-    // Unique float path for each firefly
-    const midX1 = (Math.random() - 0.5) * 150;
-    const midY1 = (Math.random() - 0.5) * 150;
-    const midX2 = (Math.random() - 0.5) * 180;
-    const midY2 = (Math.random() - 0.5) * 180;
-
-    const keyframeName = `firefly-${i}`;
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes ${keyframeName} {
-        0% { transform: translate(0, 0); }
-        25% { transform: translate(${midX1}px, ${midY1}px); }
-        50% { transform: translate(${midX2}px, ${midY2}px); }
-        75% { transform: translate(${midX1 * -0.5}px, ${midY2 * 0.7}px); }
-        100% { transform: translate(0, 0); }
-      }
-    `;
-    document.head.appendChild(style);
-
-    firefly.style.animationName = `${keyframeName}, firefly-glow`;
+    firefly.style.animationName = `firefly-${i}, firefly-glow`;
     container.appendChild(firefly);
   }
 }
