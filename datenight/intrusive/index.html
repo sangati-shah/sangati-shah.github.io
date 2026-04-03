@@ -42,86 +42,8 @@
     <!-- Fireflies -->
     <div id="fireflies"></div>
 
-    <!-- Jar Grid (one jar per category) -->
-    <div class="jar-grid">
-      <div class="deck-jar active" data-deck="deep" onclick="selectDeckAndDraw('deep')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">deep</div>
-      </div>
-      <div class="deck-jar" data-deck="dreams" onclick="selectDeckAndDraw('dreams')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">dreams</div>
-      </div>
-      <div class="deck-jar" data-deck="memories" onclick="selectDeckAndDraw('memories')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">memories</div>
-      </div>
-      <div class="deck-jar" data-deck="vulnerable" onclick="selectDeckAndDraw('vulnerable')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">vulnerable</div>
-      </div>
-      <div class="deck-jar" data-deck="gratitude" onclick="selectDeckAndDraw('gratitude')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">gratitude</div>
-      </div>
-      <div class="deck-jar" data-deck="spicy" onclick="selectDeckAndDraw('spicy')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">spicy</div>
-      </div>
-      <div class="deck-jar" data-deck="silly" onclick="selectDeckAndDraw('silly')">
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">silly</div>
-      </div>
-    </div>
+    <!-- Jar Grid (one jar per category, built by JS) -->
+    <div class="jar-grid" id="jar-grid"></div>
 
     <!-- Campfire scene (bottom of screen) -->
     <div class="campfire-scene">
@@ -188,11 +110,36 @@
           <p id="question-text" class="question-text"></p>
         </div>
       </div>
-      <button class="next-btn" onclick="drawQuestion()">draw another</button>
-      <button class="close-btn" onclick="closeQuestion()">put it back</button>
+      <button class="next-btn" id="draw-btn">draw another</button>
+      <button class="close-btn" id="close-btn">put it back</button>
     </div>
   </div>
 
   <script src="../app.js"></script>
+  <script>
+    // Build jar grid from deck names
+    const deckNames = ['deep', 'dreams', 'memories', 'vulnerable', 'gratitude', 'spicy', 'silly'];
+    const grid = document.getElementById('jar-grid');
+    deckNames.forEach((name, i) => {
+      const jar = document.createElement('div');
+      jar.className = 'deck-jar' + (i === 0 ? ' active' : '');
+      jar.dataset.deck = name;
+      jar.addEventListener('click', () => selectDeckAndDraw(name));
+      jar.innerHTML = `
+        <div class="jar">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <div class="paper paper-1"></div>
+            <div class="paper paper-2"></div>
+            <div class="paper paper-3"></div>
+          </div>
+        </div>
+        <div class="tape-label">${name}</div>`;
+      grid.appendChild(jar);
+    });
+
+    document.getElementById('draw-btn').addEventListener('click', drawQuestion);
+    document.getElementById('close-btn').addEventListener('click', closeQuestion);
+  </script>
 </body>
 </html>
