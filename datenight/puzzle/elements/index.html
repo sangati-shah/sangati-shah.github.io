@@ -479,6 +479,21 @@
     }
     .solo-btn:hover { color: rgba(240,230,211,0.7); background: rgba(255,255,255,0.08); }
 
+    .skip-btn {
+      position: fixed; bottom: 1rem; right: 1rem;
+      font-family: 'Caveat', cursive; font-size: 0.9rem;
+      color: rgba(240,230,211,0.2); background: none;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0.3rem 1rem; border-radius: 12px;
+      cursor: pointer; transition: all 0.3s;
+      text-decoration: none; z-index: 500;
+    }
+    .skip-btn:hover {
+      color: rgba(240,230,211,0.5);
+      border-color: rgba(255,255,255,0.15);
+    }
+    @media (pointer: coarse) { .skip-btn { bottom: 4.5rem; } }
+
     /* Ambient particles */
     .ambient-particle {
       position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; opacity: 0;
@@ -493,6 +508,7 @@
 </head>
 <body class="dark-hud">
   <a href="../../world/" class="back-link">&larr; back</a>
+  <a href="../../world/" class="skip-btn">skip &rarr;</a>
   <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
   <div class="switch-hint" id="switch-hint"></div>
   <div class="gem-counter" id="gem-counter">
