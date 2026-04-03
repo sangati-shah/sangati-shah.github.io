@@ -19,6 +19,7 @@ const DN_THEMES = [
     inputText: '#3a5743',
     homeBtnBg: 'rgba(255,252,245,0.7)',
     homeBtnBorder: '#c2b8a3',
+    flashColor: '#9bb5a0',
   },
   {
     name: 'poster',
@@ -36,6 +37,7 @@ const DN_THEMES = [
     inputText: '#e65100',
     homeBtnBg: '#ff6d00',
     homeBtnBorder: '#e65100',
+    flashColor: '#ff6d00',
   },
   {
     name: 'smiski',
@@ -53,6 +55,7 @@ const DN_THEMES = [
     inputText: '#2e7d32',
     homeBtnBg: 'rgba(255,255,255,0.6)',
     homeBtnBorder: '#a5d6a7',
+    flashColor: '#66bb6a',
   },
   {
     name: 'neon',
@@ -70,6 +73,7 @@ const DN_THEMES = [
     inputText: '#ffd600',
     homeBtnBg: 'rgba(255,214,0,0.08)',
     homeBtnBorder: '#ffd600',
+    flashColor: '#fff',
   },
   {
     name: 'cooking',
@@ -87,6 +91,7 @@ const DN_THEMES = [
     inputText: '#5d4037',
     homeBtnBg: 'rgba(255,248,240,0.7)',
     homeBtnBorder: '#d7ccc8',
+    flashColor: '#e64a19',
   },
   {
     name: 'earth',
@@ -104,6 +109,7 @@ const DN_THEMES = [
     inputText: '#3e2723',
     homeBtnBg: 'rgba(255,255,255,0.55)',
     homeBtnBorder: '#a1887f',
+    flashColor: '#6d9b6e',
   },
   {
     name: 'sheet-music',
@@ -121,32 +127,30 @@ const DN_THEMES = [
     inputText: '#1a1a1a',
     homeBtnBg: '#fff',
     homeBtnBorder: '#1a1a1a',
+    flashColor: '#1a1a1a',
   },
 ];
 
 let dnThemeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
 if (dnThemeIndex >= DN_THEMES.length) dnThemeIndex = 0;
 let dnTransitioning = false;
+let dnTransitionSafety;
+
+const DN_PROP_MAP = {
+  bg: '--dn-bg', text: '--dn-text', sub: '--dn-sub', accent: '--dn-accent',
+  headingFont: '--dn-heading-font', btnBg: '--dn-btn-bg', btnBorder: '--dn-btn-border',
+  btnRadius: '--dn-btn-radius', btnText: '--dn-btn-text', inputBg: '--dn-input-bg',
+  inputBorder: '--dn-input-border', inputText: '--dn-input-text',
+  homeBtnBg: '--dn-home-btn-bg', homeBtnBorder: '--dn-home-btn-border',
+};
 
 function dnApplyTheme(i) {
   const t = DN_THEMES[i];
   const r = document.documentElement;
-  r.style.setProperty('--dn-bg', t.bg);
-  r.style.setProperty('--dn-text', t.text);
-  r.style.setProperty('--dn-sub', t.sub);
-  r.style.setProperty('--dn-accent', t.accent);
-  r.style.setProperty('--dn-heading-font', t.headingFont);
-  r.style.setProperty('--dn-btn-bg', t.btnBg);
-  r.style.setProperty('--dn-btn-border', t.btnBorder);
-  r.style.setProperty('--dn-btn-radius', t.btnRadius);
-  r.style.setProperty('--dn-btn-text', t.btnText);
-  r.style.setProperty('--dn-input-bg', t.inputBg);
-  r.style.setProperty('--dn-input-border', t.inputBorder);
-  r.style.setProperty('--dn-input-text', t.inputText);
-  r.style.setProperty('--dn-home-btn-bg', t.homeBtnBg);
-  r.style.setProperty('--dn-home-btn-border', t.homeBtnBorder);
+  for (const [key, prop] of Object.entries(DN_PROP_MAP)) {
+    r.style.setProperty(prop, t[key]);
+  }
   document.body.style.background = t.bg;
-  // Update room-gate bg if it exists
   const gate = document.querySelector('.room-gate');
   if (gate) gate.style.background = t.bg;
 }
@@ -159,6 +163,8 @@ function dnApplyTheme(i) {
 function dnCycleTheme(e) {
   if (dnTransitioning) return;
   dnTransitioning = true;
+  clearTimeout(dnTransitionSafety);
+  dnTransitionSafety = setTimeout(() => { dnTransitioning = false; }, 1000);
 
   const nextIndex = (dnThemeIndex + 1) % DN_THEMES.length;
   const next = DN_THEMES[nextIndex];
@@ -176,33 +182,7 @@ function dnCycleTheme(e) {
 
   // Flash overlay — all themes get a fast flash, tinted per theme
   const flash = document.createElement('div');
-  const flashBase = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99998;pointer-events:none;opacity:1;`;
-
-  switch (next.name) {
-    case 'ghibli':
-      flash.style.cssText = flashBase + `background:${next.sub};`;
-      break;
-    case 'poster':
-      flash.style.cssText = flashBase + `background:${next.accent};`;
-      break;
-    case 'neon':
-      flash.style.cssText = flashBase + `background:#fff;`;
-      break;
-    case 'earth':
-      flash.style.cssText = flashBase + `background:${next.sub};`;
-      break;
-    case 'smiski':
-      flash.style.cssText = flashBase + `background:${next.accent};`;
-      break;
-    case 'cooking':
-      flash.style.cssText = flashBase + `background:${next.accent};`;
-      break;
-    case 'sheet-music':
-      flash.style.cssText = flashBase + `background:#1a1a1a;`;
-      break;
-    default:
-      flash.style.cssText = flashBase + `background:#fff;`;
-  }
+  flash.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99998;pointer-events:none;opacity:1;background:${next.flashColor || '#fff'};`;
 
   document.body.appendChild(flash);
 

@@ -281,8 +281,8 @@
     </div>
 
     <div class="art-buttons">
-      <button class="art-btn" id="reveal-btn" onclick="revealAnswers()">reveal answers</button>
-      <button class="art-btn" id="next-btn" onclick="loadNewArtwork()">next artwork</button>
+      <button class="art-btn" id="reveal-btn">reveal answers</button>
+      <button class="art-btn" id="next-btn">next artwork</button>
     </div>
 
     <div id="reveal-card" class="reveal-card" style="display:none;"></div>
@@ -330,12 +330,16 @@
       };
     }
 
+    let imageRetries = 0;
+    const MAX_IMAGE_RETRIES = 3;
+
     async function loadNewArtwork() {
       const loading = document.getElementById('loading');
       const artArea = document.getElementById('art-area');
       const guessSection = document.getElementById('guess-section');
       const revealCard = document.getElementById('reveal-card');
 
+      loading.textContent = 'finding a masterpiece...';
       loading.style.display = '';
       artArea.style.display = 'none';
       guessSection.style.display = 'none';
@@ -362,6 +366,7 @@
       }
 
       currentArtwork = artwork;
+      imageRetries = 0;
 
       // Set random frame
       const frame = document.getElementById('artwork-frame');
@@ -379,8 +384,12 @@
         guessSection.style.display = '';
       };
       img.onerror = () => {
-        // If image fails, try another
-        loadNewArtwork();
+        imageRetries++;
+        if (imageRetries < MAX_IMAGE_RETRIES) {
+          loadNewArtwork();
+        } else {
+          loading.textContent = 'images aren\'t loading right now, try again later';
+        }
       };
       img.src = artwork.imageUrl;
 
@@ -435,6 +444,9 @@
       card.classList.remove('fadeUp');
       void card.offsetWidth;
     }
+
+    document.getElementById('reveal-btn').addEventListener('click', revealAnswers);
+    document.getElementById('next-btn').addEventListener('click', loadNewArtwork);
 
     // Load first artwork on page load
     loadNewArtwork();
