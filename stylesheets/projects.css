@@ -1,23 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
 
 :root {
-    --orange: rgba(249, 117, 22, 1);
-    --burgundy: rgba(121, 41, 44, 1);
-    --navy: rgba(15, 51, 84, 1);
-    --magenta: rgba(224, 1, 115, 1);
-    --olive: rgba(168, 181, 69, 1);
-    --green: rgba(64, 96, 45, 1);
-    --gold: rgba(248, 183, 36, 1);
-    --bg: #fff8f3;
+    --saffron: rgba(232, 131, 58, 1);
+    --terracotta: rgba(180, 87, 72, 1);
+    --peacock: rgba(0, 115, 130, 1);
+    --rose: rgba(207, 76, 126, 1);
+    --sage: rgba(139, 168, 104, 1);
+    --green: rgba(85, 120, 65, 1);
+    --marigold: rgba(243, 176, 43, 1);
+    --cream: #fdf6ee;
+    --warm-white: #fefcf8;
 }
 
 * { box-sizing: border-box; }
 
 body {
-    font-family: 'Outfit', system-ui, sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     margin: 0;
     padding: 0;
-    background: var(--bg);
+    background: var(--cream);
+    color: #4a3f36;
     overflow-x: hidden;
 }
 
@@ -28,9 +30,9 @@ body::before {
     inset: 0;
     z-index: -1;
     background:
-        radial-gradient(circle at 10% 20%, rgba(224, 1, 115, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 85% 60%, rgba(249, 117, 22, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 50% 90%, rgba(168, 181, 69, 0.06) 0%, transparent 50%);
+        radial-gradient(circle at 10% 20%, rgba(207, 76, 126, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 60%, rgba(232, 131, 58, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(139, 168, 104, 0.06) 0%, transparent 50%);
 }
 
 main {
@@ -48,11 +50,11 @@ a {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 248, 243, 0.9);
+    background: rgba(253, 246, 238, 0.95);
     backdrop-filter: blur(12px);
     padding: 0.8rem 2rem;
     z-index: 1000;
-    border-bottom: 2px dashed var(--magenta);
+    box-shadow: 0 2px 20px rgba(180, 87, 72, 0.06);
 }
 
 .nav-content {
@@ -64,10 +66,10 @@ a {
 }
 
 .nav-logo {
-    font-family: 'Outfit', system-ui, sans-serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 1.5rem;
     font-weight: bold;
-    background: linear-gradient(135deg, var(--magenta), var(--orange));
+    background: linear-gradient(45deg, var(--saffron), var(--rose));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -75,12 +77,13 @@ a {
 
 /* ── header ── */
 h2 {
+    font-family: 'Playfair Display', Georgia, serif;
     text-align: center;
     margin-top: 4.5rem;
     margin-bottom: 0.5rem;
     font-size: 2.4rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--magenta), var(--orange), var(--gold));
+    background: linear-gradient(135deg, var(--rose), var(--saffron), var(--marigold));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -88,7 +91,7 @@ h2 {
 
 .subtitle {
     text-align: center;
-    color: var(--burgundy);
+    color: var(--terracotta);
     font-size: 1rem;
     margin-bottom: 3rem;
     opacity: 0.7;
@@ -105,7 +108,7 @@ h2 {
 /* ── project cards ── */
 .project-card {
     position: relative;
-    background: white;
+    background: var(--warm-white);
     border-radius: 1.2rem;
     overflow: hidden;
     border: 2px solid transparent;
@@ -121,7 +124,7 @@ h2 {
     inset: -2px;
     border-radius: 1.3rem;
     padding: 2px;
-    background: linear-gradient(135deg, var(--magenta), var(--orange), var(--gold), var(--olive));
+    background: linear-gradient(135deg, var(--rose), var(--saffron), var(--marigold), var(--sage));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -150,8 +153,8 @@ h2 {
 .project-card:hover {
     transform: rotate(0deg) translateY(-6px) !important;
     box-shadow:
-        0 20px 40px rgba(224, 1, 115, 0.12),
-        0 8px 16px rgba(249, 117, 22, 0.08);
+        0 20px 40px rgba(207, 76, 126, 0.12),
+        0 8px 16px rgba(232, 131, 58, 0.08);
 }
 
 .project-card img {
@@ -171,15 +174,16 @@ h2 {
 }
 
 .project-info h3 {
+    font-family: 'Playfair Display', Georgia, serif;
     margin: 0 0 0.5rem;
-    color: var(--navy);
+    color: var(--peacock);
     font-size: 1.3rem;
     font-weight: 700;
 }
 
 .project-info p {
     margin: 0 0 1rem;
-    color: #666;
+    color: #6b5b50;
     line-height: 1.5;
     font-size: 0.9rem;
 }
@@ -193,7 +197,7 @@ h2 {
 }
 
 .tech-pill {
-    background: linear-gradient(135deg, var(--olive), var(--green));
+    background: linear-gradient(135deg, var(--sage), var(--green));
     color: #fff;
     border-radius: 999px;
     padding: 0.25rem 0.75rem;
@@ -209,15 +213,15 @@ h2 {
 
 /* alternate pill colors per card */
 .project-card:nth-child(2) .tech-pill {
-    background: linear-gradient(135deg, var(--navy), #1a5276);
+    background: linear-gradient(135deg, var(--peacock), #1a8a8a);
 }
 
 .project-card:nth-child(3) .tech-pill {
-    background: linear-gradient(135deg, var(--burgundy), #a0424a);
+    background: linear-gradient(135deg, var(--terracotta), #c06050);
 }
 
 .project-card:nth-child(4) .tech-pill {
-    background: linear-gradient(135deg, var(--magenta), #ff4081);
+    background: linear-gradient(135deg, var(--rose), #e0608a);
 }
 
 /* ── view buttons ── */
@@ -231,7 +235,7 @@ h2 {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    background: var(--magenta);
+    background: linear-gradient(135deg, var(--rose), var(--saffron));
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 999px;
@@ -249,18 +253,18 @@ h2 {
 
 .view-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(224, 1, 115, 0.35);
-    background: linear-gradient(135deg, var(--magenta), var(--orange));
+    box-shadow: 0 6px 20px rgba(207, 76, 126, 0.35);
+    background: linear-gradient(135deg, var(--rose), var(--saffron));
 }
 
 .view-btn.secondary {
     background: transparent;
-    color: var(--magenta);
-    border: 1.5px solid var(--magenta);
+    color: var(--rose);
+    border: 1.5px solid var(--rose);
 }
 
 .view-btn.secondary:hover {
-    background: var(--magenta);
+    background: var(--rose);
     color: white;
 }
 
@@ -269,7 +273,7 @@ h2 {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background: linear-gradient(135deg, #fff5f9, #fff8f3, #fffef5);
+    background: linear-gradient(135deg, #fef5f0, var(--cream), #fefcf0);
 }
 
 .project-card.featured img {
@@ -319,8 +323,8 @@ footer {
     align-items: center;
     gap: 10px;
     padding: 10px;
-    font-family: 'Outfit', sans-serif;
-    color: var(--magenta);
+    font-family: 'Nunito', sans-serif;
+    color: var(--rose);
     font-size: 0.9rem;
     margin-top: 3em;
     opacity: 0.7;

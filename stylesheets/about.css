@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -5,19 +7,21 @@
 }
 
 :root {
-    --orange: rgba(249, 117, 22, 1);
-    --burgundy: rgba(121, 41, 44, 1);
-    --navy: rgba(15, 51, 84, 1);
-    --magenta: rgba(224, 1, 115, 1);
-    --olive: rgba(168, 181, 69, 1);
-    --green: rgba(64, 96, 45, 1);
-    --gold: rgba(248, 183, 36, 1);
+    --saffron: rgba(232, 131, 58, 1);
+    --terracotta: rgba(180, 87, 72, 1);
+    --peacock: rgba(0, 115, 130, 1);
+    --rose: rgba(207, 76, 126, 1);
+    --sage: rgba(139, 168, 104, 1);
+    --green: rgba(85, 120, 65, 1);
+    --marigold: rgba(243, 176, 43, 1);
+    --cream: #fdf6ee;
+    --warm-white: #fefcf8;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #ffffff;
-    color: #333;
+    font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--cream);
+    color: #4a3f36;
     overflow-x: hidden;
 }
 
@@ -29,11 +33,11 @@ a {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
+    background: rgba(253, 246, 238, 0.95);
+    backdrop-filter: blur(12px);
     padding: 1rem 2rem;
     z-index: 1000;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 20px rgba(180, 87, 72, 0.06);
 }
 
 .nav-content {
@@ -45,9 +49,10 @@ a {
 }
 
 .nav-logo {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 1.5rem;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--orange), var(--magenta));
+    background: linear-gradient(45deg, var(--saffron), var(--rose));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,11 +65,11 @@ a {
 }
 
 .nav-links a {
-    color: #333;
+    color: #5a4a3f;
     text-decoration: none;
     transition: color 0.3s;
     position: relative;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .nav-links a::after {
@@ -74,12 +79,13 @@ a {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--orange);
+    background: var(--saffron);
     transition: width 0.3s;
+    border-radius: 1px;
 }
 
 .nav-links a:hover {
-    color: var(--orange);
+    color: var(--saffron);
 }
 
 .nav-links a:hover::after {
@@ -103,7 +109,7 @@ section.visible {
 }
 
 section:nth-child(even) {
-    background: #f8f9fa;
+    background: rgba(253, 246, 238, 0.6);
 }
 
 .container {
@@ -117,21 +123,22 @@ section:nth-child(even) {
 }
 
 .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 4rem;
     margin-bottom: 1rem;
-    background: linear-gradient(45deg, var(--magenta), var(--olive), var(--green));
+    background: linear-gradient(45deg, var(--rose), var(--saffron), var(--peacock));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: gradient 3s ease infinite;
+    animation: gradient 4s ease infinite;
     background-size: 200% 200%;
 }
 
 .name-heading {
   display: flex;
   align-items: center;
-  gap: 1rem; /* space between image and text */
-  justify-content: center; /* center both horizontally */
+  gap: 1rem;
+  justify-content: center;
 }
 
 .profile-photo {
@@ -139,8 +146,8 @@ section:nth-child(even) {
   height: 90px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.8); /* optional subtle border */
-  box-shadow: 0 0 10px rgba(0,0,0,0.2); /* optional shadow for depth */
+  border: 3px solid rgba(232, 131, 58, 0.3);
+  box-shadow: 0 0 20px rgba(207, 76, 126, 0.15);
 }
 
 @keyframes gradient {
@@ -150,10 +157,12 @@ section:nth-child(even) {
 }
 
 .hero h2 {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 2rem;
-    color: var(--navy);
+    color: var(--peacock);
     margin-bottom: 2rem;
     font-weight: 400;
+    font-style: italic;
 }
 
 .hero p {
@@ -161,7 +170,7 @@ section:nth-child(even) {
     line-height: 1.8;
     max-width: 800px;
     margin: 0 auto;
-    color: #555;
+    color: #6b5b50;
 }
 
 .hero-stats {
@@ -177,16 +186,17 @@ section:nth-child(even) {
 }
 
 .stat-number {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 2.5rem;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--olive));
+    background: linear-gradient(45deg, var(--saffron));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 .stat-label {
-    color: #666;
+    color: #8a7b70;
     font-size: 0.9rem;
     margin-top: 0.5rem;
 }
@@ -209,7 +219,7 @@ section:nth-child(even) {
 }
 
 .henna-design svg {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+    filter: drop-shadow(0 2px 6px rgba(180, 87, 72, 0.08));
 }
 
 .henna-design:nth-child(1) {
@@ -278,11 +288,11 @@ section:nth-child(even) {
         transform: scale(0.8);
     }
     5% {
-        opacity: 0.18;
+        opacity: 0.22;
         transform: scale(1);
     }
     45% {
-        opacity: 0.18;
+        opacity: 0.22;
         transform: scale(1);
     }
     50% {
@@ -313,13 +323,14 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .section-title {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 3rem;
     margin-bottom: 3rem;
     text-align: center;
     position: relative;
     display: inline-block;
     width: 100%;
-    color: var(--navy);
+    color: var(--peacock);
 }
 
 .section-title::after {
@@ -330,7 +341,7 @@ animation: drawPath 2.5s ease-out forwards;
     transform: translateX(-50%);
     width: 100px;
     height: 4px;
-    background: linear-gradient(90deg, var(--orange), var(--magenta));
+    background: linear-gradient(90deg, var(--saffron), var(--rose));
     border-radius: 2px;
 }
 
@@ -342,28 +353,29 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .skill-card {
-    background: #ffffff;
+    background: var(--warm-white);
     padding: 2rem;
-    border-radius: 15px;
-    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    border: 2px solid rgba(232, 131, 58, 0.12);
     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     cursor: pointer;
 }
 
 .skill-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 30px rgba(249, 117, 22, 0.2);
-    border-color: var(--orange);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(232, 131, 58, 0.15);
+    border-color: var(--saffron);
 }
 
 .skill-card h3 {
-    color: var(--navy);
+    font-family: 'Playfair Display', Georgia, serif;
+    color: var(--peacock);
     margin-bottom: 1rem;
     font-size: 1.5rem;
 }
 
 .skill-card p {
-    color: #666;
+    color: #6b5b50;
     line-height: 1.6;
 }
 
@@ -375,11 +387,12 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .tag {
-    background: linear-gradient(135deg, var(--olive), var(--olive));
+    background: linear-gradient(135deg, var(--sage), var(--sage));
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .experience-timeline {
@@ -394,23 +407,24 @@ animation: drawPath 2.5s ease-out forwards;
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, var(--orange), var(--magenta), var(--olive));
+    background: linear-gradient(180deg, var(--saffron), var(--rose), var(--peacock));
+    border-radius: 2px;
 }
 
 .timeline-item {
     position: relative;
     margin-bottom: 3rem;
     padding: 2rem;
-    background: #ffffff;
-    border-radius: 15px;
-    border-left: 4px solid var(--orange);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    background: var(--warm-white);
+    border-radius: 20px;
+    border-left: 4px solid var(--saffron);
+    box-shadow: 0 4px 18px rgba(180, 87, 72, 0.06);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .timeline-item:hover {
-    transform: translateX(10px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transform: translateX(8px);
+    box-shadow: 0 8px 28px rgba(180, 87, 72, 0.1);
 }
 
 .timeline-item::before {
@@ -420,33 +434,34 @@ animation: drawPath 2.5s ease-out forwards;
     top: 2rem;
     width: 15px;
     height: 15px;
-    background: var(--orange);
+    background: var(--saffron);
     border-radius: 50%;
-    border: 3px solid #ffffff;
-    box-shadow: 0 0 0 3px #e9ecef;
+    border: 3px solid var(--cream);
+    box-shadow: 0 0 0 3px rgba(232, 131, 58, 0.2);
 }
 
 .timeline-date {
-    color: var(--gold);
+    color: var(--marigold);
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
 
 .timeline-title {
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: 1.5rem;
-    color: var(--navy);
+    color: var(--peacock);
     margin-bottom: 0.5rem;
 }
 
 .timeline-company {
-    color: var(--olive);
+    color: var(--sage);
     margin-bottom: 1rem;
     font-size: 1.1rem;
     font-weight: 600;
 }
 
 .timeline-description {
-    color: #555;
+    color: #6b5b50;
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
@@ -462,7 +477,7 @@ animation: drawPath 2.5s ease-out forwards;
 .cta-button {
     display: inline-block;
     padding: 1rem 2.5rem;
-    background: var(--magenta);
+    background: linear-gradient(135deg, var(--rose), var(--saffron));
     color: #fff;
     text-decoration: none;
     border-radius: 30px;
@@ -472,11 +487,12 @@ animation: drawPath 2.5s ease-out forwards;
     border: none;
     cursor: pointer;
     font-size: 1.1rem;
+    font-family: 'Nunito', sans-serif;
 }
 
 .cta-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(249, 117, 22, 0.4);
+    box-shadow: 0 10px 30px rgba(207, 76, 126, 0.3);
 }
 
 .contact-section {
@@ -484,11 +500,11 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .contact-section p {
-    color: #555;
+    color: #6b5b50;
 }
 
 .highlight {
-    color: var(--orange);
+    color: var(--saffron);
     font-weight: 600;
 }
 
