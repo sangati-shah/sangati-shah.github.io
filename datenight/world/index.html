@@ -102,23 +102,9 @@
       opacity: 0;
       pointer-events: none;
     }
-    .heart-pickup::before,
-    .heart-pickup::after {
-      content: '';
-      position: absolute;
-      width: 10px; height: 14px;
-      background: var(--dn-accent, #e85d75);
-      border-radius: 50% 50% 0 0;
-    }
-    .heart-pickup::before {
-      left: 0; top: 0;
-      transform: rotate(-45deg);
-      transform-origin: bottom right;
-    }
-    .heart-pickup::after {
-      right: 0; top: 0;
-      transform: rotate(45deg);
-      transform-origin: bottom left;
+    .heart-pickup svg {
+      width: 100%; height: 100%;
+      display: block;
     }
     @keyframes heart-bob {
       0%, 100% { transform: translateY(0); }
@@ -139,27 +125,11 @@
     }
     .heart-counter.visible { opacity: 1; }
     .heart-counter .hc-icon {
-      width: 14px; height: 14px;
-      position: relative;
-      display: inline-block;
+      width: 16px; height: 16px;
+      display: inline-flex;
     }
-    .heart-counter .hc-icon::before,
-    .heart-counter .hc-icon::after {
-      content: '';
-      position: absolute;
-      width: 8px; height: 11px;
-      background: var(--dn-accent, #e85d75);
-      border-radius: 50% 50% 0 0;
-    }
-    .heart-counter .hc-icon::before {
-      left: 0; top: 0;
-      transform: rotate(-45deg);
-      transform-origin: bottom right;
-    }
-    .heart-counter .hc-icon::after {
-      right: 0; top: 0;
-      transform: rotate(45deg);
-      transform-origin: bottom left;
+    .heart-counter .hc-icon svg {
+      width: 100%; height: 100%;
     }
     .heart-counter.bump .hc-icon {
       animation: hc-bump 0.3s ease;
@@ -536,19 +506,14 @@
 
     .ending-heart-float {
       position: absolute;
-      width: 12px; height: 12px;
+      width: 16px; height: 16px;
       opacity: 0;
       animation: heart-float-up 4s ease-in-out forwards;
     }
-    .ending-heart-float::before,
-    .ending-heart-float::after {
-      content: '';
-      position: absolute;
-      width: 7px; height: 10px;
-      border-radius: 50% 50% 0 0;
+    .ending-heart-float svg {
+      width: 100%; height: 100%;
+      display: block;
     }
-    .ending-heart-float::before { left: 0; top: 0; transform: rotate(-45deg); transform-origin: bottom right; }
-    .ending-heart-float::after { right: 0; top: 0; transform: rotate(45deg); transform-origin: bottom left; }
     @keyframes heart-float-up {
       0% { opacity: 0; transform: translateY(0) scale(0.5); }
       15% { opacity: 0.7; }
@@ -599,7 +564,7 @@
 
   <!-- Heart counter -->
   <div class="heart-counter" id="heart-counter">
-    <span class="hc-icon"></span>
+    <span class="hc-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--dn-accent, #e85d75)"/></svg></span>
     <span id="heart-count">0</span>
   </div>
 
@@ -967,6 +932,8 @@
       });
     }
 
+    const HEART_SVG = '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--dn-accent, #e85d75)"/></svg>';
+
     function renderHearts() {
       const container = document.getElementById('hearts');
       container.innerHTML = '';
@@ -975,6 +942,7 @@
         el.className = 'heart-pickup' + (h.collected ? ' collected' : '');
         el.dataset.idx = h.idx;
         el.style.cssText = `left:${h.x}px; top:${h.y}px;`;
+        el.innerHTML = HEART_SVG;
         container.appendChild(el);
       });
       updateHeartCounter();
@@ -1305,8 +1273,7 @@
         heart.className = 'ending-heart-float';
         const hColor = colors[Math.floor(Math.random() * colors.length)];
         heart.style.cssText = `left:${window.innerWidth / 2 + (Math.random() - 0.5) * 100}px;bottom:160px;animation-delay:${Math.random() * 0.5}s;`;
-        heart.style.setProperty('--heart-color', hColor);
-        heart.querySelectorAll('::before, ::after'); // CSS handles the color via accent
+        heart.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="${hColor}"/></svg>`;
         sky.appendChild(heart);
         setTimeout(() => heart.remove(), 4500);
         heartCount++;
