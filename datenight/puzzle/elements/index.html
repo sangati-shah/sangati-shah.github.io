@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>elements</title>
+  <title>flameboi & lavagirl</title>
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../hud.css" />
   <script src="../../theme.js"></script>
@@ -14,7 +14,7 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #0a0a0f;
+      background: #0d0e0a;
       color: #f0e6d3;
       overflow: hidden;
       height: 100dvh;
@@ -23,14 +23,15 @@
       -webkit-user-select: none;
     }
 
-    /* Temple background */
+    /* Temple background — dark forest/cave feel like the actual game */
     body::before {
       content: '';
       position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse at 30% 20%, rgba(255,80,20,0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(20,80,255,0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(30,25,20,1) 0%, rgba(10,10,15,1) 100%);
+        radial-gradient(ellipse at 20% 90%, rgba(255,80,20,0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 90%, rgba(20,80,200,0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 0%, rgba(40,50,30,0.4) 0%, transparent 60%),
+        linear-gradient(180deg, #0d100a 0%, #141812 40%, #0d0e0a 100%);
       z-index: -1;
     }
 
@@ -66,39 +67,26 @@
       margin-left: 0.3rem;
     }
     .active-fire { background: rgba(255,120,30,0.2); color: rgba(255,180,100,0.8); }
-    .active-water { background: rgba(30,120,255,0.2); color: rgba(100,180,255,0.8); }
+    .active-water { background: rgba(100,50,180,0.2); color: rgba(220,140,255,0.8); }
 
     /* ---- Level Container ---- */
     #level-wrap {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      padding: 4px;
-      border-radius: 6px;
-      background: #13131a;
+      padding: 3px;
+      border-radius: 4px;
+      background: #0a0b08;
       box-shadow:
-        0 0 0 2px #0a0a0c,
-        0 0 0 4px rgba(80,60,30,0.15),
-        0 8px 40px rgba(0,0,0,0.8),
-        0 0 80px rgba(0,0,0,0.4),
-        inset 0 0 30px rgba(0,0,0,0.3);
+        0 0 0 2px #060704,
+        0 8px 40px rgba(0,0,0,0.9),
+        0 0 60px rgba(0,0,0,0.5);
     }
     #level {
       position: relative;
-      border-radius: 3px;
+      border-radius: 2px;
       overflow: hidden;
-      background: #18181f;
-    }
-
-    /* Background texture for the level */
-    #level::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0px, transparent 1px, transparent 40px),
-        repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0px, transparent 1px, transparent 40px);
-      pointer-events: none;
-      z-index: 0;
+      background: #1a1e16;
     }
 
     .tile {
@@ -107,186 +95,202 @@
       z-index: 1;
     }
 
-    /* Walls - stone temple look */
+    /* Walls — earthy temple bricks like the actual game */
     .tile-wall {
-      background:
-        linear-gradient(135deg, #2f2a28 0%, #252220 40%, #1e1b19 60%, #2a2725 100%);
-      border: 1px solid #161412;
+      background: #3d3528;
+      border: 1px solid #2a2419;
       box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.04),
-        inset -1px -1px 0 rgba(0,0,0,0.3);
+        inset 1px 1px 0 rgba(255,255,255,0.06),
+        inset -1px -1px 0 rgba(0,0,0,0.4);
     }
-    /* Add stone texture variation */
-    .tile-wall.stone-v1 {
-      background: linear-gradient(145deg, #332e2b 0%, #282422 50%, #1d1a18 100%);
+    .tile-wall.brick-v1 {
+      background: linear-gradient(135deg, #453c2e 0%, #3d3528 50%, #352e22 100%);
+      border-color: #2a2419;
     }
-    .tile-wall.stone-v2 {
-      background: linear-gradient(160deg, #2b2826 0%, #232019 50%, #2e2a27 100%);
+    .tile-wall.brick-v2 {
+      background: linear-gradient(150deg, #3a3225 0%, #433a2c 50%, #3d3528 100%);
+      border-color: #28211a;
     }
-    .tile-wall.stone-v3 {
-      background: linear-gradient(120deg, #302b29 0%, #1f1c1a 40%, #292624 100%);
+    .tile-wall.brick-v3 {
+      background: linear-gradient(120deg, #413929 0%, #383024 50%, #3d3528 100%);
+      border-color: #2c2519;
+    }
+    /* Edge highlight for walls next to air */
+    .tile-wall.edge-top {
+      border-top: 1px solid rgba(200,180,140,0.15);
+    }
+    .tile-wall.edge-bottom {
+      border-bottom: 1px solid rgba(0,0,0,0.6);
     }
 
-    /* Lava */
+    /* Lava — bright orange pools */
     .tile-lava {
-      background: linear-gradient(180deg, #ff4500, #ff6a00, #e83e00, #ff5500);
-      background-size: 100% 300%;
+      background: linear-gradient(180deg, #ff6600 0%, #ff4400 30%, #cc3300 60%, #ff5500 100%);
+      background-size: 100% 200%;
       animation: lava-flow 2s ease-in-out infinite alternate;
-      box-shadow:
-        0 0 12px rgba(255,69,0,0.6),
-        0 -4px 8px rgba(255,200,0,0.2),
-        inset 0 0 8px rgba(255,200,0,0.3),
-        inset 0 2px 4px rgba(255,255,100,0.15);
-      border-radius: 2px;
+      box-shadow: inset 0 0 6px rgba(255,200,0,0.4);
     }
-    .tile-lava::after {
+    .tile-lava.lava-top {
+      background: linear-gradient(180deg, #ff8800 0%, #ff6600 40%, #ff4400 100%);
+      box-shadow:
+        0 -3px 10px rgba(255,120,0,0.4),
+        0 -1px 3px rgba(255,200,0,0.3),
+        inset 0 2px 6px rgba(255,255,100,0.2);
+    }
+    .tile-lava.lava-top::before {
       content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 30% 40%, rgba(255,255,100,0.2) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 60%, rgba(255,200,50,0.15) 0%, transparent 40%);
-      animation: lava-bubble 3s ease-in-out infinite;
+      position: absolute; top: -2px; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(255,200,50,0.5) 20%, rgba(255,255,100,0.6) 50%, rgba(255,200,50,0.5) 80%, transparent);
+      animation: surface-shimmer 3s ease-in-out infinite;
     }
     @keyframes lava-flow {
       0% { background-position: 0 0; }
       100% { background-position: 0 100%; }
     }
-    @keyframes lava-bubble {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
+    @keyframes surface-shimmer {
+      0%, 100% { opacity: 0.5; transform: scaleX(0.95); }
+      50% { opacity: 1; transform: scaleX(1.05); }
     }
 
-    /* Water */
+    /* Water — blue pools */
     .tile-water {
-      background: linear-gradient(180deg, #0066aa, #0088cc, #004488, #0077bb);
-      background-size: 100% 300%;
+      background: linear-gradient(180deg, #1a5599 0%, #0e4080 30%, #0a3060 60%, #1a5599 100%);
+      background-size: 100% 200%;
       animation: water-flow 2.5s ease-in-out infinite alternate;
-      box-shadow:
-        0 0 12px rgba(0,119,190,0.5),
-        0 -4px 8px rgba(0,200,255,0.15),
-        inset 0 0 8px rgba(0,200,255,0.25),
-        inset 0 2px 4px rgba(150,230,255,0.15);
-      border-radius: 2px;
+      box-shadow: inset 0 0 6px rgba(0,150,255,0.3);
     }
-    .tile-water::after {
+    .tile-water.water-top {
+      background: linear-gradient(180deg, #2277bb 0%, #1a5599 40%, #0e4080 100%);
+      box-shadow:
+        0 -3px 10px rgba(0,100,200,0.3),
+        0 -1px 3px rgba(100,200,255,0.2),
+        inset 0 2px 6px rgba(100,200,255,0.15);
+    }
+    .tile-water.water-top::before {
       content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 40% 30%, rgba(150,230,255,0.2) 0%, transparent 50%),
-                  radial-gradient(circle at 60% 70%, rgba(100,200,255,0.15) 0%, transparent 40%);
-      animation: water-shimmer 4s ease-in-out infinite;
+      position: absolute; top: -2px; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(100,200,255,0.4) 20%, rgba(150,230,255,0.5) 50%, rgba(100,200,255,0.4) 80%, transparent);
+      animation: surface-shimmer 4s ease-in-out infinite;
     }
     @keyframes water-flow {
       0% { background-position: 0 0; }
       100% { background-position: 0 100%; }
     }
-    @keyframes water-shimmer {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
 
     /* Green goo */
     .tile-goo {
-      background: linear-gradient(180deg, #1a6b12, #2d8a1e, #1a6b12, #3ca02e);
-      background-size: 100% 300%;
-      animation: goo-bubble 1.8s ease-in-out infinite alternate;
-      box-shadow:
-        0 0 10px rgba(76,175,80,0.5),
-        inset 0 0 8px rgba(100,255,100,0.2),
-        inset 0 2px 4px rgba(180,255,180,0.1);
-      border-radius: 2px;
+      background: linear-gradient(180deg, #2a7a1a, #1e6012, #2a7a1a);
+      background-size: 100% 200%;
+      animation: goo-flow 1.8s ease-in-out infinite alternate;
+      box-shadow: inset 0 0 6px rgba(50,200,50,0.3);
     }
-    @keyframes goo-bubble {
+    .tile-goo.goo-top {
+      box-shadow:
+        0 -3px 8px rgba(50,180,50,0.3),
+        inset 0 2px 6px rgba(100,255,100,0.15);
+    }
+    .tile-goo.goo-top::before {
+      content: '';
+      position: absolute; top: -2px; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(100,255,100,0.4) 30%, rgba(150,255,100,0.5) 50%, rgba(100,255,100,0.4) 70%, transparent);
+      animation: surface-shimmer 3.5s ease-in-out infinite;
+    }
+    @keyframes goo-flow {
       0% { background-position: 0 0; }
       100% { background-position: 0 100%; }
     }
 
-    /* Hazard surface glow - top edge shimmer */
-    .tile-lava-surface, .tile-water-surface, .tile-goo-surface {
-      position: absolute;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    /* Fire exit */
+    /* Fire exit — door shape */
     .tile-fire-exit {
-      background: radial-gradient(ellipse at 50% 80%, rgba(255,120,30,0.5), rgba(255,60,0,0.15) 60%, transparent 85%);
-      border: 2px solid rgba(255,120,30,0.5);
+      background: linear-gradient(180deg, rgba(255,100,20,0.15), rgba(255,60,0,0.05));
+      border: 2px solid rgba(255,120,30,0.4);
       border-bottom: none;
-      border-radius: 10px 10px 0 0;
-      box-shadow: 0 0 20px rgba(255,120,30,0.3), inset 0 0 15px rgba(255,120,30,0.15);
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 0 15px rgba(255,120,30,0.2), inset 0 0 10px rgba(255,120,30,0.1);
       animation: exit-glow-fire 2s ease-in-out infinite alternate;
+    }
+    .tile-fire-exit::before {
+      content: '';
+      position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+      width: 8px; height: 12px;
+      background: #ff8833;
+      clip-path: polygon(50% 0%, 0% 60%, 20% 100%, 80% 100%, 100% 60%);
+      filter: drop-shadow(0 0 4px rgba(255,120,30,0.8));
+      animation: flame-flicker 0.6s ease-in-out infinite alternate;
     }
     .tile-fire-exit::after {
       content: '';
-      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
-      width: 12px; height: 18px;
-      background: radial-gradient(ellipse, rgba(255,150,50,0.8), rgba(255,80,0,0.4) 60%, transparent 100%);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      animation: flame-flicker 0.8s ease-in-out infinite alternate;
+      position: absolute; bottom: 0; left: 15%; right: 15%; height: 2px;
+      background: rgba(255,120,30,0.5);
     }
     @keyframes exit-glow-fire {
-      0% { box-shadow: 0 0 20px rgba(255,120,30,0.3), inset 0 0 15px rgba(255,120,30,0.15); }
-      100% { box-shadow: 0 0 35px rgba(255,120,30,0.6), inset 0 0 20px rgba(255,120,30,0.3); }
+      0% { box-shadow: 0 0 15px rgba(255,120,30,0.2), inset 0 0 10px rgba(255,120,30,0.1); }
+      100% { box-shadow: 0 0 25px rgba(255,120,30,0.4), inset 0 0 15px rgba(255,120,30,0.2); }
     }
     @keyframes flame-flicker {
-      0% { transform: translateX(-50%) scaleY(0.9) scaleX(0.95); opacity: 0.8; }
-      100% { transform: translateX(-50%) scaleY(1.1) scaleX(1.05); opacity: 1; }
+      0% { transform: translateX(-50%) scaleY(0.85) scaleX(0.9); opacity: 0.7; }
+      100% { transform: translateX(-50%) scaleY(1.15) scaleX(1.1); opacity: 1; }
     }
 
-    /* Water exit */
+    /* Water exit — door shape */
     .tile-water-exit {
-      background: radial-gradient(ellipse at 50% 80%, rgba(30,120,255,0.5), rgba(0,60,255,0.15) 60%, transparent 85%);
-      border: 2px solid rgba(30,120,255,0.5);
+      background: linear-gradient(180deg, rgba(100,20,200,0.15), rgba(150,50,255,0.05));
+      border: 2px solid rgba(150,80,255,0.4);
       border-bottom: none;
-      border-radius: 10px 10px 0 0;
-      box-shadow: 0 0 20px rgba(30,120,255,0.3), inset 0 0 15px rgba(30,120,255,0.15);
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 0 15px rgba(150,80,255,0.2), inset 0 0 10px rgba(150,80,255,0.1);
       animation: exit-glow-water 2s ease-in-out infinite alternate;
+    }
+    .tile-water-exit::before {
+      content: '';
+      position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
+      width: 8px; height: 10px;
+      background: #bb66ff;
+      clip-path: polygon(50% 0%, 0% 40%, 10% 100%, 90% 100%, 100% 40%);
+      filter: drop-shadow(0 0 4px rgba(150,80,255,0.8));
+      animation: drop-pulse 1s ease-in-out infinite;
     }
     .tile-water-exit::after {
       content: '';
-      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
-      width: 10px; height: 16px;
-      background: radial-gradient(ellipse, rgba(100,180,255,0.8), rgba(30,120,255,0.4) 60%, transparent 100%);
-      border-radius: 50%;
-      animation: water-drop 1.2s ease-in-out infinite;
+      position: absolute; bottom: 0; left: 15%; right: 15%; height: 2px;
+      background: rgba(150,80,255,0.5);
     }
     @keyframes exit-glow-water {
-      0% { box-shadow: 0 0 20px rgba(30,120,255,0.3), inset 0 0 15px rgba(30,120,255,0.15); }
-      100% { box-shadow: 0 0 35px rgba(30,120,255,0.6), inset 0 0 20px rgba(30,120,255,0.3); }
+      0% { box-shadow: 0 0 15px rgba(150,80,255,0.2), inset 0 0 10px rgba(150,80,255,0.1); }
+      100% { box-shadow: 0 0 25px rgba(150,80,255,0.4), inset 0 0 15px rgba(150,80,255,0.2); }
     }
-    @keyframes water-drop {
-      0%, 100% { transform: translateX(-50%) scaleY(1); opacity: 0.7; }
-      50% { transform: translateX(-50%) scaleY(1.15); opacity: 1; }
+    @keyframes drop-pulse {
+      0%, 100% { transform: translateX(-50%) scale(0.9); opacity: 0.7; }
+      50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
     }
 
     /* Pressure plates */
-    .tile-plate {
-      background: transparent;
-    }
+    .tile-plate { background: transparent; }
     .tile-plate::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 8%; right: 8%;
-      height: 5px;
+      bottom: 0; left: 10%; right: 10%;
+      height: 4px;
       border-radius: 2px;
       transition: all 0.3s;
     }
     .tile-plate-a::after {
-      background: linear-gradient(90deg, #cc7000, #ff9800, #cc7000);
-      box-shadow: 0 0 8px rgba(255,152,0,0.4);
+      background: linear-gradient(90deg, #aa5500, #ff8800, #aa5500);
+      box-shadow: 0 0 6px rgba(255,136,0,0.4);
     }
     .tile-plate-a.pressed::after {
-      background: linear-gradient(90deg, #ffcc00, #ffeb3b, #ffcc00);
-      box-shadow: 0 0 16px rgba(255,235,59,0.8), 0 0 30px rgba(255,200,0,0.3);
-      height: 3px;
+      background: linear-gradient(90deg, #ffaa00, #ffcc44, #ffaa00);
+      box-shadow: 0 0 12px rgba(255,200,50,0.7);
+      height: 2px;
     }
     .tile-plate-b::after {
-      background: linear-gradient(90deg, #1565c0, #2196f3, #1565c0);
-      box-shadow: 0 0 8px rgba(33,150,243,0.4);
+      background: linear-gradient(90deg, #5500aa, #9944ff, #5500aa);
+      box-shadow: 0 0 6px rgba(150,80,255,0.4);
     }
     .tile-plate-b.pressed::after {
-      background: linear-gradient(90deg, #40c4ff, #80d8ff, #40c4ff);
-      box-shadow: 0 0 16px rgba(128,216,255,0.8), 0 0 30px rgba(100,200,255,0.3);
-      height: 3px;
+      background: linear-gradient(90deg, #aa66ff, #cc99ff, #aa66ff);
+      box-shadow: 0 0 12px rgba(200,150,255,0.7);
+      height: 2px;
     }
 
     /* Gates */
@@ -295,27 +299,19 @@
       transform-origin: top center;
     }
     .tile-gate-a {
-      background: repeating-linear-gradient(0deg, #ff9800 0px, #ff9800 3px, #e65100 3px, #e65100 6px);
+      background: repeating-linear-gradient(0deg, #ff8800 0px, #ff8800 3px, #cc5500 3px, #cc5500 6px);
       opacity: 0.85;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.4), 0 0 8px rgba(255,152,0,0.2);
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.4), 0 0 6px rgba(255,136,0,0.2);
     }
-    .tile-gate-a.open {
-      opacity: 0;
-      transform: scaleY(0);
-      pointer-events: none;
-    }
+    .tile-gate-a.open { opacity: 0; transform: scaleY(0); pointer-events: none; }
     .tile-gate-b {
-      background: repeating-linear-gradient(0deg, #2196f3 0px, #2196f3 3px, #0d47a1 3px, #0d47a1 6px);
+      background: repeating-linear-gradient(0deg, #9944ff 0px, #9944ff 3px, #6600cc 3px, #6600cc 6px);
       opacity: 0.85;
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.4), 0 0 8px rgba(33,150,243,0.2);
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.4), 0 0 6px rgba(150,80,255,0.2);
     }
-    .tile-gate-b.open {
-      opacity: 0;
-      transform: scaleY(0);
-      pointer-events: none;
-    }
+    .tile-gate-b.open { opacity: 0; transform: scaleY(0); pointer-events: none; }
 
-    /* Gems */
+    /* Gems — diamond shapes like the real game */
     .gem {
       position: absolute;
       z-index: 50;
@@ -324,41 +320,33 @@
     .gem-inner {
       width: 100%; height: 100%;
       position: relative;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     }
     .gem-fire .gem-inner {
-      background: radial-gradient(circle, #ffcc00, #ff8800, #cc4400);
-      clip-path: polygon(50% 0%, 85% 35%, 100% 50%, 85% 65%, 50% 100%, 15% 65%, 0% 50%, 15% 35%);
-      box-shadow: 0 0 10px rgba(255,150,0,0.6);
-      animation: gem-float 2s ease-in-out infinite, gem-glow-fire 1.5s ease-in-out infinite alternate;
+      background: linear-gradient(135deg, #ffee88, #ff8800, #cc4400);
+      animation: gem-float 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 5px rgba(255,150,0,0.6));
     }
     .gem-water .gem-inner {
-      background: radial-gradient(circle, #80d8ff, #2196f3, #0d47a1);
-      clip-path: polygon(50% 0%, 85% 35%, 100% 50%, 85% 65%, 50% 100%, 15% 65%, 0% 50%, 15% 35%);
-      animation: gem-float 2s ease-in-out infinite, gem-glow-water 1.5s ease-in-out infinite alternate;
+      background: linear-gradient(135deg, #ddaaff, #9944ff, #6600cc);
+      animation: gem-float 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 5px rgba(150,80,255,0.6));
     }
     .gem-inner::after {
       content: '';
-      position: absolute; top: 15%; left: 25%;
-      width: 30%; height: 25%;
-      background: rgba(255,255,255,0.5);
+      position: absolute; top: 15%; left: 20%;
+      width: 35%; height: 30%;
+      background: rgba(255,255,255,0.4);
       border-radius: 50%;
-      transform: rotate(-30deg);
+      transform: rotate(-20deg);
     }
     @keyframes gem-float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-3px); }
     }
-    @keyframes gem-glow-fire {
-      0% { filter: drop-shadow(0 0 4px rgba(255,150,0,0.4)); }
-      100% { filter: drop-shadow(0 0 8px rgba(255,150,0,0.8)); }
-    }
-    @keyframes gem-glow-water {
-      0% { filter: drop-shadow(0 0 4px rgba(33,150,243,0.4)); }
-      100% { filter: drop-shadow(0 0 8px rgba(33,150,243,0.8)); }
-    }
     .gem.collected {
       transition: transform 0.3s ease-in, opacity 0.3s ease-in;
-      transform: scale(1.5);
+      transform: scale(1.8);
       opacity: 0;
     }
 
@@ -369,10 +357,9 @@
       font-family: 'Caveat', cursive; font-size: 0.9rem;
     }
     .gem-counter-fire { color: rgba(255,180,100,0.6); }
-    .gem-counter-water { color: rgba(100,180,255,0.6); }
-    .gem-counter span { font-weight: 600; }
+    .gem-counter-water { color: rgba(200,150,255,0.6); }
 
-    /* ---- Player Sprites ---- */
+    /* ---- Player Sprites — Elemental characters ---- */
     .player {
       position: absolute;
       z-index: 100;
@@ -380,72 +367,142 @@
     }
     .player-inner {
       position: relative;
-      width: 24px; height: 40px;
+      width: 100%; height: 100%;
     }
-    .player .p-hair {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 18px; height: 10px; border-radius: 50% 50% 30% 30%; z-index: 3;
+
+    /* Flameboi — flame-shaped body */
+    .player-fire .player-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .player .p-face {
-      position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
-      width: 14px; height: 16px; border-radius: 50%; z-index: 2;
+    .player-fire .p-flame-head {
+      width: 16px; height: 14px;
+      background: linear-gradient(180deg, #ffcc00, #ff8800);
+      clip-path: polygon(50% 0%, 15% 45%, 0% 100%, 100% 100%, 85% 45%);
+      filter: drop-shadow(0 -2px 3px rgba(255,200,0,0.5));
+      animation: head-flicker 0.4s ease-in-out infinite alternate;
     }
-    .player .p-eyes {
-      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
-      width: 8px; display: flex; justify-content: space-between; z-index: 4;
+    .player-fire .p-face {
+      width: 14px; height: 12px;
+      background: linear-gradient(180deg, #ff8800, #ff6600);
+      border-radius: 40% 40% 50% 50%;
+      position: relative;
+      margin-top: -3px;
     }
-    .player .p-eye { width: 2px; height: 2px; background: #1a1a1a; border-radius: 50%; }
-    .player .p-body {
-      position: absolute; top: 19px; left: 50%; transform: translateX(-50%);
-      width: 16px; height: 12px; border-radius: 4px 4px 2px 2px; z-index: 1;
+    .player-fire .p-eyes {
+      position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
+      width: 8px; display: flex; justify-content: space-between;
     }
-    .player .p-legs {
-      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    .player-fire .p-eye {
+      width: 2.5px; height: 2.5px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 2px rgba(255,255,200,0.8);
+    }
+    .player-fire .p-body {
+      width: 12px; height: 10px;
+      background: linear-gradient(180deg, #ff6600, #ee4400);
+      border-radius: 3px 3px 2px 2px;
+      margin-top: -1px;
+    }
+    .player-fire .p-legs {
       display: flex; gap: 2px;
+      margin-top: -1px;
     }
-    .player .p-leg {
-      width: 5px; height: 10px; border-radius: 2px 2px 3px 3px;
-      transition: transform 0.12s;
+    .player-fire .p-leg {
+      width: 4px; height: 8px;
+      background: linear-gradient(180deg, #ee4400, #cc2200);
+      border-radius: 1px 1px 2px 2px;
+    }
+    @keyframes head-flicker {
+      0% { transform: scaleX(0.92) scaleY(0.95); }
+      100% { transform: scaleX(1.08) scaleY(1.05); }
     }
 
-    .player.walking .p-leg:first-child { animation: pwalk-l 0.25s ease-in-out infinite alternate; }
-    .player.walking .p-leg:last-child { animation: pwalk-r 0.25s ease-in-out infinite alternate; }
-    @keyframes pwalk-l { 0% { transform: rotate(-20deg); } 100% { transform: rotate(20deg); } }
-    @keyframes pwalk-r { 0% { transform: rotate(20deg); } 100% { transform: rotate(-20deg); } }
+    /* Lavagirl — flowing lava/magenta body */
+    .player-water .p-lava-head {
+      width: 16px; height: 14px;
+      background: linear-gradient(180deg, #dd66ff, #9933cc);
+      clip-path: polygon(20% 0%, 80% 0%, 95% 30%, 100% 100%, 0% 100%, 5% 30%);
+      filter: drop-shadow(0 -2px 3px rgba(180,80,255,0.4));
+      animation: lava-head-flow 1.5s ease-in-out infinite alternate;
+    }
+    .player-water .p-face {
+      width: 14px; height: 12px;
+      background: linear-gradient(180deg, #bb44ee, #9933cc);
+      border-radius: 40% 40% 50% 50%;
+      position: relative;
+      margin-top: -3px;
+    }
+    .player-water .p-eyes {
+      position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
+      width: 8px; display: flex; justify-content: space-between;
+    }
+    .player-water .p-eye {
+      width: 2.5px; height: 2.5px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 2px rgba(220,180,255,0.8);
+    }
+    .player-water .p-body {
+      width: 12px; height: 10px;
+      background: linear-gradient(180deg, #9933cc, #7722aa);
+      border-radius: 3px 3px 2px 2px;
+      margin-top: -1px;
+    }
+    .player-water .p-legs {
+      display: flex; gap: 2px;
+      margin-top: -1px;
+    }
+    .player-water .p-leg {
+      width: 4px; height: 8px;
+      background: linear-gradient(180deg, #7722aa, #551188);
+      border-radius: 1px 1px 2px 2px;
+    }
+    .player-water .player-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @keyframes lava-head-flow {
+      0% { filter: drop-shadow(0 -2px 3px rgba(180,80,255,0.3)); }
+      100% { filter: drop-shadow(0 -2px 5px rgba(220,100,255,0.6)); }
+    }
 
+    /* Walking animation */
+    .player.walking .p-leg:first-child { animation: pwalk-l 0.22s ease-in-out infinite alternate; }
+    .player.walking .p-leg:last-child { animation: pwalk-r 0.22s ease-in-out infinite alternate; }
+    @keyframes pwalk-l { 0% { transform: rotate(-22deg); } 100% { transform: rotate(22deg); } }
+    @keyframes pwalk-r { 0% { transform: rotate(22deg); } 100% { transform: rotate(-22deg); } }
     .player.jumping .p-leg { animation: none !important; transform: rotate(0deg) !important; }
     .player.facing-left .player-inner { transform: scaleX(-1); }
 
     .player-fire {
-      filter: drop-shadow(0 0 8px rgba(255,120,30,0.4));
+      filter: drop-shadow(0 0 6px rgba(255,120,30,0.5));
     }
     .player-water {
-      filter: drop-shadow(0 0 8px rgba(30,120,255,0.4));
+      filter: drop-shadow(0 0 6px rgba(150,60,255,0.4));
     }
 
     /* Active player highlight (solo mode) */
-    .player.active-player {
-      filter: drop-shadow(0 0 12px rgba(255,255,255,0.3));
-    }
     .player-fire.active-player {
-      filter: drop-shadow(0 0 12px rgba(255,150,50,0.7));
+      filter: drop-shadow(0 0 10px rgba(255,150,50,0.8));
     }
     .player-water.active-player {
-      filter: drop-shadow(0 0 12px rgba(50,150,255,0.7));
+      filter: drop-shadow(0 0 10px rgba(180,100,255,0.7));
     }
 
     .player-label {
-      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-      font-family: 'Caveat', cursive; font-size: 0.55rem;
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      font-family: 'Caveat', cursive; font-size: 0.5rem;
       white-space: nowrap; pointer-events: none; text-align: center;
     }
-    .player-fire .player-label { color: rgba(255,180,100,0.7); }
-    .player-water .player-label { color: rgba(100,180,255,0.7); }
+    .player-fire .player-label { color: rgba(255,180,100,0.6); }
+    .player-water .player-label { color: rgba(200,140,255,0.6); }
 
     /* Death flash */
-    .player.dying {
-      animation: die-flash 0.4s ease;
-    }
+    .player.dying { animation: die-flash 0.4s ease; }
     @keyframes die-flash {
       0% { opacity: 1; filter: brightness(3); }
       25% { opacity: 0.3; }
@@ -453,10 +510,7 @@
       75% { opacity: 0.2; }
       100% { opacity: 0; }
     }
-
-    .player.respawning {
-      animation: respawn-in 0.3s ease forwards;
-    }
+    .player.respawning { animation: respawn-in 0.3s ease forwards; }
     @keyframes respawn-in {
       0% { opacity: 0; transform: scale(0.3); }
       60% { opacity: 1; transform: scale(1.1); }
@@ -472,9 +526,7 @@
       opacity: 0; pointer-events: none;
       transition: opacity 0.5s ease;
     }
-    .victory-overlay.visible {
-      opacity: 1; pointer-events: auto;
-    }
+    .victory-overlay.visible { opacity: 1; pointer-events: auto; }
     .victory-card {
       text-align: center;
       padding: 2rem 3rem;
@@ -486,7 +538,7 @@
     .victory-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
     .victory-title {
       font-family: 'Abril Fatface', serif;
-      font-size: 1.8rem; color: #d49b3c;
+      font-size: 1.6rem; color: #d49b3c;
       margin-bottom: 0.3rem;
     }
     .victory-sub {
@@ -536,7 +588,7 @@
     /* ---- Waiting overlay ---- */
     .waiting-overlay {
       position: fixed; inset: 0;
-      background: rgba(10,10,15,0.95);
+      background: rgba(10,12,8,0.95);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       z-index: 800; gap: 1rem;
@@ -555,10 +607,7 @@
       content: ''; animation: dots 1.5s steps(4, end) infinite;
     }
     @keyframes dots {
-      0% { content: ''; }
-      25% { content: '.'; }
-      50% { content: '..'; }
-      75% { content: '...'; }
+      0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
     }
     .solo-btn {
       margin-top: 0.5rem;
@@ -574,12 +623,6 @@
       border-color: rgba(255,255,255,0.2);
     }
 
-    /* ---- Element labels on players ---- */
-    .element-icon {
-      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
-      font-size: 0.7rem; pointer-events: none;
-    }
-
     /* Ambient particles */
     .ambient-particle {
       position: absolute;
@@ -591,9 +634,9 @@
     }
     @keyframes ambient-rise {
       0% { opacity: 0; transform: translateY(0) scale(0.5); }
-      20% { opacity: 0.6; }
-      80% { opacity: 0.3; }
-      100% { opacity: 0; transform: translateY(-30px) scale(0); }
+      15% { opacity: 0.7; }
+      80% { opacity: 0.2; }
+      100% { opacity: 0; transform: translateY(-25px) scale(0); }
     }
   </style>
 </head>
@@ -609,24 +652,27 @@
 
   <div id="level-wrap"><div id="level"></div></div>
 
-  <!-- Players -->
+  <!-- Flameboi -->
   <div class="player player-fire" id="player-fire">
-    <div class="player-label" id="fire-label">fire</div>
+    <div class="player-label" id="fire-label">flameboi</div>
     <div class="player-inner" id="fire-inner">
-      <div class="p-hair"></div>
-      <div class="p-face"></div>
-      <div class="p-eyes"><div class="p-eye"></div><div class="p-eye"></div></div>
+      <div class="p-flame-head"></div>
+      <div class="p-face">
+        <div class="p-eyes"><div class="p-eye"></div><div class="p-eye"></div></div>
+      </div>
       <div class="p-body"></div>
       <div class="p-legs"><div class="p-leg"></div><div class="p-leg"></div></div>
     </div>
   </div>
 
+  <!-- Lavagirl -->
   <div class="player player-water" id="player-water">
-    <div class="player-label" id="water-label">water</div>
+    <div class="player-label" id="water-label">lavagirl</div>
     <div class="player-inner" id="water-inner">
-      <div class="p-hair"></div>
-      <div class="p-face"></div>
-      <div class="p-eyes"><div class="p-eye"></div><div class="p-eye"></div></div>
+      <div class="p-lava-head"></div>
+      <div class="p-face">
+        <div class="p-eyes"><div class="p-eye"></div><div class="p-eye"></div></div>
+      </div>
       <div class="p-body"></div>
       <div class="p-legs"><div class="p-leg"></div><div class="p-leg"></div></div>
     </div>
@@ -635,9 +681,9 @@
   <!-- Victory -->
   <div class="victory-overlay" id="victory-overlay">
     <div class="victory-card">
-      <div class="victory-emoji">&#x1F525;&#x1F4A7;</div>
-      <div class="victory-title">elements conquered!</div>
-      <div class="victory-sub">fire and water, together</div>
+      <div class="victory-emoji">&#x1F525;&#x1F30B;</div>
+      <div class="victory-title">temple cleared!</div>
+      <div class="victory-sub">flameboi & lavagirl, unstoppable</div>
       <div class="victory-pts" id="victory-pts">+100 pts</div>
       <a href="../../world/?after=elements" class="victory-btn">back to map &rarr;</a>
     </div>
@@ -645,8 +691,8 @@
 
   <!-- Waiting for partner -->
   <div class="waiting-overlay" id="waiting-overlay">
-    <div class="waiting-title">elements</div>
-    <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + water = unstoppable</div>
+    <div class="waiting-title">flameboi & lavagirl</div>
+    <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + lava = unstoppable</div>
     <button class="solo-btn" id="solo-btn">play solo</button>
   </div>
 
@@ -664,7 +710,7 @@
 
 <script>
 // ============================================================
-// ELEMENTS - Fireboy & Watergirl cooperative puzzle
+// FLAMEBOI & LAVAGIRL — cooperative temple puzzle
 // ============================================================
 
 // ---- Tile types ----
@@ -674,12 +720,6 @@ const PLATE_A = 7, GATE_A = 8, PLATE_B = 9, GATE_B = 10;
 const GEM_FIRE = 11, GEM_WATER = 12;
 
 // ---- Level map (24 wide x 16 tall) ----
-// Much more intricate Fireboy & Watergirl level:
-// - Fire starts bottom-left, Water starts bottom-right
-// - Multi-path design with platforms, hazards, and cooperative mechanics
-// - Gems scattered for bonus points
-// - Pressure plate cooperation required
-// - Fire exit top-left area, Water exit top-right area
 const LEVEL = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 6, 0, 0, 1],
@@ -699,8 +739,8 @@ const LEVEL = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-const COLS = LEVEL[0].length; // 24
-const ROWS = LEVEL.length;    // 16
+const COLS = LEVEL[0].length;
+const ROWS = LEVEL.length;
 
 // ---- Gem positions (extracted from level) ----
 const gems = [];
@@ -708,7 +748,7 @@ for (let r = 0; r < ROWS; r++) {
   for (let c = 0; c < COLS; c++) {
     if (LEVEL[r][c] === GEM_FIRE || LEVEL[r][c] === GEM_WATER) {
       gems.push({ r, c, type: LEVEL[r][c] === GEM_FIRE ? 'fire' : 'water', collected: false });
-      LEVEL[r][c] = AIR; // Clear from collision map
+      LEVEL[r][c] = AIR;
     }
   }
 }
@@ -719,16 +759,14 @@ let gemsCollectedWater = 0;
 // ---- Identity ----
 const isHost = sessionStorage.getItem('datenight-host') === '1';
 const roomCode = sessionStorage.getItem('datenight-room');
-
-// Host is fire, guest is water
 const myRole = isHost ? 'fire' : 'water';
 const partnerRole = isHost ? 'water' : 'fire';
 
 // ---- Solo mode ----
 let soloMode = false;
-let soloActiveRole = 'fire'; // Which character the solo player controls
+let soloActiveRole = 'fire';
 
-// ---- Character data ----
+// ---- Character data (not used for sprites in this game, but kept for HUD) ----
 const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
 const DEFAULT_PARTNER = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b', pants: '#1a1a2e' };
 let myChar = DEFAULT_CHAR;
@@ -753,7 +791,6 @@ function markCompleted(id) {
   if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
 }
 
-// ---- Display points ----
 document.getElementById('pts-num').textContent = getPoints();
 
 // ---- Tile size ----
@@ -796,8 +833,7 @@ function renderLevel() {
   plateAEls = [];
   plateBEls = [];
 
-  // Stone texture variation seeded by position
-  const stoneVariants = ['', 'stone-v1', 'stone-v2', 'stone-v3'];
+  const brickVariants = ['', 'brick-v1', 'brick-v2', 'brick-v3'];
 
   for (let r = 0; r < ROWS; r++) {
     tileEls[r] = [];
@@ -815,13 +851,24 @@ function renderLevel() {
       switch (v) {
         case WALL:
           el.classList.add('tile-wall');
-          // Add stone texture variation
-          const variant = stoneVariants[(r * 7 + c * 13) % stoneVariants.length];
-          if (variant) el.classList.add(variant);
+          el.classList.add(brickVariants[(r * 7 + c * 13) % brickVariants.length] || 'tile-wall');
+          // Edge detection for better depth
+          if (r > 0 && LEVEL[r-1][c] === AIR) el.classList.add('edge-top');
+          if (r < ROWS-1 && LEVEL[r+1][c] === AIR) el.classList.add('edge-bottom');
           break;
-        case LAVA: el.classList.add('tile-lava'); break;
-        case WATER: el.classList.add('tile-water'); break;
-        case GOO: el.classList.add('tile-goo'); break;
+        case LAVA:
+          el.classList.add('tile-lava');
+          // Top surface detection
+          if (r === 0 || LEVEL[r-1][c] !== LAVA) el.classList.add('lava-top');
+          break;
+        case WATER:
+          el.classList.add('tile-water');
+          if (r === 0 || LEVEL[r-1][c] !== WATER) el.classList.add('water-top');
+          break;
+        case GOO:
+          el.classList.add('tile-goo');
+          if (r === 0 || LEVEL[r-1][c] !== GOO) el.classList.add('goo-top');
+          break;
         case FIRE_EXIT:
           el.classList.add('tile-fire-exit');
           el.style.height = tileH * 2 + 'px';
@@ -855,10 +902,7 @@ function renderLevel() {
     }
   }
 
-  // Render gems
   renderGems();
-
-  // Add ambient particles near lava and water
   addAmbientParticles();
 }
 
@@ -868,7 +912,7 @@ function renderGems() {
   gemEls.forEach(el => el.remove());
   gemEls = [];
 
-  const gemSize = Math.max(10, tileW * 0.4);
+  const gemSize = Math.max(10, tileW * 0.45);
   gems.forEach((gem, i) => {
     if (gem.collected) return;
     const el = document.createElement('div');
@@ -883,7 +927,6 @@ function renderGems() {
     levelEl.appendChild(el);
     gemEls.push(el);
   });
-
   updateGemCounter();
 }
 
@@ -891,44 +934,35 @@ function updateGemCounter() {
   const totalFire = gems.filter(g => g.type === 'fire').length;
   const totalWater = gems.filter(g => g.type === 'water').length;
   document.getElementById('gem-counter-fire').innerHTML =
-    '<span style="color:#ff9800">&#9670;</span> ' + gemsCollectedFire + '/' + totalFire;
+    '<span style="color:#ff8800">&#9670;</span> ' + gemsCollectedFire + '/' + totalFire;
   document.getElementById('gem-counter-water').innerHTML =
-    '<span style="color:#2196f3">&#9670;</span> ' + gemsCollectedWater + '/' + totalWater;
+    '<span style="color:#9944ff">&#9670;</span> ' + gemsCollectedWater + '/' + totalWater;
 }
 
 function collectGem(gemIndex) {
   const gem = gems[gemIndex];
   if (gem.collected) return;
   gem.collected = true;
-
   if (gem.type === 'fire') gemsCollectedFire++;
   else gemsCollectedWater++;
-
   const el = document.getElementById('gem-' + gemIndex);
-  if (el) {
-    el.classList.add('collected');
-    setTimeout(() => el.remove(), 300);
-  }
+  if (el) { el.classList.add('collected'); setTimeout(() => el.remove(), 300); }
   updateGemCounter();
   addPoints(10);
 }
 
 // ---- Ambient particles ----
 function addAmbientParticles() {
-  // Add rising particles above lava and water tiles
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const v = LEVEL[r][c];
-      if (v !== LAVA && v !== WATER) continue;
-      // Only add particles on the top surface
-      if (r > 0 && (LEVEL[r-1][c] === LAVA || LEVEL[r-1][c] === WATER)) continue;
-
-      // 50% chance to add particle per surface tile
-      if (Math.random() > 0.5) continue;
+      if (v !== LAVA && v !== WATER && v !== GOO) continue;
+      if (r > 0 && LEVEL[r-1][c] === v) continue;
+      if (Math.random() > 0.6) continue;
 
       const particle = document.createElement('div');
       particle.className = 'ambient-particle';
-      const size = 2 + Math.random() * 3;
+      const size = 2 + Math.random() * 2;
       particle.style.width = size + 'px';
       particle.style.height = size + 'px';
       particle.style.left = (c * tileW + Math.random() * tileW) + 'px';
@@ -936,11 +970,9 @@ function addAmbientParticles() {
       particle.style.animationDuration = (2 + Math.random() * 3) + 's';
       particle.style.animationDelay = (Math.random() * 3) + 's';
 
-      if (v === LAVA) {
-        particle.style.background = `rgba(255,${100 + Math.random()*100|0},0,0.6)`;
-      } else {
-        particle.style.background = `rgba(0,${100 + Math.random()*100|0},255,0.4)`;
-      }
+      if (v === LAVA) particle.style.background = `rgba(255,${100 + Math.random()*80|0},0,0.6)`;
+      else if (v === WATER) particle.style.background = `rgba(0,${80 + Math.random()*80|0},255,0.4)`;
+      else particle.style.background = `rgba(${50 + Math.random()*50|0},255,${50 + Math.random()*50|0},0.4)`;
 
       levelEl.appendChild(particle);
     }
@@ -949,25 +981,13 @@ function addAmbientParticles() {
 
 renderLevel();
 
-// ---- Apply character colors ----
+// ---- Player labels ----
+// Use character names if available, else default
 function applyCharColors() {
   const fireChar = isHost ? myChar : partnerChar;
   const waterChar = isHost ? partnerChar : myChar;
-
-  const fireInner = document.getElementById('fire-inner');
-  fireInner.querySelector('.p-hair').style.background = fireChar.hair;
-  fireInner.querySelector('.p-face').style.background = fireChar.skin;
-  fireInner.querySelector('.p-body').style.background = fireChar.shirt;
-  fireInner.querySelectorAll('.p-leg').forEach(l => l.style.background = fireChar.pants || '#3a3a5c');
-
-  const waterInner = document.getElementById('water-inner');
-  waterInner.querySelector('.p-hair').style.background = waterChar.hair;
-  waterInner.querySelector('.p-face').style.background = waterChar.skin;
-  waterInner.querySelector('.p-body').style.background = waterChar.shirt;
-  waterInner.querySelectorAll('.p-leg').forEach(l => l.style.background = waterChar.pants || '#3a3a5c');
-
-  document.getElementById('fire-label').textContent = fireChar.name || 'fire';
-  document.getElementById('water-label').textContent = waterChar.name || 'water';
+  document.getElementById('fire-label').textContent = fireChar.name || 'flameboi';
+  document.getElementById('water-label').textContent = waterChar.name || 'lavagirl';
 }
 applyCharColors();
 
@@ -975,10 +995,9 @@ applyCharColors();
 const GRAVITY = 0.6;
 const JUMP_VEL = -10;
 const MOVE_SPEED = 4;
-const PLAYER_W = 20;
-const PLAYER_H = 36;
+const PLAYER_W = 18;
+const PLAYER_H = 34;
 
-// Spawn positions
 const FIRE_SPAWN = { x: 1.5 * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
 const WATER_SPAWN = { x: (COLS - 2.5) * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
 
@@ -987,26 +1006,19 @@ const players = {
   water: { x: WATER_SPAWN.x, y: WATER_SPAWN.y, vx: 0, vy: 0, onGround: false, alive: true, onExit: false, facing: 'right' },
 };
 
-// ---- Gate state ----
 let gateAOpen = false;
 let gateBOpen = false;
-
-// ---- Input state ----
 const keys = { left: false, right: false, up: false };
-
-// ---- Attempts and victory ----
 let attempts = 0;
 let won = false;
 let partnerConnected = false;
 
 // ---- Tile collision helpers ----
 function worldToTile(px, py) {
-  const c = Math.floor((px - levelLeft) / tileW);
-  const r = Math.floor((py - levelTop) / tileH);
-  return { r, c };
+  return { r: Math.floor((py - levelTop) / tileH), c: Math.floor((px - levelLeft) / tileW) };
 }
 
-function isSolid(r, c, role) {
+function isSolid(r, c) {
   if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return true;
   const v = LEVEL[r][c];
   if (v === WALL) return true;
@@ -1040,69 +1052,52 @@ function isOnPlate(px, py, pw, ph, plateType) {
       if (LEVEL[r][c] !== plateType) continue;
       const tx = c * tileW + levelLeft;
       const ty = r * tileH + levelTop;
-      if (cx > tx && cx < tx + tileW &&
-          footY >= ty && footY <= ty + tileH + 2) {
-        return true;
-      }
+      if (cx > tx && cx < tx + tileW && footY >= ty && footY <= ty + tileH + 2) return true;
     }
   }
   return false;
 }
 
-// ---- Gem collision ----
 function checkGemCollection(px, py, pw, ph, role) {
   const cx = px + pw / 2;
   const cy = py + ph / 2;
   gems.forEach((gem, i) => {
-    if (gem.collected) return;
-    // Fire collects fire gems, water collects water gems
-    if (gem.type !== role) return;
+    if (gem.collected || gem.type !== role) return;
     const gx = gem.c * tileW + tileW / 2 + levelLeft;
     const gy = gem.r * tileH + tileH / 2 + levelTop;
-    const dist = Math.hypot(cx - gx, cy - gy);
-    if (dist < tileW * 0.7) {
-      collectGem(i);
-    }
+    if (Math.hypot(cx - gx, cy - gy) < tileW * 0.7) collectGem(i);
   });
 }
 
-// ---- Physics update for one player ----
 function updatePlayer(p, role) {
   if (!p.alive) return;
 
-  // Apply gravity
   p.vy += GRAVITY;
   if (p.vy > 14) p.vy = 14;
 
   let nx = p.x + p.vx;
   let ny = p.y + p.vy;
 
-  // Horizontal collision
   if (p.vx !== 0) {
     const testX = p.vx > 0 ? nx + PLAYER_W : nx;
     const topR = worldToTile(testX, p.y + 2);
     const midR = worldToTile(testX, p.y + PLAYER_H / 2);
     const botR = worldToTile(testX, p.y + PLAYER_H - 2);
-    if (isSolid(topR.r, topR.c, role) || isSolid(midR.r, midR.c, role) || isSolid(botR.r, botR.c, role)) {
-      if (p.vx > 0) {
-        nx = Math.floor((nx + PLAYER_W - levelLeft) / tileW) * tileW + levelLeft - PLAYER_W;
-      } else {
-        nx = Math.ceil((nx - levelLeft) / tileW) * tileW + levelLeft;
-      }
+    if (isSolid(topR.r, topR.c) || isSolid(midR.r, midR.c) || isSolid(botR.r, botR.c)) {
+      if (p.vx > 0) nx = Math.floor((nx + PLAYER_W - levelLeft) / tileW) * tileW + levelLeft - PLAYER_W;
+      else nx = Math.ceil((nx - levelLeft) / tileW) * tileW + levelLeft;
       p.vx = 0;
     }
   }
   p.x = nx;
 
-  // Vertical collision
   p.onGround = false;
   if (p.vy >= 0) {
     const footY = ny + PLAYER_H;
     const leftC = worldToTile(p.x + 2, footY);
     const rightC = worldToTile(p.x + PLAYER_W - 2, footY);
-    if (isSolid(leftC.r, leftC.c, role) || isSolid(rightC.r, rightC.c, role)) {
-      const tileTop = Math.floor((footY - levelTop) / tileH) * tileH + levelTop;
-      ny = tileTop - PLAYER_H;
+    if (isSolid(leftC.r, leftC.c) || isSolid(rightC.r, rightC.c)) {
+      ny = Math.floor((footY - levelTop) / tileH) * tileH + levelTop - PLAYER_H;
       p.vy = 0;
       p.onGround = true;
     }
@@ -1110,15 +1105,13 @@ function updatePlayer(p, role) {
     const headY = ny;
     const leftC = worldToTile(p.x + 2, headY);
     const rightC = worldToTile(p.x + PLAYER_W - 2, headY);
-    if (isSolid(leftC.r, leftC.c, role) || isSolid(rightC.r, rightC.c, role)) {
-      const tileBot = (Math.floor((headY - levelTop) / tileH) + 1) * tileH + levelTop;
-      ny = tileBot;
+    if (isSolid(leftC.r, leftC.c) || isSolid(rightC.r, rightC.c)) {
+      ny = (Math.floor((headY - levelTop) / tileH) + 1) * tileH + levelTop;
       p.vy = 0;
     }
   }
   p.y = ny;
 
-  // Hazard check
   const cx = p.x + PLAYER_W / 2;
   const checks = [
     worldToTile(cx, p.y + PLAYER_H - 4),
@@ -1127,20 +1120,13 @@ function updatePlayer(p, role) {
     worldToTile(cx, p.y + PLAYER_H / 2),
   ];
   for (const ch of checks) {
-    if (isHazardFor(ch.r, ch.c, role)) {
-      killPlayer(role);
-      return;
-    }
+    if (isHazardFor(ch.r, ch.c, role)) { killPlayer(role); return; }
   }
 
-  // Gem collection
   checkGemCollection(p.x, p.y, PLAYER_W, PLAYER_H, role);
 
-  // Exit check
   const exitCheck = worldToTile(cx, p.y + PLAYER_H / 2);
   p.onExit = isExitFor(exitCheck.r, exitCheck.c, role);
-
-  // Plate checks
   p._onPlateA = isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_A);
   p._onPlateB = isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_B);
 }
@@ -1149,31 +1135,19 @@ function killPlayer(role) {
   const p = players[role];
   if (!p.alive) return;
   p.alive = false;
-
   const el = document.getElementById('player-' + role);
   el.classList.add('dying');
-
   setTimeout(() => {
     el.classList.remove('dying');
     const spawn = role === 'fire' ? FIRE_SPAWN : WATER_SPAWN;
-    p.x = spawn.x;
-    p.y = spawn.y;
-    p.vx = 0;
-    p.vy = 0;
-    p.onGround = false;
-    p.alive = true;
-    p.onExit = false;
-
+    p.x = spawn.x; p.y = spawn.y; p.vx = 0; p.vy = 0;
+    p.onGround = false; p.alive = true; p.onExit = false;
     el.classList.add('respawning');
     setTimeout(() => el.classList.remove('respawning'), 300);
-
-    if (soloMode || role === myRole) {
-      attempts++;
-    }
+    if (soloMode || role === myRole) attempts++;
   }, 450);
 }
 
-// ---- Render players ----
 function renderPlayers() {
   ['fire', 'water'].forEach(role => {
     const p = players[role];
@@ -1183,37 +1157,27 @@ function renderPlayers() {
     el.style.width = PLAYER_W + 'px';
     el.style.height = PLAYER_H + 'px';
 
-    const isMoving = Math.abs(p.vx) > 0.5 && p.onGround;
-    el.classList.toggle('walking', isMoving);
+    el.classList.toggle('walking', Math.abs(p.vx) > 0.5 && p.onGround);
     el.classList.toggle('jumping', !p.onGround);
-
     if (p.vx > 0.5) { p.facing = 'right'; el.classList.remove('facing-left'); }
     else if (p.vx < -0.5) { p.facing = 'left'; el.classList.add('facing-left'); }
-
-    // Solo mode: highlight active player
-    if (soloMode) {
-      el.classList.toggle('active-player', role === soloActiveRole);
-    }
+    if (soloMode) el.classList.toggle('active-player', role === soloActiveRole);
   });
 }
 
-// ---- Gate visuals ----
 function updateGates() {
   gateAOpen = players.fire._onPlateA || players.water._onPlateA;
   gateBOpen = players.fire._onPlateB || players.water._onPlateB;
-
   gateAEls.forEach(el => el.classList.toggle('open', gateAOpen));
   gateBEls.forEach(el => el.classList.toggle('open', gateBOpen));
   plateAEls.forEach(el => el.classList.toggle('pressed', gateAOpen));
   plateBEls.forEach(el => el.classList.toggle('pressed', gateBOpen));
 }
 
-// ---- Victory check ----
 function checkVictory() {
   if (won) return;
   if (players.fire.onExit && players.water.onExit) {
     won = true;
-    // Bonus for gems
     const gemBonus = (gemsCollectedFire + gemsCollectedWater) * 5;
     let pts = 100;
     if (attempts === 1) pts = 70;
@@ -1221,17 +1185,12 @@ function checkVictory() {
     pts += gemBonus;
     addPoints(pts);
     markCompleted('elements');
-
     document.getElementById('victory-pts').textContent = '+' + pts + ' pts';
-    setTimeout(() => {
-      document.getElementById('victory-overlay').classList.add('visible');
-    }, 500);
-
+    setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 500);
     sendPeerData({ type: 'victory', pts });
   }
 }
 
-// ---- Solo mode switching ----
 function switchSoloCharacter() {
   if (!soloMode) return;
   soloActiveRole = soloActiveRole === 'fire' ? 'water' : 'fire';
@@ -1242,7 +1201,7 @@ function updateSwitchHint() {
   const hint = document.getElementById('switch-hint');
   if (soloMode) {
     const isMobile = window.matchMedia('(pointer: coarse)').matches;
-    const label = soloActiveRole === 'fire' ? 'fire' : 'water';
+    const label = soloActiveRole === 'fire' ? 'flameboi' : 'lavagirl';
     const cls = soloActiveRole === 'fire' ? 'active-fire' : 'active-water';
     const switchKey = isMobile ? 'tap switch' : 'press tab to switch';
     hint.innerHTML = switchKey + ' <span class="active-indicator ' + cls + '">' + label + '</span>';
@@ -1251,7 +1210,6 @@ function updateSwitchHint() {
   }
 }
 
-// ---- Enter solo mode ----
 function enterSoloMode() {
   soloMode = true;
   soloActiveRole = 'fire';
@@ -1260,59 +1218,39 @@ function enterSoloMode() {
   updateSwitchHint();
 }
 
-// ---- Main game loop ----
 function gameLoop() {
   if (won) { renderPlayers(); requestAnimationFrame(gameLoop); return; }
 
   if (soloMode) {
-    // In solo mode, control the active character
     const me = players[soloActiveRole];
     if (me.alive) {
       me.vx = 0;
       if (keys.left) me.vx = -MOVE_SPEED;
       if (keys.right) me.vx = MOVE_SPEED;
-      if (keys.up && me.onGround) {
-        me.vy = JUMP_VEL;
-        me.onGround = false;
-      }
+      if (keys.up && me.onGround) { me.vy = JUMP_VEL; me.onGround = false; }
     }
-    // Inactive character stays still
     const other = players[soloActiveRole === 'fire' ? 'water' : 'fire'];
     if (other.alive) other.vx = 0;
   } else {
-    // Multiplayer: control my assigned role
     const me = players[myRole];
     if (me.alive) {
       me.vx = 0;
       if (keys.left) me.vx = -MOVE_SPEED;
       if (keys.right) me.vx = MOVE_SPEED;
-      if (keys.up && me.onGround) {
-        me.vy = JUMP_VEL;
-        me.onGround = false;
-      }
+      if (keys.up && me.onGround) { me.vy = JUMP_VEL; me.onGround = false; }
     }
   }
 
-  // Update both players physics
   updatePlayer(players.fire, 'fire');
   updatePlayer(players.water, 'water');
-
-  // Gates
   updateGates();
-
-  // Render
   renderPlayers();
-
-  // Victory
   checkVictory();
-
-  // Send my position to partner (multiplayer only)
   if (!soloMode) sendMyState();
-
   requestAnimationFrame(gameLoop);
 }
 
-// ---- Input handling ----
+// ---- Input ----
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keys.left = true; e.preventDefault(); }
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keys.right = true; e.preventDefault(); }
@@ -1325,13 +1263,8 @@ document.addEventListener('keyup', e => {
   if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') keys.up = false;
 });
 
-// ---- Mobile controls ----
+// ---- Mobile ----
 function setupMobile() {
-  const btnL = document.getElementById('btn-left');
-  const btnR = document.getElementById('btn-right');
-  const btnJ = document.getElementById('btn-jump');
-  const btnS = document.getElementById('btn-switch');
-
   function addTouch(btn, key) {
     btn.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = true; }, { passive: false });
     btn.addEventListener('touchend', e => { e.preventDefault(); keys[key] = false; }, { passive: false });
@@ -1340,21 +1273,16 @@ function setupMobile() {
     btn.addEventListener('mouseup', () => { keys[key] = false; });
     btn.addEventListener('mouseleave', () => { keys[key] = false; });
   }
-
-  addTouch(btnL, 'left');
-  addTouch(btnR, 'right');
-  addTouch(btnJ, 'up');
-
-  // Switch button
+  addTouch(document.getElementById('btn-left'), 'left');
+  addTouch(document.getElementById('btn-right'), 'right');
+  addTouch(document.getElementById('btn-jump'), 'up');
+  const btnS = document.getElementById('btn-switch');
   btnS.addEventListener('touchstart', e => { e.preventDefault(); switchSoloCharacter(); }, { passive: false });
   btnS.addEventListener('mousedown', e => { e.preventDefault(); switchSoloCharacter(); });
 }
 setupMobile();
 
-// ---- Solo button ----
-document.getElementById('solo-btn').addEventListener('click', () => {
-  enterSoloMode();
-});
+document.getElementById('solo-btn').addEventListener('click', () => enterSoloMode());
 
 // ---- PeerJS ----
 let peer = null, conn = null;
@@ -1369,44 +1297,27 @@ function sendMyState() {
   const me = players[myRole];
   sendPeerData({
     type: 'state',
-    x: Math.round(me.x * 10) / 10,
-    y: Math.round(me.y * 10) / 10,
-    vx: Math.round(me.vx * 10) / 10,
-    vy: Math.round(me.vy * 10) / 10,
-    alive: me.alive,
-    onExit: me.onExit,
-    onGround: me.onGround,
-    _onPlateA: me._onPlateA,
-    _onPlateB: me._onPlateB,
+    x: Math.round(me.x * 10) / 10, y: Math.round(me.y * 10) / 10,
+    vx: Math.round(me.vx * 10) / 10, vy: Math.round(me.vy * 10) / 10,
+    alive: me.alive, onExit: me.onExit, onGround: me.onGround,
+    _onPlateA: me._onPlateA, _onPlateB: me._onPlateB,
   });
 }
 
 function handlePeerData(data) {
   if (data.type === 'state') {
-    // Partner connected - exit solo mode if we were in it
-    if (soloMode) {
-      soloMode = false;
-      document.getElementById('switch-hint').innerHTML = '';
-    }
+    if (soloMode) { soloMode = false; document.getElementById('switch-hint').innerHTML = ''; }
     const p = players[partnerRole];
-    p.x = data.x;
-    p.y = data.y;
-    p.vx = data.vx;
-    p.vy = data.vy;
-    p.alive = data.alive;
-    p.onExit = data.onExit;
-    p.onGround = data.onGround;
-    p._onPlateA = data._onPlateA;
-    p._onPlateB = data._onPlateB;
+    p.x = data.x; p.y = data.y; p.vx = data.vx; p.vy = data.vy;
+    p.alive = data.alive; p.onExit = data.onExit; p.onGround = data.onGround;
+    p._onPlateA = data._onPlateA; p._onPlateB = data._onPlateB;
   } else if (data.type === 'victory') {
     if (!won) {
       won = true;
       addPoints(data.pts);
       markCompleted('elements');
       document.getElementById('victory-pts').textContent = '+' + data.pts + ' pts';
-      setTimeout(() => {
-        document.getElementById('victory-overlay').classList.add('visible');
-      }, 500);
+      setTimeout(() => document.getElementById('victory-overlay').classList.add('visible'), 500);
     }
   } else if (data.type === 'character') {
     partnerChar = { ...DEFAULT_PARTNER, ...data.char };
@@ -1416,8 +1327,7 @@ function handlePeerData(data) {
     const gem = gems[data.index];
     if (gem && !gem.collected) {
       gem.collected = true;
-      if (gem.type === 'fire') gemsCollectedFire++;
-      else gemsCollectedWater++;
+      if (gem.type === 'fire') gemsCollectedFire++; else gemsCollectedWater++;
       const el = document.getElementById('gem-' + data.index);
       if (el) { el.classList.add('collected'); setTimeout(() => el.remove(), 300); }
       updateGemCounter();
@@ -1426,19 +1336,12 @@ function handlePeerData(data) {
 }
 
 function setupPeer() {
-  if (!roomCode) {
-    // No room code - go straight to solo mode
-    enterSoloMode();
-    return;
-  }
-
+  if (!roomCode) { enterSoloMode(); return; }
   if (isHost) {
     peer = new Peer(peerIdForPuzzle(roomCode));
     peer.on('open', () => {
       peer.on('connection', c => {
-        conn = c;
-        partnerConnected = true;
-        soloMode = false;
+        conn = c; partnerConnected = true; soloMode = false;
         document.getElementById('waiting-overlay').classList.add('hidden');
         document.getElementById('switch-hint').innerHTML = '';
         c.on('data', handlePeerData);
@@ -1458,9 +1361,7 @@ function tryConnect(attempt) {
   if (attempt > 20) return;
   const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
   c.on('open', () => {
-    conn = c;
-    partnerConnected = true;
-    soloMode = false;
+    conn = c; partnerConnected = true; soloMode = false;
     document.getElementById('waiting-overlay').classList.add('hidden');
     document.getElementById('switch-hint').innerHTML = '';
     c.on('data', handlePeerData);
@@ -1469,7 +1370,6 @@ function tryConnect(attempt) {
   c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
 }
 
-// ---- Resize handler ----
 window.addEventListener('resize', () => {
   calcTileSize();
   FIRE_SPAWN.x = 1.5 * tileW + levelLeft;
@@ -1479,16 +1379,9 @@ window.addEventListener('resize', () => {
   renderLevel();
 });
 
-// ---- Init ----
 setupPeer();
-
-// If no room code, already entered solo mode above
-if (!roomCode) {
-  document.getElementById('waiting-overlay').classList.add('hidden');
-}
-
+if (!roomCode) document.getElementById('waiting-overlay').classList.add('hidden');
 requestAnimationFrame(gameLoop);
-
 </script>
 </body>
 </html>
