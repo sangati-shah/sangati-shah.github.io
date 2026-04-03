@@ -229,7 +229,7 @@ function dnCycleTheme(e) {
 // ── Particle burst ──
 // Each theme gets a totally different burst effect:
 // ghibli → floating soot sprites that drift upward and fade
-// poster → cute orange puffballs with faces that bounce and float with tiny hearts
+// poster → orange hearts that pop out and float upward
 // neon → electric lines/bolts that crackle from click point
 // earth → falling leaf shapes with gravity + wind drift
 // smiski → glowing green blobs that peek out and hide
@@ -332,91 +332,43 @@ function dnBurstRing(x, y, theme) {
   }
 }
 
-// poster — cute orange puffballs with tiny faces that bounce and float
+// poster — cute hearts that float upward and drift
 function dnBurstChars(x, y, theme) {
   const colors = [theme.accent, '#ff9100', '#ffcc02', '#e65100', '#ffab40'];
-  const count = 12;
-  for (let i = 0; i < count; i++) {
-    const puff = document.createElement('div');
-    const size = 10 + Math.random() * 14;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const isLarge = size > 16;
-    puff.style.cssText = `
-      position:fixed; left:${x}px; top:${y}px;
-      width:${size}px; height:${size}px;
-      background:radial-gradient(circle at 35% 35%, ${color}ee, ${color});
-      border-radius:50%;
-      pointer-events:none; z-index:99999; opacity:0;
-      transform:translate(-50%,-50%) scale(0);
-      will-change:transform,opacity,left,top;
-    `;
-    // Add tiny dot eyes and a little smile
-    if (isLarge || Math.random() > 0.3) {
-      const eyeSize = Math.max(1.5, size * 0.1);
-      const eyeGap = size * 0.18;
-      const eyeColor = '#5d2800';
-      puff.innerHTML = `<div style="position:absolute;top:32%;left:50%;transform:translateX(-50%);display:flex;gap:${eyeGap}px">
-        <div style="width:${eyeSize}px;height:${eyeSize * 1.2}px;background:${eyeColor};border-radius:50%"></div>
-        <div style="width:${eyeSize}px;height:${eyeSize * 1.2}px;background:${eyeColor};border-radius:50%"></div>
-      </div>
-      <div style="position:absolute;top:52%;left:50%;transform:translateX(-50%);width:${size*0.2}px;height:${size*0.08}px;border-bottom:1px solid ${eyeColor};border-radius:0 0 50% 50%"></div>`;
-    }
-    document.body.appendChild(puff);
-
-    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.6;
-    const spreadX = Math.cos(angle) * (40 + Math.random() * 60);
-    const peakY = -(30 + Math.random() * 70);
-    const wobble = (Math.random() - 0.5) * 30;
-    const dur = 800 + Math.random() * 400;
-    const delay = Math.random() * 100;
-    const spin = (Math.random() - 0.5) * 40;
-
-    // Phase 1: pop out and bounce upward
-    setTimeout(() => {
-      puff.style.transition = `left ${dur * 0.35}ms ease-out, top ${dur * 0.35}ms cubic-bezier(0.22,1,0.36,1), transform ${dur * 0.25}ms cubic-bezier(0.22,1,0.36,1), opacity 0.1s ease`;
-      puff.style.left = (x + spreadX) + 'px';
-      puff.style.top = (y + peakY) + 'px';
-      puff.style.transform = `translate(-50%,-50%) scale(1.1) rotate(${spin}deg)`;
-      puff.style.opacity = '0.9';
-    }, delay);
-    // Phase 2: gentle float downward with a wobble
-    setTimeout(() => {
-      puff.style.transition = `left ${dur * 0.65}ms ease-in-out, top ${dur * 0.65}ms ease-in, transform ${dur * 0.65}ms ease-in-out, opacity ${dur * 0.5}ms ease-in`;
-      puff.style.left = (x + spreadX + wobble) + 'px';
-      puff.style.top = (y + 50 + Math.random() * 40) + 'px';
-      puff.style.transform = `translate(-50%,-50%) scale(0.6) rotate(${-spin}deg)`;
-      puff.style.opacity = '0';
-    }, delay + dur * 0.35);
-    setTimeout(() => puff.remove(), delay + dur + 50);
-  }
-
-  // Tiny hearts that float up from the puffballs
-  const heartCount = 6;
+  const heartCount = 14;
   for (let i = 0; i < heartCount; i++) {
     const heart = document.createElement('div');
-    const size = 6 + Math.random() * 5;
+    const size = 8 + Math.random() * 10;
     const color = colors[Math.floor(Math.random() * colors.length)];
+    const angle = (Math.PI * 2 * i) / heartCount + (Math.random() - 0.5) * 0.6;
+    const spreadX = Math.cos(angle) * (30 + Math.random() * 50);
+    const wobble = (Math.random() - 0.5) * 30;
+    const spin = (Math.random() - 0.5) * 30;
     heart.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 10 10"><path d="M5 9C5 9 1 6 1 3.5C1 2 2 1 3.5 1C4.2 1 5 1.5 5 2.2C5 1.5 5.8 1 6.5 1C8 1 9 2 9 3.5C9 6 5 9 5 9Z" fill="${color}"/></svg>`;
     heart.style.cssText = `
-      position:fixed; left:${x + (Math.random() - 0.5) * 120}px; top:${y}px;
+      position:fixed; left:${x}px; top:${y}px;
       line-height:0;
-      pointer-events:none; z-index:99998; opacity:0;
-      transform:translate(-50%,-50%) scale(0);
-      will-change:transform,opacity,top;
+      pointer-events:none; z-index:99999; opacity:0;
+      transform:translate(-50%,-50%) scale(0) rotate(${spin}deg);
+      will-change:transform,opacity,left,top;
     `;
     document.body.appendChild(heart);
-    const dur = 600 + Math.random() * 400;
-    const delay = 150 + Math.random() * 200;
+    const dur = 700 + Math.random() * 500;
+    const delay = Math.random() * 150;
+    // Phase 1: pop out and float upward
     setTimeout(() => {
-      heart.style.transition = `top ${dur}ms ease-out, transform ${dur * 0.3}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.3}ms ease`;
-      heart.style.top = (y - 60 - Math.random() * 80) + 'px';
-      heart.style.transform = `translate(-50%,-50%) scale(1)`;
-      heart.style.opacity = '0.8';
+      heart.style.transition = `left ${dur}ms ease-out, top ${dur}ms ease-out, transform ${dur * 0.3}ms cubic-bezier(0.22,1,0.36,1), opacity ${dur * 0.3}ms ease`;
+      heart.style.left = (x + spreadX + wobble) + 'px';
+      heart.style.top = (y - 60 - Math.random() * 90) + 'px';
+      heart.style.transform = `translate(-50%,-50%) scale(1) rotate(${spin}deg)`;
+      heart.style.opacity = '0.85';
     }, delay);
+    // Phase 2: fade out gently
     setTimeout(() => {
-      heart.style.transition = `opacity 300ms ease-out`;
+      heart.style.transition = `opacity 350ms ease-out, transform 350ms ease-out`;
       heart.style.opacity = '0';
-    }, delay + dur * 0.6);
+      heart.style.transform += ' scale(0.5)';
+    }, delay + dur * 0.55);
     setTimeout(() => heart.remove(), delay + dur + 50);
   }
 }
