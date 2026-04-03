@@ -334,7 +334,7 @@
     // ══════════════════════════════════════
     // CONFIG
     // ══════════════════════════════════════
-    const WORLD_W = 5600;
+    const WORLD_W = 8400;
     const LINE_BOTTOM = 80;
     const SPRITE_W = 32;
     const SPRITE_H = 52;
@@ -376,6 +376,18 @@
       ob(4700, 35, 32),
       ob(4850, 120, 18, 'float'),
       ob(5000, 45, 28),
+      // Section 3 — between box 2 and box 3
+      ob(5700, 30, 28),
+      ob(5900, 35, 32),
+      ob(6100, 140, 18, 'float'),
+      ob(6350, 30, 28),
+      ob(6550, 40, 35),
+      ob(6750, 130, 18, 'float'),
+      ob(6950, 35, 28),
+      ob(7150, 30, 32),
+      ob(7350, 150, 18, 'float'),
+      ob(7550, 40, 28),
+      ob(7750, 35, 28),
     ];
 
     // ══════════════════════════════════════
@@ -384,6 +396,7 @@
     const ADVENTURES = [
       { id: 'music',    x: 2850, elevation: 70,  url: '../puzzle/music/',    hint: 'reach the light to begin your first adventure', color: '#d49b3c' },
       { id: 'elements', x: 5300, elevation: 130, url: '../puzzle/elements/', hint: 'this one is high... try standing on each other!', color: '#4fc3f7' },
+      { id: 'mystery',  x: 8100, elevation: 70,  url: '../puzzle/mystery/',  hint: 'one more light ahead...', color: '#b388ff' },
     ];
 
     // ══════════════════════════════════════
@@ -640,6 +653,19 @@
         introPhase = 2;
       }
 
+      // After passing second orb (elements at x=5300), show third hint
+      if (!passedSecondOrb && !secondOrbDone && introPhase === 2 && player.x > 5400) {
+        passedSecondOrb = true;
+        introEl.classList.remove('fade');
+        introEl.style.whiteSpace = '';
+        introEl.textContent = 'one more light ahead...';
+        introFaded = false;
+        introTimerDone = false;
+        introPlayerMoved = true;
+        setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 15000);
+        introPhase = 3;
+      }
+
       // Ducking
       player.ducking = !!(keys['ArrowDown'] && !player.jumping);
 
@@ -785,9 +811,12 @@
     const introEl = document.getElementById('intro-text');
     const firstOrbDone = completed.includes('music');
     const secondOrbDone = completed.includes('elements');
+    const thirdOrbDone = completed.includes('mystery');
 
-    if (secondOrbDone) {
+    if (thirdOrbDone) {
       introEl.textContent = 'explore freely...';
+    } else if (secondOrbDone) {
+      introEl.textContent = 'one more light ahead...';
     } else if (firstOrbDone) {
       introEl.textContent = "this one's a little tall...";
     } else {
@@ -799,7 +828,7 @@
     let introTimerDone = false;
     let introPlayerMoved = false;
     let introFaded = false;
-    let introPhase = firstOrbDone ? 2 : (secondOrbDone ? 0 : 1); // 1 = first msg, 2 = second msg, 0 = done
+    let introPhase = thirdOrbDone ? 0 : (secondOrbDone ? 3 : (firstOrbDone ? 2 : 1)); // 1 = first msg, 2 = second msg, 3 = third msg, 0 = done
 
     function fadeIntroIfReady() {
       if (introFaded) return;
@@ -813,6 +842,7 @@
 
     // After passing the first orb, show the second hint
     let passedFirstOrb = false;
+    let passedSecondOrb = false;
 
     // ── Set world width ──
     worldEl.style.width = WORLD_W + 'px';
