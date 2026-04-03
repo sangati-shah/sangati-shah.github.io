@@ -12,62 +12,90 @@
         <a href="/"><div class="nav-logo">&lt;s /&gt;</div></a>
     </div>
   </nav>
-  
+
       <main>
     <section id="projects">
-      <h2>Projects</h2>
-      <div class="project-card">
-        <img src="assets/projects/crash.jpg" alt="Gallery Project Thumbnail">
-        <div class="project-info">
-          <h3>Gallery</h3>
-          <p>Walk through my physical artwork in an interactive gallery that mirrors real-world exhibitions.</p>
-          <div class="tech-stack">
-            <span class="tech-pill">HTML</span>
-            <span class="tech-pill">CSS</span>
-            <span class="tech-pill">React</span>
-            <span class="tech-pill">THREE.js</span>
-          </div>
-            <a
-              href="https://sangati-shah.github.io/three-gallery/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="view-btn"
-            >
-              View Project
-            </a>
-        </div>
-      </div>
+      <h2>Things I've Made</h2>
+      <p class="subtitle">a mix of art, code, and little experiments</p>
 
-      <div class="project-card">
-        <img src="assets/projects/fishinGame.jpeg" alt="Fishing Game Thumbnail">
-        <div class="project-info">
-          <h3>Fishing Game</h3>
-          <p>Adventure video game with open exploration — discover hidden lakes, upgrade gear, and find rare fish.</p>
-          <div class="tech-stack">
-            <span class="tech-pill">Unity</span>
-            <span class="tech-pill">C#</span>
-            <span class="tech-pill">3D Art</span>
-          </div>
-          <a href="https://www.notion.so/alrite/Fishing-Game-26ac572e51ce8038a5d1d4fcfc30bde8" target="_blank" class="view-btn">View Project</a>
-        </div>
-      </div>
+      <div class="project-grid">
 
-      <div class="project-card">
-        <img src="assets/projects/tl-dr.png" alt="TL-DR Extension Thumbnail">
-        <div class="project-info">
-          <h3>TL-DR</h3>
-          <p>Chrome extension and data dashboard helping users reclaim control of their online data and privacy.</p>
-          <div class="tech-stack">
-            <span class="tech-pill">HTML</span>
-            <span class="tech-pill">CSS</span>
-            <span class="tech-pill">JavaScript</span>
-            <span class="tech-pill">Chrome API</span>
-            <span class="tech-pill">Data Visualization</span>
-            <span class="tech-pill">Python</span>
+        <!-- DATENIGHT — featured -->
+        <div class="project-card featured">
+          <img src="assets/projects/datenight.png" alt="Datenight Preview" onerror="this.style.background='linear-gradient(135deg,#ff6b9d,#ffa751)';this.style.minHeight='280px';">
+          <div class="project-info">
+            <span class="card-emoji">💕</span>
+            <h3>Datenight</h3>
+            <p>A cozy multiplayer world for two — adventure together, solve puzzles, ask deep questions, and create art side by side. Built for cute date nights in.</p>
+            <div class="tech-stack">
+              <span class="tech-pill">Vanilla JS</span>
+              <span class="tech-pill">PeerJS</span>
+              <span class="tech-pill">Multiplayer</span>
+              <span class="tech-pill">Pixel Art</span>
+            </div>
+            <div class="card-links">
+              <a href="datenight/" class="view-btn">Play Together</a>
+            </div>
           </div>
-          <a href="https://oceanestars.github.io/Super-Knockout/index.html" target="_blank" class="view-btn">View Project</a>
-          <a href="https://github.com/Oceanestars/Super-Knockout/tree/main" target="_blank" class="view-btn">View Code</a>
         </div>
+
+        <!-- GALLERY -->
+        <div class="project-card">
+          <span class="card-emoji">🎨</span>
+          <img src="assets/projects/crash.jpg" alt="Gallery Project Thumbnail">
+          <div class="project-info">
+            <h3>Gallery</h3>
+            <p>Walk through my physical artwork in an interactive 3D gallery that mirrors real exhibitions.</p>
+            <div class="tech-stack">
+              <span class="tech-pill">HTML</span>
+              <span class="tech-pill">CSS</span>
+              <span class="tech-pill">React</span>
+              <span class="tech-pill">THREE.js</span>
+            </div>
+            <div class="card-links">
+              <a href="https://sangati-shah.github.io/three-gallery/" target="_blank" rel="noopener noreferrer" class="view-btn">View Project</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- FISHING GAME -->
+        <div class="project-card">
+          <span class="card-emoji">🐟</span>
+          <img src="assets/projects/fishinGame.jpeg" alt="Fishing Game Thumbnail">
+          <div class="project-info">
+            <h3>Fishing Game</h3>
+            <p>Adventure video game with open exploration — discover hidden lakes, upgrade gear, and find rare fish.</p>
+            <div class="tech-stack">
+              <span class="tech-pill">Unity</span>
+              <span class="tech-pill">C#</span>
+              <span class="tech-pill">3D Art</span>
+            </div>
+            <div class="card-links">
+              <a href="https://www.notion.so/alrite/Fishing-Game-26ac572e51ce8038a5d1d4fcfc30bde8" target="_blank" class="view-btn">View Project</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- TL-DR -->
+        <div class="project-card">
+          <span class="card-emoji">🔒</span>
+          <img src="assets/projects/tl-dr.png" alt="TL-DR Extension Thumbnail">
+          <div class="project-info">
+            <h3>TL-DR</h3>
+            <p>Chrome extension and data dashboard helping users reclaim control of their online data and privacy.</p>
+            <div class="tech-stack">
+              <span class="tech-pill">JavaScript</span>
+              <span class="tech-pill">Chrome API</span>
+              <span class="tech-pill">Data Viz</span>
+              <span class="tech-pill">Python</span>
+            </div>
+            <div class="card-links">
+              <a href="https://oceanestars.github.io/Super-Knockout/index.html" target="_blank" class="view-btn">Demo</a>
+              <a href="https://github.com/Oceanestars/Super-Knockout/tree/main" target="_blank" class="view-btn secondary">Code</a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -86,18 +114,39 @@
       weekday: "long", year: "numeric", month: "long", day: "numeric"
     });
 
-    // Scroll animation
+    // Scroll animation with staggered delay
     const cards = document.querySelectorAll('.project-card');
     const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
+      entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, i * 120);
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.15 });
 
     cards.forEach(card => observer.observe(card));
+
+    // Sparkle trail on mouse move (subtle)
+    let sparkleTimeout;
+    document.addEventListener('mousemove', (e) => {
+      if (sparkleTimeout) return;
+      sparkleTimeout = setTimeout(() => { sparkleTimeout = null; }, 80);
+
+      if (Math.random() > 0.6) return; // only sometimes
+
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.textContent = ['✦', '✧', '·', '˚'][Math.floor(Math.random() * 4)];
+      sparkle.style.left = e.clientX + 'px';
+      sparkle.style.top = e.clientY + 'px';
+      sparkle.style.fontSize = (8 + Math.random() * 12) + 'px';
+      sparkle.style.color = ['var(--magenta)', 'var(--orange)', 'var(--gold)', 'var(--olive)'][Math.floor(Math.random() * 4)];
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 600);
+    });
   </script>
 </body>
 </html>
