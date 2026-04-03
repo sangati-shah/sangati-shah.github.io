@@ -559,26 +559,28 @@ const PLATE_A = 7, GATE_A = 8, PLATE_B = 9, GATE_B = 10;
 const GEM_FIRE = 11, GEM_WATER = 12;
 
 // ---- Level (28 wide x 18 tall) ----
-// Designed with small platforms, 2-tile jumps max, clear paths
-// Like the real game: lots of stepping stones, thin hazard pools
+// Hard level — hazards are floor strips players walk through/over
+// Max 2-tile vertical gaps between platforms
+// Flameboi safe on lava, dies on water. Aguagurl safe on water, dies on lava.
+// Both die on green goo. Cooperative plates + gates required.
 const LEVEL = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,5,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,6,0,1],
-  [1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,10,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,1],
+  [1,0,0,5,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,6,0,0,1],
+  [1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1],
+  [1,0,0,0,0,0,0,0,11,0,0,8,0,0,10,0,0,12,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,0,0,1,1,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,0,0,0,1],
-  [1,1,1,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,0,0,0,0,1,1,1],
+  [1,0,11,0,0,0,0,0,0,0,12,0,0,0,0,0,11,0,0,0,0,0,0,12,0,0,0,1],
+  [1,1,1,1,0,0,1,1,0,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,0,1],
-  [1,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,1,1,0,0,7,1,1,0,0,0,0,0,0,1,1,9,0,0,1,1,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,11,0,12,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,1,1,0,0,7,0,0,0,1,1,1,1,1,1,1,1,0,0,0,9,0,0,0,1,1,1,1],
+  [1,1,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,0,0,0,1,1,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,2,2,2,0,0,4,4,4,4,0,0,3,3,3,0,0,0,0,0,0,1],
-  [1,0,0,0,0,0,0,2,2,2,0,0,4,4,4,4,0,0,3,3,3,0,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,2,2,3,3,4,4,0,0,2,2,4,4,3,3,0,0,3,3,4,4,2,2,0,1],
+  [1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
@@ -755,14 +757,15 @@ function applyCharColors() {
 applyCharColors();
 
 // ---- Physics ----
-const GRAVITY = 0.55;
-const JUMP_VEL = -11.5;   // Higher jump to reach 3-tile gaps
-const MOVE_SPEED = 4.2;
+const GRAVITY = 0.5;
+const JUMP_VEL = -11;     // Jumps ~3 tiles high (comfortable 2-tile platform gaps)
+const MOVE_SPEED = 4.5;
 const PLAYER_W = 16;
 const PLAYER_H = 30;
 
-const FIRE_SPAWN = { x: 1.5*tileW+levelLeft, y: (ROWS-2)*tileH+levelTop-PLAYER_H };
-const WATER_SPAWN = { x: (COLS-2.5)*tileW+levelLeft, y: (ROWS-2)*tileH+levelTop-PLAYER_H };
+// Spawn on the floor (row 15 is hazards, row 16 is solid floor)
+const FIRE_SPAWN = { x: 1.5*tileW+levelLeft, y: (ROWS-3)*tileH+levelTop-PLAYER_H };
+const WATER_SPAWN = { x: (COLS-2.5)*tileW+levelLeft, y: (ROWS-3)*tileH+levelTop-PLAYER_H };
 
 const players = {
   fire: { x:FIRE_SPAWN.x, y:FIRE_SPAWN.y, vx:0, vy:0, onGround:false, alive:true, onExit:false, facing:'right' },
@@ -1022,8 +1025,8 @@ function tryConnect(attempt){
 
 window.addEventListener('resize',()=>{
   calcTileSize();
-  FIRE_SPAWN.x=1.5*tileW+levelLeft;FIRE_SPAWN.y=(ROWS-2)*tileH+levelTop-PLAYER_H;
-  WATER_SPAWN.x=(COLS-2.5)*tileW+levelLeft;WATER_SPAWN.y=(ROWS-2)*tileH+levelTop-PLAYER_H;
+  FIRE_SPAWN.x=1.5*tileW+levelLeft;FIRE_SPAWN.y=(ROWS-3)*tileH+levelTop-PLAYER_H;
+  WATER_SPAWN.x=(COLS-2.5)*tileW+levelLeft;WATER_SPAWN.y=(ROWS-3)*tileH+levelTop-PLAYER_H;
   renderLevel();
 });
 
