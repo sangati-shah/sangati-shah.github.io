@@ -30,11 +30,11 @@
       height: 100%;
     }
 
-    /* ── Ground Line ── */
-    .ground-line {
+    /* ── Ground Line (segmented) ── */
+    .ground-segment {
       position: absolute;
-      bottom: 80px; left: 0;
-      width: 100%; height: 3px;
+      bottom: 80px;
+      height: 3px;
       background: var(--dn-accent, #e85d75);
       z-index: 10;
       transition: opacity 2s ease;
@@ -576,7 +576,7 @@
 
   <div class="viewport">
     <div class="world" id="world">
-      <div class="ground-line" id="ground-line"></div>
+      <div id="ground-segments"></div>
       <div id="obstacles"></div>
       <div id="bounce-pads"></div>
       <div id="speed-zones"></div>
@@ -797,6 +797,30 @@
     ];
 
     // ══════════════════════════════════════
+    // GROUND GAPS — where the ground drops away (must ride moving platforms)
+    // ══════════════════════════════════════
+    const GROUND_GAPS = [
+      // Section 1
+      { start: 1760, end: 2100, respawnX: 1720 },
+      // Section 2
+      { start: 3580, end: 3900, respawnX: 3540 },
+      { start: 4640, end: 5030, respawnX: 4600 },
+      // Section 3
+      { start: 5850, end: 6230, respawnX: 5810 },
+      { start: 7070, end: 7420, respawnX: 7030 },
+      // Section 4
+      { start: 9050, end: 9310, respawnX: 9010 },
+      { start: 9890, end: 10580, respawnX: 9850 },  // big gap — 3 moving platforms
+    ];
+
+    function isOverGap(px) {
+      for (const g of GROUND_GAPS) {
+        if (px + SPRITE_W > g.start && px < g.end) return g;
+      }
+      return null;
+    }
+
+    // ══════════════════════════════════════
     // ADVENTURE BOXES
     // ══════════════════════════════════════
     const ADVENTURES = [
@@ -889,6 +913,32 @@
         baseX: m.x, x: m.x, y: lineY - m.elevation - m.h, w: m.w, h: m.h,
         range: m.range, speed: m.speed, phase: 0
       }));
+    }
+
+    function renderGroundSegments() {
+      const container = document.getElementById('ground-segments');
+      container.innerHTML = '';
+      // Sort gaps by start position
+      const sorted = [...GROUND_GAPS].sort((a, b) => a.start - b.start);
+      let cursor = 0;
+      for (const gap of sorted) {
+        if (gap.start > cursor) {
+          const seg = document.createElement('div');
+          seg.className = 'ground-segment';
+          seg.style.left = cursor + 'px';
+          seg.style.width = (gap.start - cursor) + 'px';
+          container.appendChild(seg);
+        }
+        cursor = gap.end;
+      }
+      // Final segment after last gap
+      if (cursor < WORLD_W) {
+        const seg = document.createElement('div');
+        seg.className = 'ground-segment';
+        seg.style.left = cursor + 'px';
+        seg.style.width = (WORLD_W - cursor) + 'px';
+        container.appendChild(seg);
+      }
     }
 
     function renderObstacles() {
@@ -1447,7 +1497,19 @@
       player.y += player.vy;
 
       const gy = groundY();
-      if (player.y >= gy) { player.y = gy; player.vy = 0; player.jumping = false; }
+      const gap = isOverGap(player.x);
+      if (gap) {
+        // Over a gap — no ground, check if fallen off screen
+        if (player.y > window.innerHeight + 50) {
+          player.x = gap.respawnX;
+          player.y = gy;
+          player.vy = 0;
+          player.vx = 0;
+          player.jumping = false;
+        }
+      } else {
+        if (player.y >= gy) { player.y = gy; player.vy = 0; player.jumping = false; }
+      }
       if (player.x < 0) player.x = 0;
       if (player.x > WORLD_W - SPRITE_W) player.x = WORLD_W - SPRITE_W;
 
@@ -1623,6 +1685,7 @@
     renderSpeedZones();
     renderHearts();
     renderMovingPlatforms();
+    renderGroundSegments();
     renderAdventureBoxes();
     setupNavMenu();
 
@@ -1699,6 +1762,7 @@
       renderSpeedZones();
       renderHearts();
       renderMovingPlatforms();
+      renderGroundSegments();
       renderAdventureBoxes();
       player.y = Math.min(player.y, groundY());
     });
