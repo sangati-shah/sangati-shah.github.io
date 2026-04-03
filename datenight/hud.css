@@ -121,7 +121,15 @@ body.dark-hud .hud-name {
 }
 
 /* ── Responsive ── */
-@media (max-width: 400px) {
-  .hud-name { max-width: 50px; }
+@media (max-width: 500px) {
   .game-hud { padding: 0.6rem 0.6rem; }
+  .hud-player {
+    padding: 0.35rem 0.55rem;
+    gap: 0.35rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .hud-name { max-width: 50px; font-size: 0.7rem; }
+  .hud-pts { font-size: 0.6rem; }
 }

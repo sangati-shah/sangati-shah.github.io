@@ -274,8 +274,29 @@ body {
 
 /* ── Responsive ── */
 @media (max-width: 500px) {
+  .games-wrapper {
+    padding: 2.5rem 0.8rem 1.5rem;
+  }
+
+  .back-btn {
+    top: 1rem;
+    left: 1rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .game-tab {
+    font-size: 1.1rem;
+    padding: 0.45em 1.1em;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
   .ttt-board {
-    width: 240px;
+    width: min(240px, 80vw);
   }
 
   .ttt-cell {
@@ -283,8 +304,38 @@ body {
   }
 
   .c4-board {
-    max-width: 320px;
+    max-width: min(320px, 90vw);
     padding: 8px;
     gap: 3px;
+  }
+
+  .reset-btn {
+    min-height: 44px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .game-tabs {
+    gap: 0.3rem;
+  }
+
+  .game-tab {
+    font-size: 1rem;
+    padding: 0.4em 0.9em;
+  }
+
+  .ttt-board {
+    width: 200px;
+  }
+
+  .ttt-cell {
+    font-size: 1.8rem;
+  }
+
+  .c4-board {
+    max-width: 280px;
+    gap: 2px;
+    padding: 6px;
   }
 }

@@ -371,8 +371,14 @@
     /* -- Responsive -- */
     @media (max-width: 420px) {
       .pad-grid { gap: 0.4rem; max-width: 300px; }
-      .music-app { gap: 0.8rem; }
+      .music-app { gap: 0.8rem; padding: 0 0.6rem; }
       .beat-dot { width: 34px; height: 34px; }
+      .top-bar { padding: 0.8rem 0.8rem 0; }
+      .top-bar a, .top-bar span { min-height: 44px; display: flex; align-items: center; }
+    }
+    @media (max-width: 360px) {
+      .pad-grid { max-width: 260px; gap: 0.3rem; }
+      .beat-dot { width: 28px; height: 28px; font-size: 0.65rem; }
     }
     @media (min-height: 800px) {
       .pad-grid { gap: 0.9rem; }
