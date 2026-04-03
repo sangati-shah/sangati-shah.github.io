@@ -14,13 +14,24 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #111;
+      background: #0a0a0f;
       color: #f0e6d3;
       overflow: hidden;
       height: 100dvh;
       width: 100vw;
       user-select: none;
       -webkit-user-select: none;
+    }
+
+    /* Temple background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(255,80,20,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(20,80,255,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(30,25,20,1) 0%, rgba(10,10,15,1) 100%);
+      z-index: -1;
     }
 
     .back-link {
@@ -38,85 +49,149 @@
     }
     .status-bar .pts-num { color: #d49b3c; font-weight: 600; }
 
+    /* Switch indicator */
+    .switch-hint {
+      position: fixed; top: 3rem; left: 50%; transform: translateX(-50%);
+      font-family: 'Caveat', cursive; font-size: 0.85rem;
+      color: rgba(240,230,211,0.25); z-index: 500;
+      transition: opacity 0.5s;
+      text-align: center;
+      pointer-events: none;
+    }
+    .active-indicator {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      margin-left: 0.3rem;
+    }
+    .active-fire { background: rgba(255,120,30,0.2); color: rgba(255,180,100,0.8); }
+    .active-water { background: rgba(30,120,255,0.2); color: rgba(100,180,255,0.8); }
+
     /* ---- Level Container ---- */
     #level-wrap {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      padding: 6px;
-      border-radius: 8px;
-      background: #1a1a1e;
+      padding: 4px;
+      border-radius: 6px;
+      background: #13131a;
       box-shadow:
-        0 0 0 3px #0a0a0c,
+        0 0 0 2px #0a0a0c,
+        0 0 0 4px rgba(80,60,30,0.15),
         0 8px 40px rgba(0,0,0,0.8),
-        0 0 80px rgba(0,0,0,0.4);
+        0 0 80px rgba(0,0,0,0.4),
+        inset 0 0 30px rgba(0,0,0,0.3);
     }
     #level {
       position: relative;
-      border-radius: 4px;
+      border-radius: 3px;
       overflow: hidden;
+      background: #18181f;
     }
 
-    /* Void / fall-off outside the level */
-    .level-void {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: -1;
-    }
-    .level-void::before {
+    /* Background texture for the level */
+    #level::before {
       content: '';
-      position: absolute;
-      inset: -40px;
-      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
-      border-radius: 16px;
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0px, transparent 1px, transparent 40px);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .tile {
       position: absolute;
       image-rendering: pixelated;
+      z-index: 1;
     }
 
-    /* Walls */
+    /* Walls - stone temple look */
     .tile-wall {
-      background: #2a2a2e;
-      border: 1px solid #1a1a1e;
-      box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+      background:
+        linear-gradient(135deg, #2f2a28 0%, #252220 40%, #1e1b19 60%, #2a2725 100%);
+      border: 1px solid #161412;
+      box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.04),
+        inset -1px -1px 0 rgba(0,0,0,0.3);
+    }
+    /* Add stone texture variation */
+    .tile-wall.stone-v1 {
+      background: linear-gradient(145deg, #332e2b 0%, #282422 50%, #1d1a18 100%);
+    }
+    .tile-wall.stone-v2 {
+      background: linear-gradient(160deg, #2b2826 0%, #232019 50%, #2e2a27 100%);
+    }
+    .tile-wall.stone-v3 {
+      background: linear-gradient(120deg, #302b29 0%, #1f1c1a 40%, #292624 100%);
     }
 
     /* Lava */
     .tile-lava {
-      background: linear-gradient(180deg, #ff4500, #ff6a00, #ff4500);
-      background-size: 100% 200%;
-      animation: lava-flow 1.2s ease-in-out infinite alternate;
-      box-shadow: 0 0 8px rgba(255,69,0,0.5), inset 0 0 6px rgba(255,200,0,0.3);
+      background: linear-gradient(180deg, #ff4500, #ff6a00, #e83e00, #ff5500);
+      background-size: 100% 300%;
+      animation: lava-flow 2s ease-in-out infinite alternate;
+      box-shadow:
+        0 0 12px rgba(255,69,0,0.6),
+        0 -4px 8px rgba(255,200,0,0.2),
+        inset 0 0 8px rgba(255,200,0,0.3),
+        inset 0 2px 4px rgba(255,255,100,0.15);
       border-radius: 2px;
+    }
+    .tile-lava::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 40%, rgba(255,255,100,0.2) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(255,200,50,0.15) 0%, transparent 40%);
+      animation: lava-bubble 3s ease-in-out infinite;
     }
     @keyframes lava-flow {
       0% { background-position: 0 0; }
       100% { background-position: 0 100%; }
     }
+    @keyframes lava-bubble {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
 
     /* Water */
     .tile-water {
-      background: linear-gradient(180deg, #0077be, #00b4d8, #0077be);
-      background-size: 100% 200%;
-      animation: water-flow 1.5s ease-in-out infinite alternate;
-      box-shadow: 0 0 8px rgba(0,119,190,0.4), inset 0 0 6px rgba(0,200,255,0.3);
+      background: linear-gradient(180deg, #0066aa, #0088cc, #004488, #0077bb);
+      background-size: 100% 300%;
+      animation: water-flow 2.5s ease-in-out infinite alternate;
+      box-shadow:
+        0 0 12px rgba(0,119,190,0.5),
+        0 -4px 8px rgba(0,200,255,0.15),
+        inset 0 0 8px rgba(0,200,255,0.25),
+        inset 0 2px 4px rgba(150,230,255,0.15);
       border-radius: 2px;
+    }
+    .tile-water::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 40% 30%, rgba(150,230,255,0.2) 0%, transparent 50%),
+                  radial-gradient(circle at 60% 70%, rgba(100,200,255,0.15) 0%, transparent 40%);
+      animation: water-shimmer 4s ease-in-out infinite;
     }
     @keyframes water-flow {
       0% { background-position: 0 0; }
       100% { background-position: 0 100%; }
     }
+    @keyframes water-shimmer {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
 
     /* Green goo */
     .tile-goo {
-      background: linear-gradient(180deg, #2d8a1e, #4caf50, #2d8a1e);
-      background-size: 100% 200%;
-      animation: goo-bubble 1s ease-in-out infinite alternate;
-      box-shadow: 0 0 8px rgba(76,175,80,0.5), inset 0 0 6px rgba(100,255,100,0.2);
+      background: linear-gradient(180deg, #1a6b12, #2d8a1e, #1a6b12, #3ca02e);
+      background-size: 100% 300%;
+      animation: goo-bubble 1.8s ease-in-out infinite alternate;
+      box-shadow:
+        0 0 10px rgba(76,175,80,0.5),
+        inset 0 0 8px rgba(100,255,100,0.2),
+        inset 0 2px 4px rgba(180,255,180,0.1);
       border-radius: 2px;
     }
     @keyframes goo-bubble {
@@ -124,32 +199,63 @@
       100% { background-position: 0 100%; }
     }
 
+    /* Hazard surface glow - top edge shimmer */
+    .tile-lava-surface, .tile-water-surface, .tile-goo-surface {
+      position: absolute;
+      z-index: 2;
+      pointer-events: none;
+    }
+
     /* Fire exit */
     .tile-fire-exit {
-      background: radial-gradient(ellipse at 50% 80%, rgba(255,120,30,0.6), rgba(255,60,0,0.2) 60%, transparent 80%);
-      border: 2px solid rgba(255,120,30,0.6);
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,120,30,0.5), rgba(255,60,0,0.15) 60%, transparent 85%);
+      border: 2px solid rgba(255,120,30,0.5);
       border-bottom: none;
-      border-radius: 8px 8px 0 0;
-      box-shadow: 0 0 15px rgba(255,120,30,0.4), inset 0 0 10px rgba(255,120,30,0.2);
-      animation: exit-glow-fire 1.5s ease-in-out infinite alternate;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0 0 20px rgba(255,120,30,0.3), inset 0 0 15px rgba(255,120,30,0.15);
+      animation: exit-glow-fire 2s ease-in-out infinite alternate;
+    }
+    .tile-fire-exit::after {
+      content: '';
+      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+      width: 12px; height: 18px;
+      background: radial-gradient(ellipse, rgba(255,150,50,0.8), rgba(255,80,0,0.4) 60%, transparent 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: flame-flicker 0.8s ease-in-out infinite alternate;
     }
     @keyframes exit-glow-fire {
-      0% { box-shadow: 0 0 15px rgba(255,120,30,0.4), inset 0 0 10px rgba(255,120,30,0.2); }
-      100% { box-shadow: 0 0 25px rgba(255,120,30,0.7), inset 0 0 15px rgba(255,120,30,0.4); }
+      0% { box-shadow: 0 0 20px rgba(255,120,30,0.3), inset 0 0 15px rgba(255,120,30,0.15); }
+      100% { box-shadow: 0 0 35px rgba(255,120,30,0.6), inset 0 0 20px rgba(255,120,30,0.3); }
+    }
+    @keyframes flame-flicker {
+      0% { transform: translateX(-50%) scaleY(0.9) scaleX(0.95); opacity: 0.8; }
+      100% { transform: translateX(-50%) scaleY(1.1) scaleX(1.05); opacity: 1; }
     }
 
     /* Water exit */
     .tile-water-exit {
-      background: radial-gradient(ellipse at 50% 80%, rgba(30,120,255,0.6), rgba(0,60,255,0.2) 60%, transparent 80%);
-      border: 2px solid rgba(30,120,255,0.6);
+      background: radial-gradient(ellipse at 50% 80%, rgba(30,120,255,0.5), rgba(0,60,255,0.15) 60%, transparent 85%);
+      border: 2px solid rgba(30,120,255,0.5);
       border-bottom: none;
-      border-radius: 8px 8px 0 0;
-      box-shadow: 0 0 15px rgba(30,120,255,0.4), inset 0 0 10px rgba(30,120,255,0.2);
-      animation: exit-glow-water 1.5s ease-in-out infinite alternate;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0 0 20px rgba(30,120,255,0.3), inset 0 0 15px rgba(30,120,255,0.15);
+      animation: exit-glow-water 2s ease-in-out infinite alternate;
+    }
+    .tile-water-exit::after {
+      content: '';
+      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+      width: 10px; height: 16px;
+      background: radial-gradient(ellipse, rgba(100,180,255,0.8), rgba(30,120,255,0.4) 60%, transparent 100%);
+      border-radius: 50%;
+      animation: water-drop 1.2s ease-in-out infinite;
     }
     @keyframes exit-glow-water {
-      0% { box-shadow: 0 0 15px rgba(30,120,255,0.4), inset 0 0 10px rgba(30,120,255,0.2); }
-      100% { box-shadow: 0 0 25px rgba(30,120,255,0.7), inset 0 0 15px rgba(30,120,255,0.4); }
+      0% { box-shadow: 0 0 20px rgba(30,120,255,0.3), inset 0 0 15px rgba(30,120,255,0.15); }
+      100% { box-shadow: 0 0 35px rgba(30,120,255,0.6), inset 0 0 20px rgba(30,120,255,0.3); }
+    }
+    @keyframes water-drop {
+      0%, 100% { transform: translateX(-50%) scaleY(1); opacity: 0.7; }
+      50% { transform: translateX(-50%) scaleY(1.15); opacity: 1; }
     }
 
     /* Pressure plates */
@@ -159,50 +265,112 @@
     .tile-plate::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 10%; right: 10%;
-      height: 4px;
+      bottom: 0; left: 8%; right: 8%;
+      height: 5px;
       border-radius: 2px;
-      transition: background 0.3s, box-shadow 0.3s;
+      transition: all 0.3s;
     }
     .tile-plate-a::after {
-      background: #ff9800;
-      box-shadow: 0 0 6px rgba(255,152,0,0.5);
+      background: linear-gradient(90deg, #cc7000, #ff9800, #cc7000);
+      box-shadow: 0 0 8px rgba(255,152,0,0.4);
     }
     .tile-plate-a.pressed::after {
-      background: #ffeb3b;
-      box-shadow: 0 0 12px rgba(255,235,59,0.8);
+      background: linear-gradient(90deg, #ffcc00, #ffeb3b, #ffcc00);
+      box-shadow: 0 0 16px rgba(255,235,59,0.8), 0 0 30px rgba(255,200,0,0.3);
+      height: 3px;
     }
     .tile-plate-b::after {
-      background: #2196f3;
-      box-shadow: 0 0 6px rgba(33,150,243,0.5);
+      background: linear-gradient(90deg, #1565c0, #2196f3, #1565c0);
+      box-shadow: 0 0 8px rgba(33,150,243,0.4);
     }
     .tile-plate-b.pressed::after {
-      background: #80d8ff;
-      box-shadow: 0 0 12px rgba(128,216,255,0.8);
+      background: linear-gradient(90deg, #40c4ff, #80d8ff, #40c4ff);
+      box-shadow: 0 0 16px rgba(128,216,255,0.8), 0 0 30px rgba(100,200,255,0.3);
+      height: 3px;
     }
 
     /* Gates */
     .tile-gate {
-      transition: opacity 0.3s, background 0.3s;
+      transition: opacity 0.4s, transform 0.4s;
+      transform-origin: top center;
     }
     .tile-gate-a {
-      background: repeating-linear-gradient(45deg, #ff9800, #ff9800 3px, #e65100 3px, #e65100 6px);
-      opacity: 0.8;
-      box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+      background: repeating-linear-gradient(0deg, #ff9800 0px, #ff9800 3px, #e65100 3px, #e65100 6px);
+      opacity: 0.85;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.4), 0 0 8px rgba(255,152,0,0.2);
     }
     .tile-gate-a.open {
       opacity: 0;
+      transform: scaleY(0);
       pointer-events: none;
     }
     .tile-gate-b {
-      background: repeating-linear-gradient(45deg, #2196f3, #2196f3 3px, #0d47a1 3px, #0d47a1 6px);
-      opacity: 0.8;
-      box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+      background: repeating-linear-gradient(0deg, #2196f3 0px, #2196f3 3px, #0d47a1 3px, #0d47a1 6px);
+      opacity: 0.85;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.4), 0 0 8px rgba(33,150,243,0.2);
     }
     .tile-gate-b.open {
       opacity: 0;
+      transform: scaleY(0);
       pointer-events: none;
     }
+
+    /* Gems */
+    .gem {
+      position: absolute;
+      z-index: 50;
+      pointer-events: none;
+    }
+    .gem-inner {
+      width: 100%; height: 100%;
+      position: relative;
+    }
+    .gem-fire .gem-inner {
+      background: radial-gradient(circle, #ffcc00, #ff8800, #cc4400);
+      clip-path: polygon(50% 0%, 85% 35%, 100% 50%, 85% 65%, 50% 100%, 15% 65%, 0% 50%, 15% 35%);
+      box-shadow: 0 0 10px rgba(255,150,0,0.6);
+      animation: gem-float 2s ease-in-out infinite, gem-glow-fire 1.5s ease-in-out infinite alternate;
+    }
+    .gem-water .gem-inner {
+      background: radial-gradient(circle, #80d8ff, #2196f3, #0d47a1);
+      clip-path: polygon(50% 0%, 85% 35%, 100% 50%, 85% 65%, 50% 100%, 15% 65%, 0% 50%, 15% 35%);
+      animation: gem-float 2s ease-in-out infinite, gem-glow-water 1.5s ease-in-out infinite alternate;
+    }
+    .gem-inner::after {
+      content: '';
+      position: absolute; top: 15%; left: 25%;
+      width: 30%; height: 25%;
+      background: rgba(255,255,255,0.5);
+      border-radius: 50%;
+      transform: rotate(-30deg);
+    }
+    @keyframes gem-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    @keyframes gem-glow-fire {
+      0% { filter: drop-shadow(0 0 4px rgba(255,150,0,0.4)); }
+      100% { filter: drop-shadow(0 0 8px rgba(255,150,0,0.8)); }
+    }
+    @keyframes gem-glow-water {
+      0% { filter: drop-shadow(0 0 4px rgba(33,150,243,0.4)); }
+      100% { filter: drop-shadow(0 0 8px rgba(33,150,243,0.8)); }
+    }
+    .gem.collected {
+      transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+      transform: scale(1.5);
+      opacity: 0;
+    }
+
+    /* Gem counter */
+    .gem-counter {
+      position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 1.2rem; z-index: 500;
+      font-family: 'Caveat', cursive; font-size: 0.9rem;
+    }
+    .gem-counter-fire { color: rgba(255,180,100,0.6); }
+    .gem-counter-water { color: rgba(100,180,255,0.6); }
+    .gem-counter span { font-weight: 600; }
 
     /* ---- Player Sprites ---- */
     .player {
@@ -249,10 +417,21 @@
     .player.facing-left .player-inner { transform: scaleX(-1); }
 
     .player-fire {
-      filter: drop-shadow(0 0 8px rgba(255,120,30,0.5));
+      filter: drop-shadow(0 0 8px rgba(255,120,30,0.4));
     }
     .player-water {
-      filter: drop-shadow(0 0 8px rgba(30,120,255,0.5));
+      filter: drop-shadow(0 0 8px rgba(30,120,255,0.4));
+    }
+
+    /* Active player highlight (solo mode) */
+    .player.active-player {
+      filter: drop-shadow(0 0 12px rgba(255,255,255,0.3));
+    }
+    .player-fire.active-player {
+      filter: drop-shadow(0 0 12px rgba(255,150,50,0.7));
+    }
+    .player-water.active-player {
+      filter: drop-shadow(0 0 12px rgba(50,150,255,0.7));
     }
 
     .player-label {
@@ -348,12 +527,16 @@
     }
     .ctrl-btn:active { background: rgba(255,255,255,0.2); }
     .ctrl-btn.jump-btn { width: 56px; height: 56px; font-size: 0.7rem; font-family: 'Caveat', cursive; }
+    .ctrl-btn.switch-btn {
+      width: 56px; height: 56px; font-size: 0.6rem; font-family: 'Caveat', cursive;
+      background: rgba(255,255,255,0.12);
+    }
     @media (pointer: coarse) { .mobile-controls { display: flex; } }
 
     /* ---- Waiting overlay ---- */
     .waiting-overlay {
       position: fixed; inset: 0;
-      background: rgba(17,17,17,0.92);
+      background: rgba(10,10,15,0.95);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       z-index: 800; gap: 1rem;
@@ -377,17 +560,52 @@
       50% { content: '..'; }
       75% { content: '...'; }
     }
+    .solo-btn {
+      margin-top: 0.5rem;
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: rgba(240,230,211,0.5); background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.5rem 1.5rem; border-radius: 16px;
+      cursor: pointer; transition: all 0.3s;
+    }
+    .solo-btn:hover {
+      color: rgba(240,230,211,0.8);
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
 
     /* ---- Element labels on players ---- */
     .element-icon {
       position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
       font-size: 0.7rem; pointer-events: none;
     }
+
+    /* Ambient particles */
+    .ambient-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      animation: ambient-rise linear infinite;
+    }
+    @keyframes ambient-rise {
+      0% { opacity: 0; transform: translateY(0) scale(0.5); }
+      20% { opacity: 0.6; }
+      80% { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-30px) scale(0); }
+    }
   </style>
 </head>
 <body class="dark-hud">
   <a href="../../world/" class="back-link">&larr; back to map</a>
   <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
+  <div class="switch-hint" id="switch-hint"></div>
+
+  <div class="gem-counter" id="gem-counter">
+    <div class="gem-counter-fire" id="gem-counter-fire"></div>
+    <div class="gem-counter-water" id="gem-counter-water"></div>
+  </div>
 
   <div id="level-wrap"><div id="level"></div></div>
 
@@ -429,6 +647,7 @@
   <div class="waiting-overlay" id="waiting-overlay">
     <div class="waiting-title">elements</div>
     <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + water = unstoppable</div>
+    <button class="solo-btn" id="solo-btn">play solo</button>
   </div>
 
   <!-- Mobile controls -->
@@ -438,6 +657,7 @@
       <button class="ctrl-btn" id="btn-right">&rarr;</button>
     </div>
     <div class="ctrl-group">
+      <button class="ctrl-btn switch-btn" id="btn-switch">switch</button>
       <button class="ctrl-btn jump-btn" id="btn-jump">jump</button>
     </div>
   </div>
@@ -451,34 +671,50 @@
 const AIR = 0, WALL = 1, LAVA = 2, WATER = 3, GOO = 4;
 const FIRE_EXIT = 5, WATER_EXIT = 6;
 const PLATE_A = 7, GATE_A = 8, PLATE_B = 9, GATE_B = 10;
+const GEM_FIRE = 11, GEM_WATER = 12;
 
-// ---- Level map (20 wide x 14 tall) ----
-// Cooperative design:
-// - Both start bottom-left
-// - Fire must press plate A (left-center) so water can pass gate A (over a lava section)
-// - Water must press plate B (right-center) so fire can pass gate B (over a water section)
-// - Lava pool blocks water's direct path, water pool blocks fire's direct path
-// - Green goo pit in the center bottom as a hazard for both
-// - Fire exit top-right, water exit top-right offset
+// ---- Level map (24 wide x 16 tall) ----
+// Much more intricate Fireboy & Watergirl level:
+// - Fire starts bottom-left, Water starts bottom-right
+// - Multi-path design with platforms, hazards, and cooperative mechanics
+// - Gems scattered for bonus points
+// - Pressure plate cooperation required
+// - Fire exit top-left area, Water exit top-right area
 const LEVEL = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 0, 0, 0, 9, 1, 1, 1, 1, 7, 0, 0, 0, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 2, 2, 4, 4, 4, 3, 3, 0, 0, 0, 3, 3, 2, 2, 0, 1],
-  [1, 0, 0, 0, 2, 2, 4, 4, 4, 3, 3, 0, 0, 0, 3, 3, 2, 2, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 6, 0, 0, 1],
+  [1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 1, 0,11, 0, 0, 8, 0, 0,10, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12, 0, 1],
+  [1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0,11, 0,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1],
+  [1, 0,11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12, 0, 0, 1],
+  [1, 1, 1, 1, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-const COLS = LEVEL[0].length; // 20
-const ROWS = LEVEL.length;    // 14
+const COLS = LEVEL[0].length; // 24
+const ROWS = LEVEL.length;    // 16
+
+// ---- Gem positions (extracted from level) ----
+const gems = [];
+for (let r = 0; r < ROWS; r++) {
+  for (let c = 0; c < COLS; c++) {
+    if (LEVEL[r][c] === GEM_FIRE || LEVEL[r][c] === GEM_WATER) {
+      gems.push({ r, c, type: LEVEL[r][c] === GEM_FIRE ? 'fire' : 'water', collected: false });
+      LEVEL[r][c] = AIR; // Clear from collision map
+    }
+  }
+}
+
+let gemsCollectedFire = 0;
+let gemsCollectedWater = 0;
 
 // ---- Identity ----
 const isHost = sessionStorage.getItem('datenight-host') === '1';
@@ -487,6 +723,10 @@ const roomCode = sessionStorage.getItem('datenight-room');
 // Host is fire, guest is water
 const myRole = isHost ? 'fire' : 'water';
 const partnerRole = isHost ? 'water' : 'fire';
+
+// ---- Solo mode ----
+let soloMode = false;
+let soloActiveRole = 'fire'; // Which character the solo player controls
 
 // ---- Character data ----
 const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
@@ -520,23 +760,21 @@ document.getElementById('pts-num').textContent = getPoints();
 let tileW, tileH, levelLeft, levelTop;
 
 function calcTileSize() {
-  const pad = 80; // space for HUD and controls
-  const sidePad = 80; // breathing room on sides
+  const pad = 80;
+  const sidePad = 40;
   const availW = window.innerWidth - sidePad * 2;
   const availH = window.innerHeight - pad * 2;
   tileW = Math.floor(availW / COLS);
   tileH = Math.floor(availH / ROWS);
-  // Keep square-ish tiles
   const ts = Math.min(tileW, tileH);
   tileW = ts;
   tileH = ts;
-  // levelLeft/levelTop computed in renderLevel after sizing
 }
 calcTileSize();
 
 // ---- Render level ----
 const levelEl = document.getElementById('level');
-const tileEls = []; // 2D array of tile elements
+const tileEls = [];
 let gateAEls = [];
 let gateBEls = [];
 let plateAEls = [];
@@ -549,9 +787,6 @@ function renderLevel() {
   levelEl.style.width = w + 'px';
   levelEl.style.height = h + 'px';
 
-  // Position the wrapper (centered via CSS), update levelLeft/Top for player positioning
-  const wrapEl = document.getElementById('level-wrap');
-  // levelLeft/levelTop are used for absolute player sprite positioning on the page
   levelLeft = Math.floor((window.innerWidth - w) / 2);
   levelTop = Math.floor((window.innerHeight - h) / 2);
 
@@ -560,6 +795,9 @@ function renderLevel() {
   gateBEls = [];
   plateAEls = [];
   plateBEls = [];
+
+  // Stone texture variation seeded by position
+  const stoneVariants = ['', 'stone-v1', 'stone-v2', 'stone-v3'];
 
   for (let r = 0; r < ROWS; r++) {
     tileEls[r] = [];
@@ -575,7 +813,12 @@ function renderLevel() {
       el.style.height = tileH + 'px';
 
       switch (v) {
-        case WALL: el.classList.add('tile-wall'); break;
+        case WALL:
+          el.classList.add('tile-wall');
+          // Add stone texture variation
+          const variant = stoneVariants[(r * 7 + c * 13) % stoneVariants.length];
+          if (variant) el.classList.add(variant);
+          break;
         case LAVA: el.classList.add('tile-lava'); break;
         case WATER: el.classList.add('tile-water'); break;
         case GOO: el.classList.add('tile-goo'); break;
@@ -611,6 +854,97 @@ function renderLevel() {
       tileEls[r][c] = el;
     }
   }
+
+  // Render gems
+  renderGems();
+
+  // Add ambient particles near lava and water
+  addAmbientParticles();
+}
+
+// ---- Render gems ----
+let gemEls = [];
+function renderGems() {
+  gemEls.forEach(el => el.remove());
+  gemEls = [];
+
+  const gemSize = Math.max(10, tileW * 0.4);
+  gems.forEach((gem, i) => {
+    if (gem.collected) return;
+    const el = document.createElement('div');
+    el.className = 'gem gem-' + gem.type;
+    el.id = 'gem-' + i;
+    el.style.left = (gem.c * tileW + tileW / 2 - gemSize / 2) + 'px';
+    el.style.top = (gem.r * tileH + tileH / 2 - gemSize / 2) + 'px';
+    el.style.width = gemSize + 'px';
+    el.style.height = gemSize + 'px';
+    el.innerHTML = '<div class="gem-inner"></div>';
+    el.style.animationDelay = (i * 0.3) + 's';
+    levelEl.appendChild(el);
+    gemEls.push(el);
+  });
+
+  updateGemCounter();
+}
+
+function updateGemCounter() {
+  const totalFire = gems.filter(g => g.type === 'fire').length;
+  const totalWater = gems.filter(g => g.type === 'water').length;
+  document.getElementById('gem-counter-fire').innerHTML =
+    '<span style="color:#ff9800">&#9670;</span> ' + gemsCollectedFire + '/' + totalFire;
+  document.getElementById('gem-counter-water').innerHTML =
+    '<span style="color:#2196f3">&#9670;</span> ' + gemsCollectedWater + '/' + totalWater;
+}
+
+function collectGem(gemIndex) {
+  const gem = gems[gemIndex];
+  if (gem.collected) return;
+  gem.collected = true;
+
+  if (gem.type === 'fire') gemsCollectedFire++;
+  else gemsCollectedWater++;
+
+  const el = document.getElementById('gem-' + gemIndex);
+  if (el) {
+    el.classList.add('collected');
+    setTimeout(() => el.remove(), 300);
+  }
+  updateGemCounter();
+  addPoints(10);
+}
+
+// ---- Ambient particles ----
+function addAmbientParticles() {
+  // Add rising particles above lava and water tiles
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const v = LEVEL[r][c];
+      if (v !== LAVA && v !== WATER) continue;
+      // Only add particles on the top surface
+      if (r > 0 && (LEVEL[r-1][c] === LAVA || LEVEL[r-1][c] === WATER)) continue;
+
+      // 50% chance to add particle per surface tile
+      if (Math.random() > 0.5) continue;
+
+      const particle = document.createElement('div');
+      particle.className = 'ambient-particle';
+      const size = 2 + Math.random() * 3;
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = (c * tileW + Math.random() * tileW) + 'px';
+      particle.style.top = (r * tileH - 2) + 'px';
+      particle.style.animationDuration = (2 + Math.random() * 3) + 's';
+      particle.style.animationDelay = (Math.random() * 3) + 's';
+
+      if (v === LAVA) {
+        particle.style.background = `rgba(255,${100 + Math.random()*100|0},0,0.6)`;
+      } else {
+        particle.style.background = `rgba(0,${100 + Math.random()*100|0},255,0.4)`;
+      }
+
+      levelEl.appendChild(particle);
+    }
+  }
 }
 
 renderLevel();
@@ -641,12 +975,12 @@ applyCharColors();
 const GRAVITY = 0.6;
 const JUMP_VEL = -10;
 const MOVE_SPEED = 4;
-const PLAYER_W = 20; // collision box width
-const PLAYER_H = 36; // collision box height
+const PLAYER_W = 20;
+const PLAYER_H = 36;
 
-// Spawn positions (pixel coords, bottom-left of level)
+// Spawn positions
 const FIRE_SPAWN = { x: 1.5 * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
-const WATER_SPAWN = { x: 2.5 * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
+const WATER_SPAWN = { x: (COLS - 2.5) * tileW + levelLeft, y: (ROWS - 2) * tileH + levelTop - PLAYER_H };
 
 const players = {
   fire: { x: FIRE_SPAWN.x, y: FIRE_SPAWN.y, vx: 0, vy: 0, onGround: false, alive: true, onExit: false, facing: 'right' },
@@ -699,7 +1033,6 @@ function isExitFor(r, c, role) {
 }
 
 function isOnPlate(px, py, pw, ph, plateType) {
-  // Check if player's feet overlap with a plate tile
   const footY = py + ph;
   const cx = px + pw / 2;
   for (let r = 0; r < ROWS; r++) {
@@ -707,7 +1040,6 @@ function isOnPlate(px, py, pw, ph, plateType) {
       if (LEVEL[r][c] !== plateType) continue;
       const tx = c * tileW + levelLeft;
       const ty = r * tileH + levelTop;
-      // Player standing on the plate tile (feet on top of it or inside it)
       if (cx > tx && cx < tx + tileW &&
           footY >= ty && footY <= ty + tileH + 2) {
         return true;
@@ -717,27 +1049,41 @@ function isOnPlate(px, py, pw, ph, plateType) {
   return false;
 }
 
+// ---- Gem collision ----
+function checkGemCollection(px, py, pw, ph, role) {
+  const cx = px + pw / 2;
+  const cy = py + ph / 2;
+  gems.forEach((gem, i) => {
+    if (gem.collected) return;
+    // Fire collects fire gems, water collects water gems
+    if (gem.type !== role) return;
+    const gx = gem.c * tileW + tileW / 2 + levelLeft;
+    const gy = gem.r * tileH + tileH / 2 + levelTop;
+    const dist = Math.hypot(cx - gx, cy - gy);
+    if (dist < tileW * 0.7) {
+      collectGem(i);
+    }
+  });
+}
+
 // ---- Physics update for one player ----
 function updatePlayer(p, role) {
   if (!p.alive) return;
 
   // Apply gravity
   p.vy += GRAVITY;
-  if (p.vy > 14) p.vy = 14; // terminal velocity
+  if (p.vy > 14) p.vy = 14;
 
-  // Horizontal movement
   let nx = p.x + p.vx;
   let ny = p.y + p.vy;
 
   // Horizontal collision
   if (p.vx !== 0) {
-    // Check left/right edges
     const testX = p.vx > 0 ? nx + PLAYER_W : nx;
     const topR = worldToTile(testX, p.y + 2);
     const midR = worldToTile(testX, p.y + PLAYER_H / 2);
     const botR = worldToTile(testX, p.y + PLAYER_H - 2);
     if (isSolid(topR.r, topR.c, role) || isSolid(midR.r, midR.c, role) || isSolid(botR.r, botR.c, role)) {
-      // Snap to tile edge
       if (p.vx > 0) {
         nx = Math.floor((nx + PLAYER_W - levelLeft) / tileW) * tileW + levelLeft - PLAYER_W;
       } else {
@@ -751,7 +1097,6 @@ function updatePlayer(p, role) {
   // Vertical collision
   p.onGround = false;
   if (p.vy >= 0) {
-    // Falling - check below
     const footY = ny + PLAYER_H;
     const leftC = worldToTile(p.x + 2, footY);
     const rightC = worldToTile(p.x + PLAYER_W - 2, footY);
@@ -762,7 +1107,6 @@ function updatePlayer(p, role) {
       p.onGround = true;
     }
   } else {
-    // Rising - check above
     const headY = ny;
     const leftC = worldToTile(p.x + 2, headY);
     const rightC = worldToTile(p.x + PLAYER_W - 2, headY);
@@ -774,9 +1118,8 @@ function updatePlayer(p, role) {
   }
   p.y = ny;
 
-  // Hazard check - check center and feet
+  // Hazard check
   const cx = p.x + PLAYER_W / 2;
-  const fy = p.y + PLAYER_H;
   const checks = [
     worldToTile(cx, p.y + PLAYER_H - 4),
     worldToTile(p.x + 2, p.y + PLAYER_H - 4),
@@ -790,21 +1133,16 @@ function updatePlayer(p, role) {
     }
   }
 
+  // Gem collection
+  checkGemCollection(p.x, p.y, PLAYER_W, PLAYER_H, role);
+
   // Exit check
   const exitCheck = worldToTile(cx, p.y + PLAYER_H / 2);
   p.onExit = isExitFor(exitCheck.r, exitCheck.c, role);
 
   // Plate checks
-  if (isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_A)) {
-    p._onPlateA = true;
-  } else {
-    p._onPlateA = false;
-  }
-  if (isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_B)) {
-    p._onPlateB = true;
-  } else {
-    p._onPlateB = false;
-  }
+  p._onPlateA = isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_A);
+  p._onPlateB = isOnPlate(p.x, p.y, PLAYER_W, PLAYER_H, PLATE_B);
 }
 
 function killPlayer(role) {
@@ -817,7 +1155,6 @@ function killPlayer(role) {
 
   setTimeout(() => {
     el.classList.remove('dying');
-    // Respawn
     const spawn = role === 'fire' ? FIRE_SPAWN : WATER_SPAWN;
     p.x = spawn.x;
     p.y = spawn.y;
@@ -830,7 +1167,7 @@ function killPlayer(role) {
     el.classList.add('respawning');
     setTimeout(() => el.classList.remove('respawning'), 300);
 
-    if (role === myRole) {
+    if (soloMode || role === myRole) {
       attempts++;
     }
   }, 450);
@@ -846,22 +1183,22 @@ function renderPlayers() {
     el.style.width = PLAYER_W + 'px';
     el.style.height = PLAYER_H + 'px';
 
-    // Walking class
     const isMoving = Math.abs(p.vx) > 0.5 && p.onGround;
     el.classList.toggle('walking', isMoving);
     el.classList.toggle('jumping', !p.onGround);
 
-    // Facing
     if (p.vx > 0.5) { p.facing = 'right'; el.classList.remove('facing-left'); }
     else if (p.vx < -0.5) { p.facing = 'left'; el.classList.add('facing-left'); }
+
+    // Solo mode: highlight active player
+    if (soloMode) {
+      el.classList.toggle('active-player', role === soloActiveRole);
+    }
   });
 }
 
 // ---- Gate visuals ----
 function updateGates() {
-  const wasAOpen = gateAOpen;
-  const wasBOpen = gateBOpen;
-
   gateAOpen = players.fire._onPlateA || players.water._onPlateA;
   gateBOpen = players.fire._onPlateB || players.water._onPlateB;
 
@@ -876,9 +1213,12 @@ function checkVictory() {
   if (won) return;
   if (players.fire.onExit && players.water.onExit) {
     won = true;
+    // Bonus for gems
+    const gemBonus = (gemsCollectedFire + gemsCollectedWater) * 5;
     let pts = 100;
     if (attempts === 1) pts = 70;
     else if (attempts >= 2) pts = 50;
+    pts += gemBonus;
     addPoints(pts);
     markCompleted('elements');
 
@@ -891,19 +1231,65 @@ function checkVictory() {
   }
 }
 
+// ---- Solo mode switching ----
+function switchSoloCharacter() {
+  if (!soloMode) return;
+  soloActiveRole = soloActiveRole === 'fire' ? 'water' : 'fire';
+  updateSwitchHint();
+}
+
+function updateSwitchHint() {
+  const hint = document.getElementById('switch-hint');
+  if (soloMode) {
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    const label = soloActiveRole === 'fire' ? 'fire' : 'water';
+    const cls = soloActiveRole === 'fire' ? 'active-fire' : 'active-water';
+    const switchKey = isMobile ? 'tap switch' : 'press tab to switch';
+    hint.innerHTML = switchKey + ' <span class="active-indicator ' + cls + '">' + label + '</span>';
+  } else {
+    hint.innerHTML = '';
+  }
+}
+
+// ---- Enter solo mode ----
+function enterSoloMode() {
+  soloMode = true;
+  soloActiveRole = 'fire';
+  partnerConnected = true;
+  document.getElementById('waiting-overlay').classList.add('hidden');
+  updateSwitchHint();
+}
+
 // ---- Main game loop ----
 function gameLoop() {
   if (won) { renderPlayers(); requestAnimationFrame(gameLoop); return; }
 
-  // Apply input to my player
-  const me = players[myRole];
-  if (me.alive) {
-    me.vx = 0;
-    if (keys.left) me.vx = -MOVE_SPEED;
-    if (keys.right) me.vx = MOVE_SPEED;
-    if (keys.up && me.onGround) {
-      me.vy = JUMP_VEL;
-      me.onGround = false;
+  if (soloMode) {
+    // In solo mode, control the active character
+    const me = players[soloActiveRole];
+    if (me.alive) {
+      me.vx = 0;
+      if (keys.left) me.vx = -MOVE_SPEED;
+      if (keys.right) me.vx = MOVE_SPEED;
+      if (keys.up && me.onGround) {
+        me.vy = JUMP_VEL;
+        me.onGround = false;
+      }
+    }
+    // Inactive character stays still
+    const other = players[soloActiveRole === 'fire' ? 'water' : 'fire'];
+    if (other.alive) other.vx = 0;
+  } else {
+    // Multiplayer: control my assigned role
+    const me = players[myRole];
+    if (me.alive) {
+      me.vx = 0;
+      if (keys.left) me.vx = -MOVE_SPEED;
+      if (keys.right) me.vx = MOVE_SPEED;
+      if (keys.up && me.onGround) {
+        me.vy = JUMP_VEL;
+        me.onGround = false;
+      }
     }
   }
 
@@ -920,8 +1306,8 @@ function gameLoop() {
   // Victory
   checkVictory();
 
-  // Send my position to partner
-  sendMyState();
+  // Send my position to partner (multiplayer only)
+  if (!soloMode) sendMyState();
 
   requestAnimationFrame(gameLoop);
 }
@@ -931,6 +1317,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { keys.left = true; e.preventDefault(); }
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { keys.right = true; e.preventDefault(); }
   if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') { keys.up = true; e.preventDefault(); }
+  if (e.key === 'Tab') { e.preventDefault(); switchSoloCharacter(); }
 });
 document.addEventListener('keyup', e => {
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
@@ -943,6 +1330,7 @@ function setupMobile() {
   const btnL = document.getElementById('btn-left');
   const btnR = document.getElementById('btn-right');
   const btnJ = document.getElementById('btn-jump');
+  const btnS = document.getElementById('btn-switch');
 
   function addTouch(btn, key) {
     btn.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = true; }, { passive: false });
@@ -956,8 +1344,17 @@ function setupMobile() {
   addTouch(btnL, 'left');
   addTouch(btnR, 'right');
   addTouch(btnJ, 'up');
+
+  // Switch button
+  btnS.addEventListener('touchstart', e => { e.preventDefault(); switchSoloCharacter(); }, { passive: false });
+  btnS.addEventListener('mousedown', e => { e.preventDefault(); switchSoloCharacter(); });
 }
 setupMobile();
+
+// ---- Solo button ----
+document.getElementById('solo-btn').addEventListener('click', () => {
+  enterSoloMode();
+});
 
 // ---- PeerJS ----
 let peer = null, conn = null;
@@ -968,7 +1365,7 @@ function sendPeerData(data) { if (conn && conn.open) conn.send(data); }
 
 function sendMyState() {
   sendThrottle++;
-  if (sendThrottle % 2 !== 0) return; // Send every other frame
+  if (sendThrottle % 2 !== 0) return;
   const me = players[myRole];
   sendPeerData({
     type: 'state',
@@ -986,6 +1383,11 @@ function sendMyState() {
 
 function handlePeerData(data) {
   if (data.type === 'state') {
+    // Partner connected - exit solo mode if we were in it
+    if (soloMode) {
+      soloMode = false;
+      document.getElementById('switch-hint').innerHTML = '';
+    }
     const p = players[partnerRole];
     p.x = data.x;
     p.y = data.y;
@@ -1010,14 +1412,23 @@ function handlePeerData(data) {
     partnerChar = { ...DEFAULT_PARTNER, ...data.char };
     if (window.hudUpdatePartner) window.hudUpdatePartner(data.char);
     applyCharColors();
+  } else if (data.type === 'gem-collected') {
+    const gem = gems[data.index];
+    if (gem && !gem.collected) {
+      gem.collected = true;
+      if (gem.type === 'fire') gemsCollectedFire++;
+      else gemsCollectedWater++;
+      const el = document.getElementById('gem-' + data.index);
+      if (el) { el.classList.add('collected'); setTimeout(() => el.remove(), 300); }
+      updateGemCounter();
+    }
   }
 }
 
 function setupPeer() {
   if (!roomCode) {
-    // No room code - play solo (control both characters for testing)
-    partnerConnected = true;
-    document.getElementById('waiting-overlay').classList.add('hidden');
+    // No room code - go straight to solo mode
+    enterSoloMode();
     return;
   }
 
@@ -1027,10 +1438,11 @@ function setupPeer() {
       peer.on('connection', c => {
         conn = c;
         partnerConnected = true;
+        soloMode = false;
         document.getElementById('waiting-overlay').classList.add('hidden');
+        document.getElementById('switch-hint').innerHTML = '';
         c.on('data', handlePeerData);
         c.on('close', () => { conn = null; });
-        // Send our character
         sendPeerData({ type: 'character', char: myChar });
       });
     });
@@ -1048,9 +1460,10 @@ function tryConnect(attempt) {
   c.on('open', () => {
     conn = c;
     partnerConnected = true;
+    soloMode = false;
     document.getElementById('waiting-overlay').classList.add('hidden');
+    document.getElementById('switch-hint').innerHTML = '';
     c.on('data', handlePeerData);
-    // Send our character
     sendPeerData({ type: 'character', char: myChar });
   });
   c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
@@ -1059,10 +1472,9 @@ function tryConnect(attempt) {
 // ---- Resize handler ----
 window.addEventListener('resize', () => {
   calcTileSize();
-  // Recalculate spawn positions
   FIRE_SPAWN.x = 1.5 * tileW + levelLeft;
   FIRE_SPAWN.y = (ROWS - 2) * tileH + levelTop - PLAYER_H;
-  WATER_SPAWN.x = 2.5 * tileW + levelLeft;
+  WATER_SPAWN.x = (COLS - 2.5) * tileW + levelLeft;
   WATER_SPAWN.y = (ROWS - 2) * tileH + levelTop - PLAYER_H;
   renderLevel();
 });
@@ -1070,7 +1482,7 @@ window.addEventListener('resize', () => {
 // ---- Init ----
 setupPeer();
 
-// If no room code, hide waiting and start immediately
+// If no room code, already entered solo mode above
 if (!roomCode) {
   document.getElementById('waiting-overlay').classList.add('hidden');
 }
