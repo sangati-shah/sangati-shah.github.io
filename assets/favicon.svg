@@ -1,13 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Center petal -->
-  <ellipse cx="32" cy="22" rx="8" ry="18" fill="#CF4C7E" opacity="0.9" transform="rotate(0 32 32)"/>
-  <!-- Left petals -->
-  <ellipse cx="32" cy="22" rx="7.5" ry="17" fill="#E8833A" opacity="0.85" transform="rotate(-30 32 32)"/>
-  <ellipse cx="32" cy="22" rx="7" ry="15" fill="#F3B02B" opacity="0.8" transform="rotate(-55 32 32)"/>
-  <!-- Right petals -->
-  <ellipse cx="32" cy="22" rx="7.5" ry="17" fill="#E8833A" opacity="0.85" transform="rotate(30 32 32)"/>
-  <ellipse cx="32" cy="22" rx="7" ry="15" fill="#F3B02B" opacity="0.8" transform="rotate(55 32 32)"/>
-  <!-- Inner details -->
-  <circle cx="32" cy="30" r="5" fill="#007382" opacity="0.7"/>
-  <circle cx="32" cy="30" r="2.5" fill="#FDF6EE"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Outer petals -->
+  <ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="#222" stroke-width="2.5" transform="rotate(-50 64 64)"/>
+  <ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="#222" stroke-width="2.5" transform="rotate(-25 64 64)"/>
+  <ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="#222" stroke-width="2.5" transform="rotate(0 64 64)"/>
+  <ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="#222" stroke-width="2.5" transform="rotate(25 64 64)"/>
+  <ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="#222" stroke-width="2.5" transform="rotate(50 64 64)"/>
+  <!-- Inner ring -->
+  <circle cx="64" cy="58" r="10" fill="none" stroke="#222" stroke-width="2.5"/>
+  <!-- Center dot -->
+  <circle cx="64" cy="58" r="4" fill="#222"/>
+  <!-- Base leaves -->
+  <path d="M44 78 Q54 68 64 74 Q74 68 84 78" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M38 86 Q50 74 64 80 Q78 74 90 86" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>
 </svg>
