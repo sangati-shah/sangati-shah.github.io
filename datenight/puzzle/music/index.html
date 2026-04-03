@@ -363,6 +363,11 @@
     }
     .victory-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px color-mix(in srgb, var(--dn-accent) 15%, transparent); }
 
+    /* Solo mode: 3x2 grid for 6 instruments */
+    .solo-mode .pad-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
     /* -- Responsive -- */
     @media (max-width: 420px) {
       .pad-grid { gap: 0.4rem; max-width: 300px; }
@@ -469,8 +474,9 @@
     const GUEST_INSTRUMENTS = ['krar', 'kebero', 'masinko'];
 
     const isHost = sessionStorage.getItem('datenight-host') === '1';
-    const myInstruments = isHost ? HOST_INSTRUMENTS : GUEST_INSTRUMENTS;
-    const partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
+    let soloMode = false;
+    let myInstruments = isHost ? HOST_INSTRUMENTS : GUEST_INSTRUMENTS;
+    let partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
 
     // Target beat uses instruments from BOTH players
     const TARGET_BEAT = ['tabla', 'kebero', 'sitar', 'krar', 'bansuri', 'masinko', 'tabla', 'kebero'];
@@ -648,6 +654,20 @@
       yourGrid.innerHTML = '';
       partnerGrid.innerHTML = '';
 
+      if (soloMode) {
+        document.getElementById('partner-section').style.display = 'none';
+        document.querySelector('#your-section .section-label').textContent = 'your instruments';
+        INSTRUMENTS.forEach(inst => {
+          const pad = document.createElement('div');
+          pad.className = 'pad';
+          pad.dataset.inst = inst.id;
+          pad.innerHTML = `<span class="pad-icon" style="color:${inst.color}">${INST_ICONS[inst.id]}</span><span class="pad-name">${inst.name}</span>`;
+          pad.addEventListener('pointerdown', e => { e.preventDefault(); hitPad(inst.id, pad); });
+          yourGrid.appendChild(pad);
+        });
+        return;
+      }
+
       const myInstData = INSTRUMENTS.filter(inst => myInstruments.includes(inst.id));
       const partnerInstData = INSTRUMENTS.filter(inst => partnerInstruments.includes(inst.id));
 
@@ -670,7 +690,7 @@
     }
 
     function hitPad(id, padEl) {
-      if (!myInstruments.includes(id)) return;
+      if (!soloMode && !myInstruments.includes(id)) return;
 
       playSound(id);
 
@@ -687,9 +707,13 @@
       ripple.addEventListener('animationend', () => ripple.remove());
 
       if (mode === 'recording' && currentBeatIndex < 8) {
-        const neededInst = TARGET_BEAT[currentBeatIndex];
-        if (neededInst && myInstruments.includes(neededInst)) {
+        if (soloMode) {
           recordBeatHit(id);
+        } else {
+          const neededInst = TARGET_BEAT[currentBeatIndex];
+          if (neededInst && myInstruments.includes(neededInst)) {
+            recordBeatHit(id);
+          }
         }
       }
 
@@ -777,7 +801,7 @@
         mode = 'idle';
         listenBtn.classList.remove('active');
         listenBtn.textContent = 'listen again';
-        setStatus('now tap "tap the beat" and replay it together!');
+        setStatus(soloMode ? 'now tap "tap the beat" and replay it!' : 'now tap "tap the beat" and replay it together!');
       }, total * 1000);
     }
 
@@ -797,7 +821,7 @@
 
       document.getElementById('record-btn').classList.add('active');
       document.getElementById('record-btn').textContent = 'recording...';
-      setStatus('tap your instruments when your beat comes up!', 'gold');
+      setStatus(soloMode ? 'tap the right instrument for each beat!' : 'tap your instruments when your beat comes up!', 'gold');
 
       sendPeerData({ type: 'recording-start' });
 
@@ -936,9 +960,9 @@
     };
     document.addEventListener('keydown', e => {
       const inst = ALL_KEY_MAP[e.key.toLowerCase()];
-      if (inst && myInstruments.includes(inst)) {
+      if (inst && (soloMode || myInstruments.includes(inst))) {
         e.preventDefault();
-        const pad = document.querySelector(`#your-pads .pad[data-inst="${inst}"]`);
+        const pad = document.querySelector(`.pad[data-inst="${inst}"]`);
         if (pad) hitPad(inst, pad);
       }
     });
@@ -953,6 +977,25 @@
     });
 
     // ======================================
+    // SOLO MODE
+    // ======================================
+    function enterSoloMode() {
+      soloMode = true;
+      myInstruments = INSTRUMENTS.map(i => i.id);
+      partnerInstruments = [];
+      document.querySelector('.music-app').classList.add('solo-mode');
+      document.getElementById('page-sub').textContent = 'listen to the beat, then replay it solo';
+      const howToPlay = document.querySelector('.how-to-play ol');
+      howToPlay.innerHTML = `
+        <li>Press <strong>listen</strong> to hear the 8-beat pattern</li>
+        <li>Press <strong>tap the beat</strong> to start recording</li>
+        <li>Tap the correct instrument for each beat in order</li>
+        <li>Match all 8 beats to complete the rhythm!</li>
+      `;
+      buildPads();
+    }
+
+    // ======================================
     // INIT
     // ======================================
     buildTimeline();
@@ -965,7 +1008,11 @@
       window.location.href = '../../world/?after=music';
     });
 
-    if (roomCode) setupPeer();
+    if (roomCode) {
+      setupPeer();
+    } else {
+      enterSoloMode();
+    }
   </script>
 </body>
 </html>
