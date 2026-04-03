@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Left heart half -->
+  <path d="M64 108 Q20 75 20 48 Q20 28 38 28 Q52 28 64 44" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right heart half -->
+  <path d="M64 108 Q108 75 108 48 Q108 28 90 28 Q76 28 64 44" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Moon inside heart -->
+  <path d="M56 58 Q56 48 64 44 Q58 48 58 58 Q58 68 64 72 Q56 68 56 58Z" fill="#222"/>
+  <!-- Stars -->
+  <circle cx="76" cy="52" r="2" fill="#222"/>
+  <circle cx="72" cy="64" r="1.5" fill="#222"/>
+  <circle cx="82" cy="60" r="1.5" fill="#222"/>
+</svg>
