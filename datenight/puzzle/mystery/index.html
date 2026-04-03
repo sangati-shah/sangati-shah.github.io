@@ -125,7 +125,6 @@
       gap: 8px;
       width: 100%;
       max-width: 480px;
-      perspective: 800px;
     }
 
     @media (max-width: 420px) {
@@ -138,59 +137,93 @@
       position: relative;
       cursor: pointer;
       transform-style: preserve-3d;
-      transition: transform 0.5s ease;
-      border-radius: 8px;
+      perspective: 600px;
+      border-radius: 6px;
     }
-    .tile.flipped { transform: rotateY(180deg); }
-    .tile.matched {
+    .tile:hover:not(.matched):not(.flipped) .tile-inner {
+      transform: rotateY(8deg);
+    }
+    .tile-inner {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.45s ease;
+      border-radius: 6px;
+    }
+    .tile.flipped .tile-inner { transform: rotateY(180deg); }
+    .tile.matched .tile-inner {
       transform: rotateY(180deg);
-      cursor: default;
     }
-    .tile.matched .tile-front,
-    .tile.matched .tile-back {
-      box-shadow: 0 0 12px rgba(21, 101, 192, 0.4);
-    }
-    .tile.matched .tile-back {
-      opacity: 0.85;
-    }
-    .tile.locked { pointer-events: none; }
+    .tile.matched { cursor: default; }
 
     .tile-front, .tile-back {
       position: absolute; inset: 0;
       backface-visibility: hidden;
-      border-radius: 8px;
+      -webkit-backface-visibility: hidden;
+      border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
     }
 
+    /* Card back - ornate blue ceramic look */
     .tile-front {
-      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 50%, #1565c0 100%);
-      border: 2px solid rgba(255,255,255,0.2);
-      z-index: 2;
+      background: linear-gradient(145deg, #1a6fc4 0%, #0f4c8a 40%, #1565c0 60%, #0d47a1 100%);
+      border: 2px solid #2979c7;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.15);
     }
 
-    .tile-front-pattern {
+    .tile-front-design {
       width: 100%; height: 100%;
-      opacity: 0.25;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .tile-front-design svg {
+      width: 75%; height: 75%;
+      opacity: 0.3;
+    }
+    /* Corner dots on card back */
+    .tile-front::before {
+      content: '';
+      position: absolute; inset: 4px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 3px;
     }
 
+    /* Card face - the pattern */
     .tile-back {
-      background: #fafafa;
-      border: 2px solid #1565c0;
+      background: #f0f4f8;
+      border: 2px solid #90caf9;
       transform: rotateY(180deg);
+      box-shadow: inset 0 0 8px rgba(21,101,192,0.08);
     }
 
     .tile-back svg {
-      width: 85%; height: 85%;
+      width: 92%; height: 92%;
     }
 
-    /* -- Match flash -- */
-    @keyframes matchFlash {
-      0% { box-shadow: 0 0 0 0 rgba(21,101,192,0.6); }
-      50% { box-shadow: 0 0 20px 8px rgba(21,101,192,0.4); }
-      100% { box-shadow: 0 0 12px 2px rgba(21,101,192,0.2); }
+    /* -- Match animations -- */
+    @keyframes matchGlow {
+      0% { box-shadow: 0 0 0 0 rgba(21,101,192,0.5); }
+      50% { box-shadow: 0 0 18px 6px rgba(21,101,192,0.35); }
+      100% { box-shadow: 0 0 8px 2px rgba(21,101,192,0.15); }
     }
-    .tile.match-flash { animation: matchFlash 0.6s ease; }
+    .tile.matched .tile-inner {
+      animation: matchGlow 0.7s ease;
+    }
+    .tile.matched .tile-back {
+      border-color: #1565c0;
+      background: #e8f0fe;
+    }
+
+    /* Mismatch shake */
+    @keyframes tileShake {
+      0%, 100% { transform: rotateY(180deg) translateX(0); }
+      25% { transform: rotateY(180deg) translateX(-3px); }
+      75% { transform: rotateY(180deg) translateX(3px); }
+    }
+    .tile.wrong .tile-inner {
+      animation: tileShake 0.3s ease;
+    }
 
     /* -- Controls -- */
     .controls {
@@ -327,149 +360,269 @@
 
   <script>
     // ======================================
-    // AZULEJO TILE PATTERNS (12 unique Portuguese-inspired SVGs)
+    // AZULEJO TILE PATTERNS - Rich Portuguese-inspired designs
+    // Uses multiple blue shades, filled shapes, and ornate details
     // ======================================
+    const B1 = '#0d47a1'; // deep navy
+    const B2 = '#1565c0'; // royal blue
+    const B3 = '#1e88e5'; // bright blue
+    const B4 = '#42a5f5'; // light blue
+    const B5 = '#90caf9'; // pale blue
+    const BG = '#f0f4f8'; // warm white
+
     const AZULEJO_PATTERNS = [
-      // 1 - Classic star
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <path d="M40 8L50 30H72L54 44L62 68L40 52L18 68L26 44L8 30H30Z" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="8" fill="#1565c0" opacity="0.25" stroke="#1565c0" stroke-width="1"/>
+      // 1 - Ornate star medallion
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <polygon points="50,12 58,38 85,38 63,54 72,80 50,64 28,80 37,54 15,38 42,38" fill="${B4}" opacity="0.35"/>
+        <polygon points="50,12 58,38 85,38 63,54 72,80 50,64 28,80 37,54 15,38 42,38" fill="none" stroke="${B2}" stroke-width="1.8"/>
+        <polygon points="50,24 55,42 73,42 59,52 64,70 50,60 36,70 41,52 27,42 45,42" fill="${B3}" opacity="0.3"/>
+        <polygon points="50,24 55,42 73,42 59,52 64,70 50,60 36,70 41,52 27,42 45,42" fill="none" stroke="${B2}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="8" fill="${B2}" opacity="0.5"/>
+        <circle cx="50" cy="50" r="4" fill="${B1}" opacity="0.6"/>
+        <circle cx="50" cy="50" r="8" fill="none" stroke="${B1}" stroke-width="1.2"/>
+        <circle cx="50" cy="12" r="2.5" fill="${B2}" opacity="0.5"/>
+        <circle cx="85" cy="38" r="2.5" fill="${B2}" opacity="0.5"/>
+        <circle cx="72" cy="80" r="2.5" fill="${B2}" opacity="0.5"/>
+        <circle cx="28" cy="80" r="2.5" fill="${B2}" opacity="0.5"/>
+        <circle cx="15" cy="38" r="2.5" fill="${B2}" opacity="0.5"/>
       </svg>`,
-      // 2 - Diamond cross
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <path d="M40 6L74 40L40 74L6 40Z" fill="none" stroke="#1565c0" stroke-width="2"/>
-        <line x1="40" y1="6" x2="40" y2="74" stroke="#1565c0" stroke-width="1.5"/>
-        <line x1="6" y1="40" x2="74" y2="40" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="10" fill="#1565c0" opacity="0.12" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="4" fill="#1565c0" opacity="0.3"/>
+
+      // 2 - Diamond lattice with center flower
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <path d="M50,8 L92,50 L50,92 L8,50 Z" fill="${B5}" opacity="0.3" stroke="${B2}" stroke-width="1.5"/>
+        <path d="M50,20 L80,50 L50,80 L20,50 Z" fill="${B4}" opacity="0.25" stroke="${B2}" stroke-width="1.2"/>
+        <line x1="50" y1="8" x2="50" y2="92" stroke="${B3}" stroke-width="1" opacity="0.5"/>
+        <line x1="8" y1="50" x2="92" y2="50" stroke="${B3}" stroke-width="1" opacity="0.5"/>
+        <circle cx="50" cy="50" r="14" fill="${B3}" opacity="0.3" stroke="${B2}" stroke-width="1.5"/>
+        <ellipse cx="50" cy="38" rx="5" ry="9" fill="${B2}" opacity="0.4"/>
+        <ellipse cx="50" cy="62" rx="5" ry="9" fill="${B2}" opacity="0.4"/>
+        <ellipse cx="38" cy="50" rx="9" ry="5" fill="${B2}" opacity="0.4"/>
+        <ellipse cx="62" cy="50" rx="9" ry="5" fill="${B2}" opacity="0.4"/>
+        <circle cx="50" cy="50" r="5" fill="${B1}" opacity="0.6"/>
+        <circle cx="50" cy="50" r="2" fill="${BG}"/>
       </svg>`,
-      // 3 - Flower petals
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <circle cx="40" cy="25" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
-        <circle cx="40" cy="55" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
-        <circle cx="25" cy="40" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
-        <circle cx="55" cy="40" r="10" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1.2"/>
-        <circle cx="40" cy="40" r="6" fill="#1565c0" opacity="0.3" stroke="#1565c0" stroke-width="1"/>
+
+      // 3 - Four-petal rosette
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <path d="M50,10 Q70,30 50,50 Q30,30 50,10Z" fill="${B3}" opacity="0.4" stroke="${B2}" stroke-width="1.2"/>
+        <path d="M90,50 Q70,70 50,50 Q70,30 90,50Z" fill="${B3}" opacity="0.4" stroke="${B2}" stroke-width="1.2"/>
+        <path d="M50,90 Q30,70 50,50 Q70,70 50,90Z" fill="${B3}" opacity="0.4" stroke="${B2}" stroke-width="1.2"/>
+        <path d="M10,50 Q30,30 50,50 Q30,70 10,50Z" fill="${B3}" opacity="0.4" stroke="${B2}" stroke-width="1.2"/>
+        <path d="M50,22 Q58,38 50,50 Q42,38 50,22Z" fill="${B2}" opacity="0.35"/>
+        <path d="M78,50 Q62,58 50,50 Q62,42 78,50Z" fill="${B2}" opacity="0.35"/>
+        <path d="M50,78 Q42,62 50,50 Q58,62 50,78Z" fill="${B2}" opacity="0.35"/>
+        <path d="M22,50 Q38,42 50,50 Q38,58 22,50Z" fill="${B2}" opacity="0.35"/>
+        <circle cx="50" cy="50" r="8" fill="${B1}" opacity="0.5" stroke="${B1}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="3.5" fill="${BG}" opacity="0.8"/>
+        <circle cx="15" cy="15" r="4" fill="${B4}" opacity="0.3"/>
+        <circle cx="85" cy="15" r="4" fill="${B4}" opacity="0.3"/>
+        <circle cx="15" cy="85" r="4" fill="${B4}" opacity="0.3"/>
+        <circle cx="85" cy="85" r="4" fill="${B4}" opacity="0.3"/>
       </svg>`,
-      // 4 - Concentric arches
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <path d="M10 70 A30 30 0 0 1 70 70" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M18 70 A22 22 0 0 1 62 70" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M26 70 A14 14 0 0 1 54 70" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M10 10 A30 30 0 0 0 70 10" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M18 10 A22 22 0 0 0 62 10" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="5" fill="#1565c0" opacity="0.25"/>
+
+      // 4 - Moorish arch pattern
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <path d="M18,88 V42 Q18,12 50,12 Q82,12 82,42 V88" fill="${B4}" opacity="0.2" stroke="${B2}" stroke-width="1.8"/>
+        <path d="M28,88 V45 Q28,22 50,22 Q72,22 72,45 V88" fill="${B3}" opacity="0.2" stroke="${B2}" stroke-width="1.2"/>
+        <path d="M38,88 V48 Q38,32 50,32 Q62,32 62,48 V88" fill="${B2}" opacity="0.15" stroke="${B2}" stroke-width="1"/>
+        <circle cx="50" cy="45" r="10" fill="none" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="50" cy="45" r="5" fill="${B2}" opacity="0.45"/>
+        <circle cx="50" cy="45" r="2" fill="${BG}" opacity="0.6"/>
+        <line x1="50" y1="12" x2="50" y2="88" stroke="${B3}" stroke-width="0.8" opacity="0.4"/>
+        <path d="M18,70 H82" stroke="${B4}" stroke-width="0.8" opacity="0.4"/>
+        <circle cx="18" cy="70" r="2" fill="${B3}" opacity="0.4"/>
+        <circle cx="82" cy="70" r="2" fill="${B3}" opacity="0.4"/>
+        <rect x="44" y="60" width="12" height="28" rx="6" fill="${B5}" opacity="0.3" stroke="${B3}" stroke-width="0.8"/>
       </svg>`,
-      // 5 - Geometric lattice
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <line x1="10" y1="10" x2="70" y2="70" stroke="#1565c0" stroke-width="1.2"/>
-        <line x1="70" y1="10" x2="10" y2="70" stroke="#1565c0" stroke-width="1.2"/>
-        <line x1="40" y1="6" x2="40" y2="74" stroke="#1565c0" stroke-width="1.2"/>
-        <line x1="6" y1="40" x2="74" y2="40" stroke="#1565c0" stroke-width="1.2"/>
-        <rect x="25" y="25" width="30" height="30" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.2"/>
-        <rect x="32" y="32" width="16" height="16" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1"/>
+
+      // 5 - Compass rose / wind star
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="${B4}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="28" fill="${B5}" opacity="0.25" stroke="${B3}" stroke-width="1"/>
+        <polygon points="50,14 54,44 50,50 46,44" fill="${B1}" opacity="0.6"/>
+        <polygon points="86,50 56,54 50,50 56,46" fill="${B2}" opacity="0.5"/>
+        <polygon points="50,86 46,56 50,50 54,56" fill="${B1}" opacity="0.6"/>
+        <polygon points="14,50 44,46 50,50 44,54" fill="${B2}" opacity="0.5"/>
+        <polygon points="75,25 56,46 50,50 54,44" fill="${B3}" opacity="0.4"/>
+        <polygon points="75,75 56,54 50,50 54,56" fill="${B3}" opacity="0.4"/>
+        <polygon points="25,75 44,56 50,50 46,54" fill="${B3}" opacity="0.4"/>
+        <polygon points="25,25 44,44 50,50 46,46" fill="${B3}" opacity="0.4"/>
+        <circle cx="50" cy="50" r="8" fill="${B2}" opacity="0.6" stroke="${B1}" stroke-width="1.2"/>
+        <circle cx="50" cy="50" r="3" fill="${BG}"/>
       </svg>`,
-      // 6 - Swirl rosette
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <circle cx="40" cy="40" r="22" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M40 18 Q55 30 40 40 Q25 50 40 62" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M18 40 Q30 25 40 40 Q50 55 62 40" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="5" fill="#1565c0" opacity="0.3"/>
-        <circle cx="40" cy="18" r="3" fill="#1565c0" opacity="0.2"/>
-        <circle cx="40" cy="62" r="3" fill="#1565c0" opacity="0.2"/>
-        <circle cx="18" cy="40" r="3" fill="#1565c0" opacity="0.2"/>
-        <circle cx="62" cy="40" r="3" fill="#1565c0" opacity="0.2"/>
+
+      // 6 - Scrollwork quatrefoil
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="50" cy="28" r="16" fill="${B4}" opacity="0.3" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="50" cy="72" r="16" fill="${B4}" opacity="0.3" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="28" cy="50" r="16" fill="${B4}" opacity="0.3" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="72" cy="50" r="16" fill="${B4}" opacity="0.3" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="50" cy="28" r="8" fill="${B2}" opacity="0.35"/>
+        <circle cx="50" cy="72" r="8" fill="${B2}" opacity="0.35"/>
+        <circle cx="28" cy="50" r="8" fill="${B2}" opacity="0.35"/>
+        <circle cx="72" cy="50" r="8" fill="${B2}" opacity="0.35"/>
+        <rect x="36" y="36" width="28" height="28" rx="14" fill="${B1}" opacity="0.45" stroke="${B1}" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="7" fill="${BG}" opacity="0.5"/>
+        <circle cx="50" cy="50" r="3" fill="${B1}" opacity="0.5"/>
+        <path d="M15,15 Q30,20 36,36" fill="none" stroke="${B4}" stroke-width="1" opacity="0.5"/>
+        <path d="M85,15 Q70,20 64,36" fill="none" stroke="${B4}" stroke-width="1" opacity="0.5"/>
+        <path d="M15,85 Q30,80 36,64" fill="none" stroke="${B4}" stroke-width="1" opacity="0.5"/>
+        <path d="M85,85 Q70,80 64,64" fill="none" stroke="${B4}" stroke-width="1" opacity="0.5"/>
       </svg>`,
-      // 7 - Pointed arch window
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <path d="M20 70V35 Q20 10 40 10 Q60 10 60 35V70" fill="#1565c0" opacity="0.08" stroke="#1565c0" stroke-width="1.5"/>
-        <path d="M28 70V38 Q28 18 40 18 Q52 18 52 38V70" fill="#1565c0" opacity="0.08" stroke="#1565c0" stroke-width="1.2"/>
-        <line x1="40" y1="10" x2="40" y2="70" stroke="#1565c0" stroke-width="1" opacity="0.5"/>
-        <circle cx="40" cy="35" r="6" fill="none" stroke="#1565c0" stroke-width="1.2"/>
-        <circle cx="40" cy="35" r="2.5" fill="#1565c0" opacity="0.3"/>
+
+      // 7 - Interlocking waves
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <path d="M5,20 Q27,5 50,20 Q73,35 95,20" fill="none" stroke="${B2}" stroke-width="2"/>
+        <path d="M5,20 Q27,5 50,20 Q73,35 95,20 L95,30 Q73,45 50,30 Q27,15 5,30Z" fill="${B4}" opacity="0.2"/>
+        <path d="M5,38 Q27,23 50,38 Q73,53 95,38" fill="none" stroke="${B3}" stroke-width="1.8"/>
+        <path d="M5,38 Q27,23 50,38 Q73,53 95,38 L95,48 Q73,63 50,48 Q27,33 5,48Z" fill="${B4}" opacity="0.18"/>
+        <path d="M5,56 Q27,41 50,56 Q73,71 95,56" fill="none" stroke="${B2}" stroke-width="2"/>
+        <path d="M5,56 Q27,41 50,56 Q73,71 95,56 L95,66 Q73,81 50,66 Q27,51 5,66Z" fill="${B3}" opacity="0.2"/>
+        <path d="M5,74 Q27,59 50,74 Q73,89 95,74" fill="none" stroke="${B3}" stroke-width="1.8"/>
+        <path d="M5,74 Q27,59 50,74 Q73,89 95,74 L95,84 Q73,99 50,84 Q27,69 5,84Z" fill="${B4}" opacity="0.18"/>
+        <circle cx="50" cy="47" r="6" fill="${B2}" opacity="0.35" stroke="${B1}" stroke-width="1"/>
       </svg>`,
-      // 8 - Compass rose
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <polygon points="40,8 46,34 72,34 50,50 58,74 40,56 22,74 30,50 8,34 34,34" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.2"/>
-        <polygon points="40,20 44,36 60,36 47,46 52,62 40,52 28,62 33,46 20,36 36,36" fill="#1565c0" opacity="0.12" stroke="#1565c0" stroke-width="0.8"/>
-        <circle cx="40" cy="40" r="4" fill="#1565c0" opacity="0.35"/>
+
+      // 8 - Geometric octagon
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <polygon points="35,10 65,10 90,35 90,65 65,90 35,90 10,65 10,35" fill="${B5}" opacity="0.25" stroke="${B2}" stroke-width="1.8"/>
+        <polygon points="40,20 60,20 78,40 78,60 60,80 40,80 22,60 22,40" fill="${B4}" opacity="0.2" stroke="${B2}" stroke-width="1.2"/>
+        <polygon points="44,32 56,32 66,44 66,56 56,68 44,68 34,56 34,44" fill="${B3}" opacity="0.25" stroke="${B2}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="10" fill="${B2}" opacity="0.4" stroke="${B1}" stroke-width="1.2"/>
+        <circle cx="50" cy="50" r="4" fill="${B1}" opacity="0.5"/>
+        <line x1="50" y1="10" x2="50" y2="90" stroke="${B4}" stroke-width="0.7" opacity="0.4"/>
+        <line x1="10" y1="50" x2="90" y2="50" stroke="${B4}" stroke-width="0.7" opacity="0.4"/>
+        <line x1="10" y1="35" x2="35" y2="10" stroke="${B4}" stroke-width="0.7" opacity="0.3"/>
+        <line x1="65" y1="10" x2="90" y2="35" stroke="${B4}" stroke-width="0.7" opacity="0.3"/>
+        <line x1="90" y1="65" x2="65" y2="90" stroke="${B4}" stroke-width="0.7" opacity="0.3"/>
+        <line x1="35" y1="90" x2="10" y2="65" stroke="${B4}" stroke-width="0.7" opacity="0.3"/>
       </svg>`,
-      // 9 - Wave scales
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <path d="M0 20 Q20 0 40 20 Q60 40 80 20" fill="none" stroke="#1565c0" stroke-width="1.3"/>
-        <path d="M0 35 Q20 15 40 35 Q60 55 80 35" fill="none" stroke="#1565c0" stroke-width="1.3"/>
-        <path d="M0 50 Q20 30 40 50 Q60 70 80 50" fill="none" stroke="#1565c0" stroke-width="1.3"/>
-        <path d="M0 65 Q20 45 40 65 Q60 85 80 65" fill="#1565c0" opacity="0.08" stroke="#1565c0" stroke-width="1.3"/>
-        <circle cx="40" cy="40" r="6" fill="#1565c0" opacity="0.15" stroke="#1565c0" stroke-width="1"/>
+
+      // 9 - Floral cross
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <rect x="38" y="12" width="24" height="76" rx="12" fill="${B4}" opacity="0.25" stroke="${B2}" stroke-width="1.2"/>
+        <rect x="12" y="38" width="76" height="24" rx="12" fill="${B4}" opacity="0.25" stroke="${B2}" stroke-width="1.2"/>
+        <rect x="42" y="18" width="16" height="64" rx="8" fill="${B3}" opacity="0.2"/>
+        <rect x="18" y="42" width="64" height="16" rx="8" fill="${B3}" opacity="0.2"/>
+        <circle cx="50" cy="50" r="12" fill="${B2}" opacity="0.4" stroke="${B1}" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="6" fill="${B1}" opacity="0.5"/>
+        <circle cx="50" cy="50" r="2.5" fill="${BG}" opacity="0.6"/>
+        <circle cx="50" cy="18" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="50" cy="82" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="18" cy="50" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="82" cy="50" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="15" cy="15" r="5" fill="${B5}" opacity="0.35" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="85" cy="15" r="5" fill="${B5}" opacity="0.35" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="15" cy="85" r="5" fill="${B5}" opacity="0.35" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="85" cy="85" r="5" fill="${B5}" opacity="0.35" stroke="${B4}" stroke-width="0.8"/>
       </svg>`,
-      // 10 - Quatrefoil
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <circle cx="40" cy="24" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
-        <circle cx="40" cy="56" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
-        <circle cx="24" cy="40" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
-        <circle cx="56" cy="40" r="12" fill="#1565c0" opacity="0.1" stroke="#1565c0" stroke-width="1.3"/>
-        <rect x="30" y="30" width="20" height="20" rx="10" fill="#1565c0" opacity="0.2" stroke="#1565c0" stroke-width="1"/>
+
+      // 10 - Sunburst mandala
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="${B4}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="30" fill="${B5}" opacity="0.2" stroke="${B3}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="22" fill="${B4}" opacity="0.2" stroke="${B2}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="14" fill="${B3}" opacity="0.25" stroke="${B2}" stroke-width="1.2"/>
+        ${[0,30,60,90,120,150,180,210,240,270,300,330].map(a => {
+          const r = a * Math.PI / 180;
+          const x1 = 50 + 14 * Math.cos(r), y1 = 50 + 14 * Math.sin(r);
+          const x2 = 50 + 38 * Math.cos(r), y2 = 50 + 38 * Math.sin(r);
+          return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="${B3}" stroke-width="0.8" opacity="0.5"/>';
+        }).join('')}
+        <circle cx="50" cy="50" r="7" fill="${B2}" opacity="0.55" stroke="${B1}" stroke-width="1.2"/>
+        <circle cx="50" cy="50" r="3" fill="${BG}" opacity="0.5"/>
       </svg>`,
-      // 11 - Chevron zigzag
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <polyline points="8,25 24,12 40,25 56,12 72,25" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <polyline points="8,40 24,27 40,40 56,27 72,40" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <polyline points="8,55 24,42 40,55 56,42 72,55" fill="#1565c0" opacity="0.06" stroke="#1565c0" stroke-width="1.5"/>
-        <polyline points="8,70 24,57 40,70 56,57 72,70" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="5" fill="#1565c0" opacity="0.2"/>
+
+      // 11 - Herringbone weave
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <path d="M10,18 L30,10 L50,18 L70,10 L90,18" stroke="${B2}" stroke-width="2" fill="none"/>
+        <path d="M10,18 L30,10 L50,18 L70,10 L90,18 L90,30 L70,22 L50,30 L30,22 L10,30Z" fill="${B4}" opacity="0.2"/>
+        <path d="M10,34 L30,26 L50,34 L70,26 L90,34" stroke="${B3}" stroke-width="1.8" fill="none"/>
+        <path d="M10,34 L30,26 L50,34 L70,26 L90,34 L90,46 L70,38 L50,46 L30,38 L10,46Z" fill="${B3}" opacity="0.15"/>
+        <path d="M10,50 L30,42 L50,50 L70,42 L90,50" stroke="${B2}" stroke-width="2" fill="none"/>
+        <path d="M10,50 L30,42 L50,50 L70,42 L90,50 L90,62 L70,54 L50,62 L30,54 L10,62Z" fill="${B4}" opacity="0.2"/>
+        <path d="M10,66 L30,58 L50,66 L70,58 L90,66" stroke="${B3}" stroke-width="1.8" fill="none"/>
+        <path d="M10,66 L30,58 L50,66 L70,58 L90,66 L90,78 L70,70 L50,78 L30,70 L10,78Z" fill="${B3}" opacity="0.15"/>
+        <path d="M10,82 L30,74 L50,82 L70,74 L90,82" stroke="${B2}" stroke-width="2" fill="none"/>
+        <path d="M10,82 L30,74 L50,82 L70,74 L90,82 L90,92 L70,86 L50,92 L30,86 L10,92Z" fill="${B4}" opacity="0.2"/>
+        <circle cx="50" cy="50" r="5" fill="${B2}" opacity="0.4" stroke="${B1}" stroke-width="1"/>
       </svg>`,
-      // 12 - Interlocking rings
-      `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="80" height="80" fill="#fafafa"/>
-        <rect x="2" y="2" width="76" height="76" rx="2" stroke="#1565c0" stroke-width="2" fill="none"/>
-        <circle cx="30" cy="30" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="50" cy="30" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="30" cy="50" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="50" cy="50" r="14" fill="none" stroke="#1565c0" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="8" fill="#1565c0" opacity="0.15"/>
+
+      // 12 - Linked circles chain
+      `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="${BG}"/>
+        <rect x="3" y="3" width="94" height="94" rx="2" fill="none" stroke="${B5}" stroke-width="2"/>
+        <rect x="7" y="7" width="86" height="86" rx="1" fill="none" stroke="${B4}" stroke-width="0.8"/>
+        <circle cx="30" cy="30" r="18" fill="${B5}" opacity="0.25" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="70" cy="30" r="18" fill="${B5}" opacity="0.25" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="30" cy="70" r="18" fill="${B5}" opacity="0.25" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="70" cy="70" r="18" fill="${B5}" opacity="0.25" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="30" cy="30" r="10" fill="${B3}" opacity="0.3" stroke="${B2}" stroke-width="1"/>
+        <circle cx="70" cy="30" r="10" fill="${B3}" opacity="0.3" stroke="${B2}" stroke-width="1"/>
+        <circle cx="30" cy="70" r="10" fill="${B3}" opacity="0.3" stroke="${B2}" stroke-width="1"/>
+        <circle cx="70" cy="70" r="10" fill="${B3}" opacity="0.3" stroke="${B2}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="14" fill="${B4}" opacity="0.25" stroke="${B2}" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="7" fill="${B2}" opacity="0.45" stroke="${B1}" stroke-width="1"/>
+        <circle cx="50" cy="50" r="3" fill="${BG}" opacity="0.5"/>
+        <circle cx="30" cy="30" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="70" cy="30" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="30" cy="70" r="4" fill="${B2}" opacity="0.4"/>
+        <circle cx="70" cy="70" r="4" fill="${B2}" opacity="0.4"/>
       </svg>`,
     ];
 
-    // Back-of-tile pattern (decorative azulejo motif)
-    const BACK_PATTERN = `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="80" height="80" fill="none"/>
-      <path d="M40 10L50 30H70L54 42L60 62L40 50L20 62L26 42L10 30H30Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-      <circle cx="40" cy="38" r="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+    // Card back design - ornate tile back
+    const CARD_BACK_SVG = `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40,12 L52,32 H68 L56,44 L60,62 L40,50 L20,62 L24,44 L12,32 H28Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+      <circle cx="40" cy="40" r="8" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <circle cx="40" cy="40" r="3" fill="rgba(255,255,255,0.12)"/>
+      <rect x="12" y="12" width="56" height="56" rx="2" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
     </svg>`;
 
     // ======================================
     // GAME STATE
     // ======================================
     const TOTAL_PAIRS = 12;
-    const TOTAL_TILES = TOTAL_PAIRS * 2; // 24 tiles, 6x4 grid
-    let tiles = [];       // { id, patternIndex, matched, element }
-    let flipped = [];     // currently flipped tile indices (max 2)
+    const TOTAL_TILES = TOTAL_PAIRS * 2;
+    let tiles = [];
+    let flipped = [];
     let myScore = 0;
     let theirScore = 0;
     let myTurn = true;
-    let locked = false;   // prevent clicks during animations
+    let waitingForFlipBack = false;
     let gameOver = false;
     let soloMode = false;
 
@@ -492,7 +645,7 @@
     }
 
     // ======================================
-    // SHUFFLE (Fisher-Yates)
+    // SHUFFLE
     // ======================================
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -502,7 +655,6 @@
       return arr;
     }
 
-    // Seeded shuffle so both players get the same board
     function seededShuffle(arr, seed) {
       let s = seed;
       function next() { s = (s * 16807 + 0) % 2147483647; return (s - 1) / 2147483646; }
@@ -523,11 +675,10 @@
       flipped = [];
       myScore = 0;
       theirScore = 0;
-      locked = false;
+      waitingForFlipBack = false;
       gameOver = false;
       updateScores();
 
-      // Create pairs
       let indices = [];
       for (let i = 0; i < TOTAL_PAIRS; i++) {
         indices.push(i, i);
@@ -544,16 +695,20 @@
         tile.className = 'tile';
         tile.dataset.index = i;
 
+        const inner = document.createElement('div');
+        inner.className = 'tile-inner';
+
         const front = document.createElement('div');
         front.className = 'tile-front';
-        front.innerHTML = `<div class="tile-front-pattern">${BACK_PATTERN}</div>`;
+        front.innerHTML = `<div class="tile-front-design">${CARD_BACK_SVG}</div>`;
 
         const back = document.createElement('div');
         back.className = 'tile-back';
         back.innerHTML = AZULEJO_PATTERNS[patternIndex];
 
-        tile.appendChild(front);
-        tile.appendChild(back);
+        inner.appendChild(front);
+        inner.appendChild(back);
+        tile.appendChild(inner);
         tile.addEventListener('click', () => onTileClick(i));
         grid.appendChild(tile);
 
@@ -564,10 +719,11 @@
     }
 
     // ======================================
-    // TILE CLICK
+    // TILE CLICK LOGIC
     // ======================================
     function onTileClick(index) {
-      if (locked || gameOver) return;
+      if (gameOver) return;
+      if (waitingForFlipBack) return;
       if (!soloMode && !myTurn) return;
       if (tiles[index].matched) return;
       if (flipped.includes(index)) return;
@@ -577,7 +733,6 @@
       sendPeerData({ type: 'flip', index });
 
       if (flipped.length === 2) {
-        locked = true;
         checkMatch();
       }
     }
@@ -595,48 +750,52 @@
       const [a, b] = flipped;
       const isMatch = tiles[a].patternIndex === tiles[b].patternIndex;
 
+      // Block further clicks while we resolve
+      waitingForFlipBack = true;
+
       if (isMatch) {
         setTimeout(() => {
           tiles[a].matched = true;
           tiles[b].matched = true;
-          tiles[a].element.classList.add('matched', 'match-flash');
-          tiles[b].element.classList.add('matched', 'match-flash');
+          tiles[a].element.classList.add('matched');
+          tiles[b].element.classList.add('matched');
 
           if (myTurn || soloMode) {
             myScore++;
+            addPoints(10);
           } else {
             theirScore++;
           }
           updateScores();
 
-          // Points for finding a match
-          if (myTurn || soloMode) {
-            addPoints(10);
-          }
-
           flipped = [];
-          locked = false;
+          waitingForFlipBack = false;
 
-          // Check if game is over
           if (tiles.every(t => t.matched)) {
             endGame();
           }
-          // Same player goes again on a match (no turn switch)
         }, 600);
       } else {
+        // Show a brief shake, then flip back
         setTimeout(() => {
+          tiles[a].element.classList.add('wrong');
+          tiles[b].element.classList.add('wrong');
+        }, 400);
+
+        setTimeout(() => {
+          tiles[a].element.classList.remove('wrong');
+          tiles[b].element.classList.remove('wrong');
           unflipTile(a);
           unflipTile(b);
           flipped = [];
-          locked = false;
+          waitingForFlipBack = false;
 
-          // Switch turns
           if (!soloMode) {
             myTurn = !myTurn;
             updateTurnIndicator();
             sendPeerData({ type: 'turn-switch' });
           }
-        }, 900);
+        }, 1000);
       }
     }
 
@@ -671,16 +830,16 @@
       let title, sub;
       if (soloMode) {
         title = 'beautiful!';
-        sub = `you matched all ${TOTAL_PAIRS} pairs`;
+        sub = 'you matched all ' + TOTAL_PAIRS + ' pairs';
       } else if (myScore > theirScore) {
         title = 'you win!';
-        sub = `${myScore} - ${theirScore}`;
+        sub = myScore + ' \u2013 ' + theirScore;
       } else if (theirScore > myScore) {
         title = 'they win!';
-        sub = `${theirScore} - ${myScore}`;
+        sub = theirScore + ' \u2013 ' + myScore;
       } else {
-        title = 'it\'s a tie!';
-        sub = `${myScore} - ${theirScore}`;
+        title = "it's a tie!";
+        sub = myScore + ' \u2013 ' + theirScore;
       }
 
       const bonus = soloMode ? 50 : (myScore >= theirScore ? 60 : 30);
@@ -716,7 +875,6 @@
             conn = c;
             c.on('data', handlePeerData);
             c.on('close', () => { conn = null; });
-            // Host sends the seed so both boards match
             const seed = Math.floor(Math.random() * 2147483646) + 1;
             buildBoard(seed);
             myTurn = true;
@@ -743,15 +901,12 @@
 
     function handlePeerData(data) {
       if (data.type === 'init') {
-        // Guest receives the seed and builds the same board
         buildBoard(data.seed);
-        myTurn = !data.hostStarts; // guest goes second
+        myTurn = !data.hostStarts;
         updateTurnIndicator();
       } else if (data.type === 'flip') {
-        // Partner flipped a tile
         flipTile(data.index);
         if (flipped.length === 2) {
-          locked = true;
           checkMatch();
         }
       } else if (data.type === 'turn-switch') {
@@ -765,7 +920,6 @@
         if (!gameOver) {
           gameOver = true;
           markCompleted('mystery');
-          // The other player's endGame handles their own victory screen
         }
       }
     }
@@ -797,12 +951,11 @@
       document.getElementById('page-sub').textContent = 'flip tiles and find all the matching pairs';
       document.querySelector('.score-row').style.display = 'none';
       const howToPlay = document.querySelector('.how-to-play ol');
-      howToPlay.innerHTML = `
-        <li>Click any tile to flip it over</li>
-        <li>Flip a second tile to try for a match</li>
-        <li>If they match, they stay revealed!</li>
-        <li>Find all ${TOTAL_PAIRS} pairs to win</li>
-      `;
+      howToPlay.innerHTML =
+        '<li>Click any tile to flip it over</li>' +
+        '<li>Flip a second tile to try for a match</li>' +
+        '<li>If they match, they stay revealed!</li>' +
+        '<li>Find all ' + TOTAL_PAIRS + ' pairs to win</li>';
       buildBoard();
     }
 
@@ -822,8 +975,6 @@
     // ======================================
     if (roomCode) {
       setupPeer();
-      // Board will be built when peer connects and seed is shared
-      // Show a waiting state
       if (isHost) {
         document.getElementById('turn-indicator').textContent = 'waiting for partner...';
       } else {
