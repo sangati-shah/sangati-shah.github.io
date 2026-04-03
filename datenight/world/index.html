@@ -53,6 +53,146 @@
       border-radius: 3px;
     }
 
+    /* ── Bounce Pads ── */
+    .bounce-pad {
+      position: absolute;
+      z-index: 22;
+      border-radius: 50% 50% 4px 4px;
+      background: var(--dn-accent, #e85d75);
+      opacity: 0.6;
+      transition: transform 0.1s ease;
+    }
+    .bounce-pad.squish {
+      transform: scaleY(0.5) scaleX(1.3);
+      transform-origin: bottom center;
+    }
+
+    /* ── Speed Zones ── */
+    .speed-zone {
+      position: absolute;
+      z-index: 8;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .speed-zone .sz-arrow {
+      position: absolute;
+      width: 12px; height: 12px;
+      border-right: 2.5px solid var(--dn-accent, #e85d75);
+      border-top: 2.5px solid var(--dn-accent, #e85d75);
+      transform: rotate(45deg);
+      animation: sz-drift 1s ease-in-out infinite;
+    }
+    @keyframes sz-drift {
+      0%, 100% { opacity: 0.3; transform: rotate(45deg) translateX(0); }
+      50% { opacity: 1; transform: rotate(45deg) translateX(4px); }
+    }
+
+    /* ── Floating Hearts ── */
+    .heart-pickup {
+      position: absolute;
+      z-index: 24;
+      width: 18px; height: 18px;
+      cursor: pointer;
+      animation: heart-bob 2s ease-in-out infinite;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .heart-pickup.collected {
+      transform: scale(1.8);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .heart-pickup::before,
+    .heart-pickup::after {
+      content: '';
+      position: absolute;
+      width: 10px; height: 14px;
+      background: var(--dn-accent, #e85d75);
+      border-radius: 50% 50% 0 0;
+    }
+    .heart-pickup::before {
+      left: 0; top: 0;
+      transform: rotate(-45deg);
+      transform-origin: bottom right;
+    }
+    .heart-pickup::after {
+      right: 0; top: 0;
+      transform: rotate(45deg);
+      transform-origin: bottom left;
+    }
+    @keyframes heart-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* ── Heart Counter ── */
+    .heart-counter {
+      position: fixed;
+      top: 1.2rem; right: 1.2rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--dn-sub, #999);
+      z-index: 300;
+      display: flex; align-items: center; gap: 6px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .heart-counter.visible { opacity: 1; }
+    .heart-counter .hc-icon {
+      width: 14px; height: 14px;
+      position: relative;
+      display: inline-block;
+    }
+    .heart-counter .hc-icon::before,
+    .heart-counter .hc-icon::after {
+      content: '';
+      position: absolute;
+      width: 8px; height: 11px;
+      background: var(--dn-accent, #e85d75);
+      border-radius: 50% 50% 0 0;
+    }
+    .heart-counter .hc-icon::before {
+      left: 0; top: 0;
+      transform: rotate(-45deg);
+      transform-origin: bottom right;
+    }
+    .heart-counter .hc-icon::after {
+      right: 0; top: 0;
+      transform: rotate(45deg);
+      transform-origin: bottom left;
+    }
+    .heart-counter.bump .hc-icon {
+      animation: hc-bump 0.3s ease;
+    }
+    @keyframes hc-bump {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); }
+      100% { transform: scale(1); }
+    }
+
+    /* ── Moving Platforms ── */
+    .moving-platform {
+      position: absolute;
+      z-index: 20;
+      background: var(--dn-accent, #e85d75);
+      border-radius: 3px;
+      opacity: 0.55;
+    }
+
+    /* ── Skip Button ── */
+    .skip-btn {
+      position: fixed; top: 1.2rem;
+      right: 1.2rem;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.95rem; color: var(--dn-sub, #999);
+      text-decoration: none; z-index: 300;
+      cursor: pointer; border: none; background: none;
+      opacity: 0.6;
+      transition: opacity 0.3s, color 0.3s;
+    }
+    .skip-btn:hover { opacity: 1; color: var(--dn-text, #555); }
+    .heart-counter.visible ~ .skip-btn,
+    .skip-btn.with-hearts { top: 2.8rem; }
+
     /* ── Glowing Adventure Box ── */
     .adventure-box {
       position: absolute;
@@ -299,6 +439,15 @@
 
   <a href="#" class="back-btn" id="back-home-btn">&larr; home</a>
 
+  <!-- Heart counter -->
+  <div class="heart-counter" id="heart-counter">
+    <span class="hc-icon"></span>
+    <span id="heart-count">0</span>
+  </div>
+
+  <!-- Skip to next adventure -->
+  <button class="skip-btn" id="skip-btn" style="display:none;">skip &rarr;</button>
+
   <div class="intro-text" id="intro-text"></div>
 
   <div class="viewport">
@@ -307,6 +456,18 @@
 
       <!-- Obstacles built by JS -->
       <div id="obstacles"></div>
+
+      <!-- Bounce pads built by JS -->
+      <div id="bounce-pads"></div>
+
+      <!-- Speed zones built by JS -->
+      <div id="speed-zones"></div>
+
+      <!-- Hearts built by JS -->
+      <div id="hearts"></div>
+
+      <!-- Moving platforms built by JS -->
+      <div id="moving-platforms"></div>
 
       <!-- Adventure boxes built by JS -->
       <div id="adventure-boxes"></div>
@@ -343,6 +504,7 @@
     const SPEED = 2.4;
     const DUCK_H = 30;
     const BOX_SIZE = 50;
+    const BOUNCE_VEL = -14;
 
     function groundY() { return window.innerHeight - LINE_BOTTOM - 3 - SPRITE_H; }
 
@@ -391,6 +553,84 @@
     ];
 
     // ══════════════════════════════════════
+    // BOUNCE PADS — springy pads that launch you high
+    // ══════════════════════════════════════
+    const BOUNCE_DEFS = [
+      // Section 1
+      { x: 700, w: 30, h: 10 },
+      { x: 1700, w: 30, h: 10 },
+      // Section 2
+      { x: 3100, w: 30, h: 10 },
+      { x: 4050, w: 30, h: 10 },
+      { x: 4900, w: 30, h: 10 },
+      // Section 3
+      { x: 5800, w: 30, h: 10 },
+      { x: 6450, w: 30, h: 10 },
+      { x: 7050, w: 30, h: 10 },
+    ];
+
+    // ══════════════════════════════════════
+    // SPEED ZONES — wind gusts that boost you forward
+    // ══════════════════════════════════════
+    const SPEED_ZONE_DEFS = [
+      // Section 1
+      { x: 200, w: 120 },
+      { x: 1200, w: 100 },
+      // Section 2
+      { x: 3500, w: 130 },
+      { x: 4400, w: 110 },
+      // Section 3
+      { x: 6200, w: 120 },
+      { x: 7400, w: 130 },
+    ];
+    const SPEED_BOOST = 1.8;
+
+    // ══════════════════════════════════════
+    // FLOATING HEARTS — cute collectibles
+    // ══════════════════════════════════════
+    const HEART_DEFS = [
+      // Section 1 — some easy, some need bouncing
+      { x: 300, elevation: 30 },
+      { x: 720, elevation: 110 },   // above bounce pad — need to bounce
+      { x: 900, elevation: 55 },    // on float platform
+      { x: 1250, elevation: 30 },
+      { x: 1600, elevation: 55 },
+      { x: 1720, elevation: 120 },  // above bounce pad
+      { x: 2150, elevation: 55 },
+      { x: 2600, elevation: 30 },
+      // Section 2
+      { x: 3120, elevation: 110 },  // above bounce pad
+      { x: 3300, elevation: 30 },
+      { x: 3650, elevation: 55 },
+      { x: 4070, elevation: 120 },  // above bounce pad
+      { x: 4400, elevation: 55 },
+      { x: 4650, elevation: 30 },
+      { x: 4920, elevation: 110 },  // above bounce pad
+      // Section 3
+      { x: 5820, elevation: 110 },  // above bounce pad
+      { x: 6150, elevation: 55 },
+      { x: 6470, elevation: 120 },  // above bounce pad
+      { x: 6800, elevation: 55 },
+      { x: 7070, elevation: 110 },  // above bounce pad
+      { x: 7400, elevation: 55 },
+      { x: 7600, elevation: 30 },
+    ];
+
+    // ══════════════════════════════════════
+    // MOVING PLATFORMS — slide back and forth
+    // ══════════════════════════════════════
+    const MOVING_PLAT_DEFS = [
+      // Section 1
+      { x: 1900, w: 80, h: 14, range: 120, speed: 0.8, elevation: 50 },
+      // Section 2
+      { x: 3700, w: 80, h: 14, range: 100, speed: 0.9, elevation: 55 },
+      { x: 4800, w: 90, h: 14, range: 140, speed: 0.7, elevation: 45 },
+      // Section 3
+      { x: 6000, w: 80, h: 14, range: 130, speed: 0.85, elevation: 50 },
+      { x: 7200, w: 90, h: 14, range: 110, speed: 0.75, elevation: 55 },
+    ];
+
+    // ══════════════════════════════════════
     // ADVENTURE BOXES — the glowing orbs on the map
     // ══════════════════════════════════════
     const ADVENTURES = [
@@ -429,10 +669,23 @@
       if (!c.includes(id)) { c.push(id); sessionStorage.setItem('datenight-completed', JSON.stringify(c)); }
     }
 
+    // Track collected hearts (persisted per session)
+    function getCollectedHearts() {
+      try { return JSON.parse(sessionStorage.getItem('datenight-hearts') || '[]'); } catch { return []; }
+    }
+    function saveCollectedHearts(arr) {
+      sessionStorage.setItem('datenight-hearts', JSON.stringify(arr));
+    }
+
     // ══════════════════════════════════════
     // COMPUTED OBSTACLES & BOXES
     // ══════════════════════════════════════
     let obstacles = [];
+    let bouncePads = [];
+    let speedZones = [];
+    let hearts = [];
+    let movingPlats = [];
+    let collectedHearts = getCollectedHearts();
 
     function computeObstacles() {
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
@@ -442,6 +695,23 @@
         }
         return { x: o.x, y: lineY - o.h, w: o.w, h: o.h, type: 'ground' };
       });
+
+      bouncePads = BOUNCE_DEFS.map(b => ({
+        x: b.x, y: lineY - b.h, w: b.w, h: b.h
+      }));
+
+      speedZones = SPEED_ZONE_DEFS.map(s => ({
+        x: s.x, y: lineY - 20, w: s.w, h: 20
+      }));
+
+      hearts = HEART_DEFS.map((h, i) => ({
+        x: h.x, y: lineY - 18 - h.elevation, w: 18, h: 18, idx: i, collected: collectedHearts.includes(i)
+      }));
+
+      movingPlats = MOVING_PLAT_DEFS.map(m => ({
+        baseX: m.x, x: m.x, y: lineY - m.elevation - m.h, w: m.w, h: m.h,
+        range: m.range, speed: m.speed, phase: 0
+      }));
     }
 
     function renderObstacles() {
@@ -451,6 +721,62 @@
         const el = document.createElement('div');
         el.className = 'obstacle' + (o.type === 'float' ? ' obstacle-float' : '');
         el.style.cssText = `left:${o.x}px; top:${o.y}px; width:${o.w}px; height:${o.h}px; position:absolute;`;
+        container.appendChild(el);
+      });
+    }
+
+    function renderBouncePads() {
+      const container = document.getElementById('bounce-pads');
+      container.innerHTML = '';
+      bouncePads.forEach((b, i) => {
+        const el = document.createElement('div');
+        el.className = 'bounce-pad';
+        el.dataset.idx = i;
+        el.style.cssText = `left:${b.x}px; top:${b.y}px; width:${b.w}px; height:${b.h}px;`;
+        container.appendChild(el);
+      });
+    }
+
+    function renderSpeedZones() {
+      const container = document.getElementById('speed-zones');
+      container.innerHTML = '';
+      speedZones.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'speed-zone';
+        el.style.cssText = `left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px;`;
+        // Add little arrow indicators
+        const arrowCount = Math.floor(s.w / 30);
+        for (let i = 0; i < arrowCount; i++) {
+          const arrow = document.createElement('div');
+          arrow.className = 'sz-arrow';
+          arrow.style.cssText = `left:${10 + i * 30}px; top:3px; animation-delay:${i * 0.15}s;`;
+          el.appendChild(arrow);
+        }
+        container.appendChild(el);
+      });
+    }
+
+    function renderHearts() {
+      const container = document.getElementById('hearts');
+      container.innerHTML = '';
+      hearts.forEach(h => {
+        const el = document.createElement('div');
+        el.className = 'heart-pickup' + (h.collected ? ' collected' : '');
+        el.dataset.idx = h.idx;
+        el.style.cssText = `left:${h.x}px; top:${h.y}px;`;
+        container.appendChild(el);
+      });
+      updateHeartCounter();
+    }
+
+    function renderMovingPlatforms() {
+      const container = document.getElementById('moving-platforms');
+      container.innerHTML = '';
+      movingPlats.forEach((m, i) => {
+        const el = document.createElement('div');
+        el.className = 'moving-platform';
+        el.dataset.idx = i;
+        el.style.cssText = `left:${m.x}px; top:${m.y}px; width:${m.w}px; height:${m.h}px;`;
         container.appendChild(el);
       });
     }
@@ -471,6 +797,14 @@
         el.addEventListener('touchend', (e) => { e.preventDefault(); enterAdventure(adv); });
         container.appendChild(el);
       });
+    }
+
+    function updateHeartCounter() {
+      const count = collectedHearts.length;
+      const total = HEART_DEFS.length;
+      document.getElementById('heart-count').textContent = `${count} / ${total}`;
+      const counter = document.getElementById('heart-counter');
+      if (count > 0) counter.classList.add('visible');
     }
 
     // ══════════════════════════════════════
@@ -498,7 +832,7 @@
     // PLAYER STATE
     // ══════════════════════════════════════
     const spawnX = getSpawnX();
-    const player = { x: spawnX, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right' };
+    const player = { x: spawnX, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right', speedBoost: 0 };
     const partner = { x: spawnX + 40, y: 0, jumping: false, ducking: false };
     let entering = false;
 
@@ -532,6 +866,8 @@
     // ══════════════════════════════════════
     function collideDuck(px, py, ph) {
       const pw = SPRITE_W;
+
+      // Static obstacles
       for (const o of obstacles) {
         if (px + pw <= o.x || px >= o.x + o.w || py + ph <= o.y || py >= o.y + o.h) continue;
 
@@ -556,6 +892,104 @@
           player.vx = 0;
         }
       }
+
+      // Moving platforms
+      for (const m of movingPlats) {
+        if (px + pw <= m.x || px >= m.x + m.w || py + ph <= m.y || py >= m.y + m.h) continue;
+
+        const overlapT = (py + ph) - m.y;
+        const overlapB = (m.y + m.h) - py;
+
+        if (overlapT < overlapB && player.vy >= 0) {
+          player.y = m.y - SPRITE_H;
+          player.vy = 0;
+          player.jumping = false;
+          // Carry player with platform
+          player.x += m.dx || 0;
+        }
+      }
+    }
+
+    // ══════════════════════════════════════
+    // BOUNCE PADS — check landing
+    // ══════════════════════════════════════
+    function checkBouncePads() {
+      const pw = SPRITE_W;
+      const pFeetY = player.y + SPRITE_H;
+
+      for (let i = 0; i < bouncePads.length; i++) {
+        const b = bouncePads[i];
+        if (player.x + pw > b.x && player.x < b.x + b.w &&
+            pFeetY >= b.y && pFeetY <= b.y + b.h + 6 && player.vy >= 0) {
+          player.vy = BOUNCE_VEL;
+          player.jumping = true;
+          // Squish animation
+          const el = document.querySelector(`.bounce-pad[data-idx="${i}"]`);
+          if (el) {
+            el.classList.add('squish');
+            setTimeout(() => el.classList.remove('squish'), 150);
+          }
+          return;
+        }
+      }
+    }
+
+    // ══════════════════════════════════════
+    // SPEED ZONES — check if player is in one
+    // ══════════════════════════════════════
+    function checkSpeedZones() {
+      const px = player.x + SPRITE_W / 2;
+      const py = player.y + SPRITE_H;
+      player.speedBoost = 0;
+
+      for (const s of speedZones) {
+        if (px > s.x && px < s.x + s.w && py > s.y && py < s.y + s.h + 10) {
+          player.speedBoost = SPEED_BOOST;
+          return;
+        }
+      }
+    }
+
+    // ══════════════════════════════════════
+    // HEARTS — check collection
+    // ══════════════════════════════════════
+    function checkHearts() {
+      const pw = SPRITE_W;
+      for (const h of hearts) {
+        if (h.collected) continue;
+        if (player.x + pw > h.x && player.x < h.x + h.w &&
+            player.y + SPRITE_H > h.y && player.y < h.y + h.h) {
+          h.collected = true;
+          collectedHearts.push(h.idx);
+          saveCollectedHearts(collectedHearts);
+          // Animate collection
+          const el = document.querySelector(`.heart-pickup[data-idx="${h.idx}"]`);
+          if (el) el.classList.add('collected');
+          // Bump counter
+          updateHeartCounter();
+          const counter = document.getElementById('heart-counter');
+          counter.classList.remove('bump');
+          void counter.offsetWidth;
+          counter.classList.add('bump');
+          // Notify partner
+          sendPeer({ type: 'heart', idx: h.idx });
+        }
+      }
+    }
+
+    // ══════════════════════════════════════
+    // MOVING PLATFORMS — update positions
+    // ══════════════════════════════════════
+    function updateMovingPlatforms() {
+      const container = document.getElementById('moving-platforms');
+      movingPlats.forEach((m, i) => {
+        m.phase += m.speed * 0.02;
+        const prevX = m.x;
+        m.x = m.baseX + Math.sin(m.phase) * m.range;
+        m.dx = m.x - prevX;
+        const el = container.children[i];
+        if (el) el.style.left = m.x + 'px';
+      });
     }
 
     // ══════════════════════════════════════
@@ -626,6 +1060,42 @@
     }
 
     // ══════════════════════════════════════
+    // SKIP TO NEXT ADVENTURE
+    // ══════════════════════════════════════
+    function getNextAdventure() {
+      const completed = getCompleted();
+      return ADVENTURES.find(a => !completed.includes(a.id));
+    }
+
+    function setupSkipButton() {
+      const skipBtn = document.getElementById('skip-btn');
+      const next = getNextAdventure();
+      if (!next) { skipBtn.style.display = 'none'; return; }
+
+      skipBtn.style.display = '';
+      skipBtn.textContent = `skip to ${next.id} \u2192`;
+      if (collectedHearts.length > 0) skipBtn.classList.add('with-hearts');
+
+      skipBtn.onclick = () => {
+        // Smooth teleport: flash, move, unflash
+        const flash = document.getElementById('enter-flash');
+        flash.style.background = next.color || 'var(--dn-accent)';
+        flash.style.opacity = '1';
+        flash.style.transition = 'opacity 0.3s ease';
+
+        setTimeout(() => {
+          player.x = next.x - 100;
+          player.y = groundY();
+          player.vx = 0;
+          player.vy = 0;
+          player.jumping = false;
+          flash.style.opacity = '0';
+          setTimeout(() => { flash.style.transition = ''; }, 300);
+        }, 250);
+      };
+    }
+
+    // ══════════════════════════════════════
     // GAME LOOP
     // ══════════════════════════════════════
     let lastPeerSend = 0;
@@ -669,8 +1139,12 @@
       // Ducking
       player.ducking = !!(keys['ArrowDown'] && !player.jumping);
 
-      if (keys['ArrowLeft']) { player.vx = -SPEED; player.facing = 'left'; }
-      else if (keys['ArrowRight']) { player.vx = SPEED; player.facing = 'right'; }
+      // Speed zones
+      checkSpeedZones();
+      const effectiveSpeed = SPEED + player.speedBoost;
+
+      if (keys['ArrowLeft']) { player.vx = -effectiveSpeed; player.facing = 'left'; }
+      else if (keys['ArrowRight']) { player.vx = effectiveSpeed; player.facing = 'right'; }
       else { player.vx = 0; }
 
       if (keys['Space'] && !player.jumping && !player.ducking) {
@@ -704,10 +1178,19 @@
         }
       }
 
+      // Bounce pads
+      checkBouncePads();
+
       // Use shorter hitbox when ducking
       const effectiveH = player.ducking ? DUCK_H : SPRITE_H;
       const effectiveY = player.ducking ? (player.y + SPRITE_H - DUCK_H) : player.y;
       collideDuck(player.x, effectiveY, effectiveH);
+
+      // Hearts
+      checkHearts();
+
+      // Moving platforms
+      updateMovingPlatforms();
 
       const walking = Math.abs(player.vx) > 0 && !player.jumping;
       playerEl.classList.toggle('walking', walking);
@@ -770,6 +1253,24 @@
       else if (data.type === 'enter') {
         const adv = ADVENTURES.find(a => a.id === data.id);
         if (adv) enterAdventure(adv);
+      }
+      else if (data.type === 'heart') {
+        // Partner collected a heart — sync it
+        const h = hearts.find(h => h.idx === data.idx);
+        if (h && !h.collected) {
+          h.collected = true;
+          if (!collectedHearts.includes(data.idx)) {
+            collectedHearts.push(data.idx);
+            saveCollectedHearts(collectedHearts);
+          }
+          const el = document.querySelector(`.heart-pickup[data-idx="${data.idx}"]`);
+          if (el) el.classList.add('collected');
+          updateHeartCounter();
+          const counter = document.getElementById('heart-counter');
+          counter.classList.remove('bump');
+          void counter.offsetWidth;
+          counter.classList.add('bump');
+        }
       }
     }
 
@@ -849,7 +1350,12 @@
 
     computeObstacles();
     renderObstacles();
+    renderBouncePads();
+    renderSpeedZones();
+    renderHearts();
+    renderMovingPlatforms();
     renderAdventureBoxes();
+    setupSkipButton();
 
     player.y = groundY();
     partner.y = groundY();
@@ -922,6 +1428,10 @@
     window.addEventListener('resize', () => {
       computeObstacles();
       renderObstacles();
+      renderBouncePads();
+      renderSpeedZones();
+      renderHearts();
+      renderMovingPlatforms();
       renderAdventureBoxes();
       player.y = Math.min(player.y, groundY());
     });
