@@ -1278,6 +1278,41 @@ body.lights-off::after {
 
 /* ── Responsive ── */
 @media (max-width: 500px) {
+  .room-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .room-code-input {
+    font-size: 2rem;
+    width: 5.5em;
+  }
+
+  .room-btn {
+    font-size: 1.1rem;
+    padding: 0.55em 1.5em;
+    min-height: 44px;
+  }
+
+  .home-action-btn {
+    width: 110px;
+    padding: 1.2rem 0.8rem;
+  }
+
+  .back-btn {
+    top: 1rem;
+    left: 1rem;
+    font-size: 1.1rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .scared-corner {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
   .jar {
     width: 80px;
     height: 110px;
@@ -1309,6 +1344,7 @@ body.lights-off::after {
   .jar-grid {
     gap: 1rem 1.2rem;
     max-width: 380px;
+    top: 38%;
   }
 
   .deck-jar .jar {
@@ -1333,5 +1369,58 @@ body.lights-off::after {
 
   .tape-label {
     font-size: 0.75rem;
+  }
+
+  .question-display {
+    padding: 1.2rem;
+  }
+
+  .fire-glow {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (max-width: 360px) {
+  .home-actions {
+    gap: 0.7rem;
+  }
+
+  .home-action-btn {
+    width: 100px;
+    padding: 1rem 0.6rem;
+  }
+
+  .ha-label {
+    font-size: 0.9rem;
+  }
+
+  .jar-grid {
+    gap: 0.8rem 1rem;
+    max-width: 320px;
+  }
+
+  .deck-jar .jar {
+    width: 60px;
+    height: 82px;
+  }
+
+  .deck-jar .jar-lid {
+    width: 38px;
+    height: 10px;
+  }
+
+  .deck-jar .jar-body {
+    width: 50px;
+    height: 64px;
+    top: 12px;
+  }
+
+  .deck-jar .paper {
+    width: 16px;
+  }
+
+  .tape-label {
+    font-size: 0.65rem;
   }
 }

@@ -239,6 +239,57 @@
     .art-info-link:hover {
       opacity: 0.6;
     }
+
+    /* ── Mobile ── */
+    @media (max-width: 500px) {
+      body {
+        padding: 1.2rem 0.8rem 1.5rem;
+      }
+
+      .guess-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.25rem;
+      }
+
+      .guess-label {
+        text-align: left;
+        min-width: unset;
+        font-size: 1rem;
+      }
+
+      .guess-input {
+        font-size: 1rem;
+        padding: 0.6rem 0.8rem;
+      }
+
+      .reveal-row {
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .reveal-label {
+        text-align: left;
+        min-width: unset;
+        font-size: 0.95rem;
+      }
+
+      .art-btn {
+        font-size: 1.1rem;
+        padding: 0.55rem 1.2rem;
+        min-height: 44px;
+      }
+
+      .artwork-frame {
+        padding: 10px;
+      }
+
+      .frame-baroque { padding: 14px; }
+      .frame-ornate { padding: 16px; }
+      .frame-gallery { padding: 18px; }
+      .frame-gilt { padding: 16px; }
+      .frame-velvet { padding: 14px; }
+    }
   </style>
 </head>
 <body>
