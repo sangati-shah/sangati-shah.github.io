@@ -172,6 +172,21 @@
       100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
     }
 
+    /* ── Endless HUD ── */
+    .endless-hud {
+      position: fixed;
+      top: 1.2rem; left: 50%; transform: translateX(-50%);
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+      color: var(--dn-text, #555);
+      z-index: 300;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .endless-label {
+      font-size: 0.85rem;
+      color: var(--dn-sub, #999);
+    }
+
     /* ── Moving Platforms ── */
     .moving-platform {
       position: absolute;
@@ -705,6 +720,12 @@
     <span id="points-display">0</span>
   </div>
 
+  <!-- Endless mode distance -->
+  <div class="endless-hud" id="endless-hud" style="display:none;">
+    <span class="endless-label">distance</span>
+    <span id="endless-dist">0m</span>
+  </div>
+
   <!-- Chapter nav -->
   <nav class="chapter-nav" id="chapter-nav"></nav>
 
@@ -741,7 +762,8 @@
     // ══════════════════════════════════════
     // CONFIG
     // ══════════════════════════════════════
-    const WORLD_W = 12400;
+    const isEndless = new URLSearchParams(window.location.search).get('mode') === 'endless';
+    let WORLD_W = isEndless ? 4000 : 12400;
     const LINE_BOTTOM = 80;
     const SPRITE_W = 32;
     const SPRITE_H = 52;
@@ -1044,6 +1066,136 @@
         baseX: m.x, x: m.x, y: lineY - m.elevation - m.h, w: m.w, h: m.h,
         range: m.range, speed: m.speed, phase: 0
       }));
+    }
+
+    // ══════════════════════════════════════
+    // ENDLESS MODE — procedural generation
+    // ══════════════════════════════════════
+    let endlessGenerated = 0;  // how far we've generated
+    let endlessDistance = 0;
+    let endlessChunkIdx = 0;
+
+    function endlessDifficulty() {
+      // 0 → 1 scale, reaches ~0.8 around 20000px
+      return Math.min(1, endlessGenerated / 25000);
+    }
+
+    function endlessGenerateChunk() {
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
+      const d = endlessDifficulty();
+      const chunkW = 800 + Math.floor(Math.random() * 400);
+      const startX = endlessGenerated;
+      const endX = startX + chunkW;
+      endlessChunkIdx++;
+
+      // Ground gap (probability increases with difficulty)
+      if (Math.random() < 0.3 + d * 0.35) {
+        const gapW = 180 + Math.floor(d * 200 + Math.random() * 100);
+        const gapStart = startX + 200 + Math.floor(Math.random() * (chunkW - gapW - 300));
+        GROUND_GAPS.push({ start: gapStart, end: gapStart + gapW, respawnX: gapStart - 40 });
+
+        // Bounce pad before gap
+        BOUNCE_DEFS.push({ x: gapStart - 30, w: 30, h: 10 });
+        bouncePads.push({ x: gapStart - 30, y: lineY - 10, w: 30, h: 10 });
+
+        // Moving platform over gap (slower at start, faster later)
+        const platSpeed = 0.5 + d * 0.6 + Math.random() * 0.2;
+        const platW = Math.max(60, 100 - Math.floor(d * 30));
+        MOVING_PLAT_DEFS.push({ x: gapStart + gapW / 2 - platW / 2, w: platW, h: 14, range: 60 + Math.floor(d * 40), speed: platSpeed, elevation: 45 + Math.floor(Math.random() * 20) });
+        const mIdx = movingPlats.length;
+        const m = MOVING_PLAT_DEFS[MOVING_PLAT_DEFS.length - 1];
+        movingPlats.push({ baseX: m.x, x: m.x, y: lineY - m.elevation - m.h, w: m.w, h: m.h, range: m.range, speed: m.speed, phase: 0 });
+        // render it
+        const platEl = document.createElement('div');
+        platEl.className = 'moving-platform';
+        platEl.dataset.idx = mIdx;
+        platEl.style.cssText = `left:${m.x}px; top:${lineY - m.elevation - m.h}px; width:${m.w}px; height:${m.h}px;`;
+        document.getElementById('moving-platforms').appendChild(platEl);
+      }
+
+      // Obstacles (more and taller with difficulty)
+      const numObs = 1 + Math.floor(Math.random() * (2 + d * 3));
+      for (let i = 0; i < numObs; i++) {
+        const ox = startX + 50 + Math.floor(Math.random() * (chunkW - 100));
+        const isFloat = Math.random() < 0.25 + d * 0.15;
+        if (isFloat) {
+          const ow = 80 + Math.floor(Math.random() * 60);
+          const oh = 16 + Math.floor(Math.random() * 4);
+          OBSTACLE_DEFS.push(ob(ox, ow, oh, 'float'));
+          const o = { x: ox, y: lineY - DUCK_H - oh - 2, w: ow, h: oh, type: 'float' };
+          obstacles.push(o);
+          const el = document.createElement('div');
+          el.className = 'obstacle obstacle-float';
+          el.style.cssText = `left:${o.x}px; top:${o.y}px; width:${o.w}px; height:${o.h}px; position:absolute;`;
+          document.getElementById('obstacles').appendChild(el);
+        } else {
+          const ow = 25 + Math.floor(Math.random() * 20);
+          const oh = 24 + Math.floor(d * 30 + Math.random() * 15);
+          OBSTACLE_DEFS.push(ob(ox, ow, oh));
+          const o = { x: ox, y: lineY - oh, w: ow, h: oh, type: 'ground' };
+          obstacles.push(o);
+          const el = document.createElement('div');
+          el.className = 'obstacle';
+          el.style.cssText = `left:${o.x}px; top:${o.y}px; width:${o.w}px; height:${o.h}px; position:absolute;`;
+          document.getElementById('obstacles').appendChild(el);
+        }
+      }
+
+      // Hearts (occasional)
+      if (Math.random() < 0.5) {
+        const hx = startX + 100 + Math.floor(Math.random() * (chunkW - 200));
+        const he = 30 + Math.floor(Math.random() * 100);
+        const hIdx = hearts.length;
+        const h = { x: hx, y: lineY - 18 - he, w: 18, h: 18, idx: hIdx, collected: false };
+        hearts.push(h);
+        const el = document.createElement('div');
+        el.className = 'heart-pickup';
+        el.dataset.idx = hIdx;
+        el.style.cssText = `left:${hx}px; top:${h.y}px;`;
+        el.innerHTML = HEART_SVG;
+        document.getElementById('hearts').appendChild(el);
+      }
+
+      // Speed zone (occasional)
+      if (Math.random() < 0.3) {
+        const sx = startX + Math.floor(Math.random() * (chunkW - 120));
+        const sz = { x: sx, y: lineY - 20, w: 100, h: 20 };
+        speedZones.push(sz);
+        const el = document.createElement('div');
+        el.className = 'speed-zone';
+        el.style.cssText = `left:${sz.x}px; top:${sz.y}px; width:${sz.w}px; height:${sz.h}px;`;
+        const arrowCount = 3;
+        for (let i = 0; i < arrowCount; i++) {
+          const arrow = document.createElement('div');
+          arrow.className = 'sz-arrow';
+          arrow.style.cssText = `left:${10 + i * 30}px; top:3px; animation-delay:${i * 0.15}s;`;
+          el.appendChild(arrow);
+        }
+        document.getElementById('speed-zones').appendChild(el);
+      }
+
+      // Extend ground segment
+      const seg = document.createElement('div');
+      seg.className = 'ground-segment';
+      seg.style.left = startX + 'px';
+      seg.style.width = chunkW + 'px';
+      document.getElementById('ground-segments').appendChild(seg);
+
+      endlessGenerated = endX;
+      WORLD_W = endX + 2000;
+      worldEl.style.width = WORLD_W + 'px';
+    }
+
+    function updateEndless() {
+      if (!isEndless) return;
+      endlessDistance = Math.max(endlessDistance, Math.floor(player.x / 10));
+      const distEl = document.getElementById('endless-dist');
+      if (distEl) distEl.textContent = endlessDistance + 'm';
+
+      // Generate ahead of player
+      while (endlessGenerated < player.x + 3000) {
+        endlessGenerateChunk();
+      }
     }
 
     function renderGroundSegments() {
@@ -1691,8 +1843,8 @@
         fadeIntroIfReady();
       }
 
-      // Contextual hints as player progresses
-      if (!passedFirstOrb && !firstOrbDone && introPhase === 1 && player.x > 2900) {
+      // Contextual hints as player progresses (story mode only)
+      if (isEndless) {} else if (!passedFirstOrb && !firstOrbDone && introPhase === 1 && player.x > 2900) {
         passedFirstOrb = true;
         introEl.classList.remove('fade');
         introEl.style.whiteSpace = '';
@@ -1733,7 +1885,7 @@
       }
 
       // Check for ending trigger
-      if (player.x >= ENDING_X) {
+      if (!isEndless && player.x >= ENDING_X) {
         triggerEnding();
       }
 
@@ -1828,6 +1980,7 @@
 
       checkAdventureBoxes();
       updateChapterHighlight();
+      updateEndless();
 
       const now = Date.now();
       if (now - lastPeerSend > 50) {
@@ -1995,15 +2148,61 @@
 
     worldEl.style.width = WORLD_W + 'px';
 
-    computeObstacles();
-    renderObstacles();
-    renderBouncePads();
-    renderSpeedZones();
-    renderHearts();
-    renderMovingPlatforms();
-    renderGroundSegments();
-    renderAdventureBoxes();
-    renderEndTunnel();
+    if (isEndless) {
+      // Clear static definitions for endless mode
+      OBSTACLE_DEFS.length = 0;
+      BOUNCE_DEFS.length = 0;
+      SPEED_ZONE_DEFS.length = 0;
+      HEART_DEFS.length = 0;
+      MOVING_PLAT_DEFS.length = 0;
+      GROUND_GAPS.length = 0;
+
+      // Empty compute
+      obstacles = [];
+      bouncePads = [];
+      speedZones = [];
+      hearts = [];
+      movingPlats = [];
+      collectedHearts = [];
+
+      // Show endless HUD, hide story elements
+      document.getElementById('endless-hud').style.display = '';
+      document.getElementById('chapter-nav').style.display = 'none';
+      document.getElementById('end-tunnel').style.display = 'none';
+      introEl.textContent = 'endless mode\nhow far can you go?';
+      introEl.style.whiteSpace = 'pre-line';
+
+      // Render empty containers
+      renderObstacles();
+      renderBouncePads();
+      renderSpeedZones();
+      renderHearts();
+      renderMovingPlatforms();
+
+      // Generate initial ground + first chunks
+      const initSeg = document.createElement('div');
+      initSeg.className = 'ground-segment';
+      initSeg.style.left = '0px';
+      initSeg.style.width = '600px';
+      document.getElementById('ground-segments').innerHTML = '';
+      document.getElementById('ground-segments').appendChild(initSeg);
+      endlessGenerated = 600;
+
+      // Pre-generate a few chunks ahead
+      for (let i = 0; i < 5; i++) endlessGenerateChunk();
+
+      worldEl.style.width = WORLD_W + 'px';
+    } else {
+      computeObstacles();
+      renderObstacles();
+      renderBouncePads();
+      renderSpeedZones();
+      renderHearts();
+      renderMovingPlatforms();
+      renderGroundSegments();
+      renderAdventureBoxes();
+      renderEndTunnel();
+    }
     setupNavMenu();
 
     if (orbSpawnY !== null) {
