@@ -9,36 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
   <script src="../theme.js"></script>
 </head>
-<body>
+<body class="lights-off" style="background:#0a0a12;">
 
-  <!-- LIGHTS ON STATE -->
-  <div id="lights-on" class="jar-state active">
-    <a href="../" class="back-btn">← back</a>
-    <div class="lights-on-content">
-      <p class="jar-prompt">let's turn off the lights<br/>and get deep</p>
+  <a href="../" class="back-btn" style="color:rgba(255,255,255,0.4);">← home</a>
 
-      <!-- Tent Toggle Switch (from uiverse.io/m1her) -->
-      <div class="tent-switch vertical" id="tent-switch-container">
-        <div class="tent-switch-inner">
-          <div class="tent-dot"></div>
-          <label for="lights-toggle" class="tent-label">
-            <input type="checkbox" id="lights-toggle" />
-            <div class="tent">
-              <div class="tent-top">
-                <div class="tent-top-inner"></div>
-              </div>
-              <div class="tent-left"></div>
-              <div class="tent-right"></div>
-            </div>
-          </label>
-          <div class="tent-line"></div>
-        </div>
-      </div>
-    </div>
+  <!-- LIGHTS ON STATE (hidden - go straight to campfire) -->
+  <div id="lights-on" class="jar-state">
+    <input type="checkbox" id="lights-toggle" style="display:none;" checked />
   </div>
 
   <!-- LIGHTS OFF STATE (campfire) -->
-  <div id="lights-off" class="jar-state">
+  <div id="lights-off" class="jar-state active">
 
     <!-- Fireflies -->
     <div id="fireflies"></div>

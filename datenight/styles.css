@@ -603,6 +603,7 @@ body.lights-off {
   flex-direction: column;
   justify-content: flex-end;
   gap: 0;
+  background: #0a0a12;
 }
 
 .campfire-scene {
