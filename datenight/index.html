@@ -11,6 +11,7 @@
   <script src="theme.js"></script>
   <script src="hud.js"></script>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
   <!-- One unified component — steps revealed progressively -->
@@ -133,6 +134,22 @@
     let roomCode = null;
     let isHost = false;
 
+    // ── Supabase ──
+    const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function dbCreateRoom(code) {
+      await supabase.from('rooms').upsert({ code, created_at: new Date().toISOString() });
+    }
+    async function dbRoomExists(code) {
+      const { data } = await supabase.from('rooms').select('code').eq('code', code).single();
+      return !!data;
+    }
+    async function dbDeleteRoom(code) {
+      await supabase.from('rooms').delete().eq('code', code);
+    }
+
     function peerIdFromCode(code) {
       return 'shahhub-datenight-' + code;
     }
@@ -201,8 +218,9 @@
 
       peer = new Peer(id);
 
-      peer.on('open', () => {
+      peer.on('open', async () => {
         isHost = true;
+        await dbCreateRoom(code);
         enterRoom(code);
 
         const banner = document.getElementById('waiting-banner');
@@ -236,7 +254,7 @@
     });
 
     // ── Join room ──
-    joinBtn.addEventListener('click', () => {
+    joinBtn.addEventListener('click', async () => {
       const code = joinCodeInput.value.trim().toUpperCase();
       if (code.length !== 4) {
         showStatus('join-status', 'enter exactly 4 letters', true);
@@ -245,6 +263,13 @@
 
       joinBtn.disabled = true;
       showStatus('join-status', 'joining room...');
+
+      const exists = await dbRoomExists(code);
+      if (!exists) {
+        showStatus('join-status', 'room not found', true);
+        joinBtn.disabled = false;
+        return;
+      }
 
       peer = new Peer();
 
@@ -298,6 +323,8 @@
         // Update cursor label with partner name
         const label = document.querySelector('.partner-label');
         if (label && data.char.name) label.textContent = data.char.name;
+      } else if (data.type === 'start') {
+        playExitAndNavigate();
       }
     }
 
@@ -327,6 +354,13 @@
       partnerCursor.style.display = 'none';
       document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner disconnected)';
     }
+
+    // Clean up room in database when leaving
+    window.addEventListener('beforeunload', () => {
+      if (roomCode && isHost) {
+        dbDeleteRoom(roomCode);
+      }
+    });
 
     // ── Congrats & journey progress ──
     function showCongrats() {
@@ -546,9 +580,7 @@
     spawnSparkles();
 
     // ── Start Adventure Transition ──
-    document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
-      e.preventDefault();
-
+    function playExitAndNavigate() {
       const mySlot = document.getElementById('my-char-slot');
       const mySprite = document.getElementById('my-char-sprite');
       const charRect = mySprite ? mySprite.getBoundingClientRect() : null;
@@ -586,6 +618,12 @@
         sessionStorage.setItem('datenight-drop-in', '1');
         setTimeout(() => { window.location.href = 'world/'; }, 280);
       }, 550);
+    }
+
+    document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (conn && conn.open) conn.send({ type: 'start' });
+      playExitAndNavigate();
     });
   </script>
 </body>
