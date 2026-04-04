@@ -589,16 +589,7 @@
     .restart-btn:hover { color: rgba(240,230,211,0.4); }
     @media (pointer: coarse) { .restart-btn { bottom: 4.5rem; left: auto; right: 4.5rem; transform: none; } }
 
-    /* Ambient particles */
-    .ambient-particle {
-      position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; opacity: 0;
-      animation: ambient-rise linear infinite;
-    }
-    @keyframes ambient-rise {
-      0% { opacity: 0; transform: translateY(0) scale(0.5); }
-      15% { opacity: 0.6; } 80% { opacity: 0.15; }
-      100% { opacity: 0; transform: translateY(-20px) scale(0); }
-    }
+    /* Ambient particles — disabled */
   </style>
 </head>
 <body class="dark-hud">
@@ -923,21 +914,7 @@ function collectGem(i) {
   updateGemCounter(); addPoints(10);
 }
 
-function addAmbientParticles() {
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-    const v = LEVEL[r][c];
-    if (v!==LAVA&&v!==WATER&&v!==GOO) continue;
-    if (r>0&&LEVEL[r-1][c]===v) continue;
-    if (Math.random()>0.6) continue;
-    const p = document.createElement('div'); p.className = 'ambient-particle';
-    const sz = 1.5+Math.random()*2;
-    p.style.cssText = `width:${sz}px;height:${sz}px;left:${c*tileW+Math.random()*tileW}px;top:${r*tileH-1}px;animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*3}s;`;
-    if (v===LAVA) p.style.background = `rgba(255,${100+Math.random()*80|0},0,0.5)`;
-    else if (v===WATER) p.style.background = `rgba(0,${80+Math.random()*80|0},255,0.3)`;
-    else p.style.background = `rgba(${50+Math.random()*50|0},255,${50+Math.random()*50|0},0.3)`;
-    levelEl.appendChild(p);
-  }
-}
+function addAmbientParticles() {}
 
 function applyCharColors() {
   const fc = isHost ? myChar : partnerChar, wc = isHost ? partnerChar : myChar;
