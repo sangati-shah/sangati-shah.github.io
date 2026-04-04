@@ -14,44 +14,117 @@
 <body>
   <a href="../" class="back-btn">&larr; back</a>
 
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
   <div class="games-wrapper">
     <h1 class="games-title" data-dn-cycle>game night</h1>
     <p class="games-sub">pick a game, loser gets the dishes</p>
 
-    <div class="game-tabs">
-      <a class="game-tab" href="../puzzle/music/?from=games">rhythm</a>
-      <a class="game-tab" href="../puzzle/elements/?from=games">elements</a>
-      <a class="game-tab" href="../puzzle/mystery/?from=games">azulejos</a>
-      <a class="game-tab" href="../art/?from=games">gallery</a>
-      <a class="game-tab" data-game="tictactoe">tic tac toe</a>
-      <a class="game-tab" data-game="connect4">connect 4</a>
-      <a class="game-tab" href="../world/">ending</a>
+    <div class="game-cards">
+      <a class="game-card" href="../puzzle/music/?from=games" style="--i:0">
+        <div class="card-icon icon-rhythm">
+          <div class="note n1"></div>
+          <div class="note n2"></div>
+          <div class="note n3"></div>
+        </div>
+        <span class="card-name">rhythm</span>
+        <span class="card-hint">tap to the beat</span>
+      </a>
+      <a class="game-card" href="../puzzle/elements/?from=games" style="--i:1">
+        <div class="card-icon icon-elements">
+          <div class="elem e-fire"></div>
+          <div class="elem e-water"></div>
+          <div class="elem e-earth"></div>
+        </div>
+        <span class="card-name">elements</span>
+        <span class="card-hint">mix & match</span>
+      </a>
+      <a class="game-card" href="../puzzle/mystery/?from=games" style="--i:2">
+        <div class="card-icon icon-mystery">
+          <div class="magnifier"></div>
+        </div>
+        <span class="card-name">azulejos</span>
+        <span class="card-hint">solve the clues</span>
+      </a>
+      <a class="game-card" href="../art/?from=games" style="--i:3">
+        <div class="card-icon icon-gallery">
+          <div class="easel"></div>
+          <div class="canvas"></div>
+        </div>
+        <span class="card-name">gallery</span>
+        <span class="card-hint">create together</span>
+      </a>
+      <a class="game-card" data-game="tictactoe" style="--i:4">
+        <div class="card-icon icon-ttt">
+          <div class="grid-line gl-h1"></div>
+          <div class="grid-line gl-h2"></div>
+          <div class="grid-line gl-v1"></div>
+          <div class="grid-line gl-v2"></div>
+          <span class="mini-x">x</span>
+          <span class="mini-o">o</span>
+        </div>
+        <span class="card-name">tic tac toe</span>
+        <span class="card-hint">classic showdown</span>
+      </a>
+      <a class="game-card" data-game="connect4" style="--i:5">
+        <div class="card-icon icon-c4">
+          <div class="c4-mini-dot dot-r"></div>
+          <div class="c4-mini-dot dot-y"></div>
+          <div class="c4-mini-dot dot-r2"></div>
+          <div class="c4-mini-dot dot-y2"></div>
+        </div>
+        <span class="card-name">connect 4</span>
+        <span class="card-hint">drop to win</span>
+      </a>
+      <a class="game-card card-ending" href="../world/" style="--i:6">
+        <div class="card-icon icon-ending">
+          <div class="star s1"></div>
+          <div class="star s2"></div>
+          <div class="star s3"></div>
+        </div>
+        <span class="card-name">ending</span>
+        <span class="card-hint">the final chapter</span>
+      </a>
     </div>
 
     <!-- Tic Tac Toe -->
     <div class="game-panel" id="tictactoe-panel">
-      <div class="game-status" id="ttt-status">your turn, <span class="player-x">X</span></div>
-      <div class="ttt-board" id="ttt-board">
-        <button class="ttt-cell" data-index="0"></button>
-        <button class="ttt-cell" data-index="1"></button>
-        <button class="ttt-cell" data-index="2"></button>
-        <button class="ttt-cell" data-index="3"></button>
-        <button class="ttt-cell" data-index="4"></button>
-        <button class="ttt-cell" data-index="5"></button>
-        <button class="ttt-cell" data-index="6"></button>
-        <button class="ttt-cell" data-index="7"></button>
-        <button class="ttt-cell" data-index="8"></button>
+      <div class="game-stage">
+        <div class="game-status" id="ttt-status">your turn, <span class="player-x">X</span></div>
+        <div class="ttt-board" id="ttt-board">
+          <button class="ttt-cell" data-index="0"></button>
+          <button class="ttt-cell" data-index="1"></button>
+          <button class="ttt-cell" data-index="2"></button>
+          <button class="ttt-cell" data-index="3"></button>
+          <button class="ttt-cell" data-index="4"></button>
+          <button class="ttt-cell" data-index="5"></button>
+          <button class="ttt-cell" data-index="6"></button>
+          <button class="ttt-cell" data-index="7"></button>
+          <button class="ttt-cell" data-index="8"></button>
+        </div>
+        <div class="game-actions">
+          <button class="reset-btn" id="ttt-reset">play again</button>
+          <button class="back-to-menu-btn" data-back>back to games</button>
+        </div>
       </div>
-      <button class="reset-btn" id="ttt-reset">play again</button>
     </div>
 
     <!-- Connect 4 -->
     <div class="game-panel" id="connect4-panel">
-      <div class="game-status" id="c4-status">your turn, <span class="player-red">red</span></div>
-      <div class="c4-board" id="c4-board">
-        <!-- 7 columns x 6 rows, built by JS -->
+      <div class="game-stage">
+        <div class="game-status" id="c4-status">your turn, <span class="player-red">red</span></div>
+        <div class="c4-board" id="c4-board">
+          <!-- 7 columns x 6 rows, built by JS -->
+        </div>
+        <div class="game-actions">
+          <button class="reset-btn" id="c4-reset">play again</button>
+          <button class="back-to-menu-btn" data-back>back to games</button>
+        </div>
       </div>
-      <button class="reset-btn" id="c4-reset">play again</button>
     </div>
   </div>
 

@@ -5,16 +5,29 @@ const soloCheckbox = document.getElementById('solo-mode');
 function isSolo() { return soloCheckbox && soloCheckbox.checked; }
 
 // ══════════════════════════════════════
-// TAB SWITCHING (only for inline games)
+// CARD / TAB SWITCHING (only for inline games)
 // ══════════════════════════════════════
-document.querySelectorAll('.game-tab[data-game]').forEach((tab) => {
-  tab.addEventListener('click', (e) => {
+const wrapper = document.querySelector('.games-wrapper');
+
+document.querySelectorAll('.game-card[data-game]').forEach((card) => {
+  card.addEventListener('click', (e) => {
     e.preventDefault();
-    document.querySelectorAll('.game-tab').forEach((t) => t.classList.remove('active'));
+    document.querySelectorAll('.game-card').forEach((c) => c.classList.remove('active'));
     document.querySelectorAll('.game-panel').forEach((p) => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(tab.dataset.game + '-panel').classList.add('active');
+    card.classList.add('active');
+    wrapper.classList.add('playing');
+    document.getElementById(card.dataset.game + '-panel').classList.add('active');
   });
+});
+
+function backToMenu() {
+  document.querySelectorAll('.game-card').forEach((c) => c.classList.remove('active'));
+  document.querySelectorAll('.game-panel').forEach((p) => p.classList.remove('active'));
+  wrapper.classList.remove('playing');
+}
+
+document.querySelectorAll('[data-back]').forEach((btn) => {
+  btn.addEventListener('click', backToMenu);
 });
 
 // ══════════════════════════════════════
