@@ -333,6 +333,14 @@ body.lights-off {
   box-shadow: 0 10px 30px rgba(232, 93, 117, 0.3);
 }
 
+.home-action-secondary {
+  background: var(--dn-btn-bg);
+  border: 1.5px solid var(--dn-btn-border);
+  color: var(--dn-btn-text);
+  width: 95px;
+  padding: 1rem 0.6rem;
+}
+
 .ha-icon {
   font-size: 2rem;
   display: flex;
