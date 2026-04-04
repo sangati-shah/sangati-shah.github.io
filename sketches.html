@@ -6,21 +6,21 @@
   <title>Sketches</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
     :root {
-      --saffron: rgba(232, 131, 58, 1);
-      --rose: rgba(207, 76, 126, 1);
-      --peacock: rgba(0, 115, 130, 1);
-      --cream: #fdf6ee;
+      --ghibli-bg: #f7f2e7;
+      --ghibli-text: #3a5743;
+      --ghibli-sub: #9bb5a0;
+      --ghibli-accent: #c25b56;
     }
 
     body {
-      font-family: 'Nunito', system-ui, sans-serif;
+      font-family: 'Quicksand', system-ui, sans-serif;
       margin: 0;
       padding: 0;
-      color: #4a3f36;
-      background: var(--cream);
+      color: var(--ghibli-text);
+      background: var(--ghibli-bg);
     }
 
     .nav {
@@ -29,9 +29,9 @@
       width: 100%;
       padding: 1rem 2rem;
       z-index: 1000;
-      background: rgba(253, 246, 238, 0.95);
+      background: rgba(247, 242, 231, 0.95);
       backdrop-filter: blur(12px);
-      box-shadow: 0 2px 20px rgba(180, 87, 72, 0.06);
+      box-shadow: 0 2px 20px rgba(58, 87, 67, 0.06);
     }
 
     .nav-content {
@@ -43,13 +43,10 @@
     }
 
     .nav-logo {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Quicksand', sans-serif;
       font-size: 1.5rem;
       font-weight: bold;
-      background: linear-gradient(45deg, var(--saffron), var(--rose));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--ghibli-text);
     }
 
     main {
@@ -60,10 +57,11 @@
     }
 
     h1 {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Quicksand', sans-serif;
       text-align: center;
       margin-bottom: 2rem;
-      color: var(--peacock);
+      font-weight: 700;
+      color: var(--ghibli-text);
     }
 
     ul { list-style: none; padding: 0; }
@@ -77,7 +75,7 @@
       transition: color 0.2s ease;
     }
     a:hover {
-      color: var(--saffron);
+      color: var(--ghibli-accent);
       text-decoration: underline;
     }
     footer {
@@ -86,8 +84,8 @@
       align-items: center;
       gap: 10px;
       padding: 10px;
-      font-family: 'Nunito', sans-serif;
-      color: var(--rose);
+      font-family: 'Quicksand', sans-serif;
+      color: var(--ghibli-sub);
       font-size: 1rem;
       margin-top: 3em;
     }
