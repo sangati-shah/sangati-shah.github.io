@@ -193,10 +193,33 @@
       el.className = 'room-status' + (isError ? ' room-error' : '');
     }
 
+    const ROOM_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+    function saveRoomExpiry(code) {
+      localStorage.setItem('datenight-room-created', JSON.stringify({ code, ts: Date.now() }));
+    }
+    function isRoomExpired() {
+      try {
+        const d = JSON.parse(localStorage.getItem('datenight-room-created'));
+        if (!d) return false;
+        return Date.now() - d.ts > ROOM_TTL;
+      } catch { return false; }
+    }
+    function clearExpiredRoom() {
+      localStorage.removeItem('datenight-room-created');
+      sessionStorage.removeItem('datenight-room');
+      sessionStorage.removeItem('datenight-host');
+      sessionStorage.removeItem('datenight-completed');
+      sessionStorage.removeItem('datenight-hearts');
+      sessionStorage.removeItem('partner-character');
+      sessionStorage.removeItem('puzzle-points');
+    }
+
     function enterRoom(code) {
       roomCode = code;
       sessionStorage.setItem('datenight-room', code);
       sessionStorage.setItem('datenight-host', isHost ? '1' : '0');
+      saveRoomExpiry(code);
 
       // Smooth transition to home step (same component, no overlay shift)
       showStep(stepHome);
@@ -468,6 +491,9 @@
         peer.on('error', () => {});
       }
     }
+
+    // ── Check room expiry ──
+    if (isRoomExpired()) clearExpiredRoom();
 
     // ── URL params ──
     const params = new URLSearchParams(window.location.search);
