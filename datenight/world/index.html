@@ -150,53 +150,42 @@
       opacity: 0.55;
     }
 
-    /* ── Skip / Nav Menu ── */
-    .nav-menu-btn {
-      position: fixed; top: 1.2rem; right: 1.2rem;
+    /* ── Chapter Nav ── */
+    .chapter-nav {
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 0.15rem;
+      z-index: 310;
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 0.95rem; color: var(--dn-sub, #999);
-      cursor: pointer; border: none; background: none;
-      z-index: 310;
-      opacity: 0.7;
-      transition: opacity 0.3s, color 0.3s;
-      padding: 4px 8px;
+      font-size: 0.85rem;
+      background: color-mix(in srgb, var(--dn-bg, #f7f2e7) 85%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      border-radius: 20px;
+      padding: 3px 4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .nav-menu-btn:hover { opacity: 1; color: var(--dn-text, #555); }
-    .heart-counter.visible ~ .nav-menu-btn { top: 2.6rem; }
-
-    .nav-dropdown {
-      position: fixed; top: 2.6rem; right: 1.2rem;
-      font-family: 'Caveat', cursive;
-      background: var(--dn-bg, #f7f2e7);
-      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
-      border-radius: 10px;
-      padding: 6px 0;
-      z-index: 310;
-      min-width: 140px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      display: none;
-    }
-    .nav-dropdown.open { display: block; }
-    .heart-counter.visible ~ .nav-dropdown { top: 4rem; }
-    .nav-dropdown button {
-      display: block; width: 100%;
+    .chapter-btn {
       background: none; border: none;
-      padding: 7px 16px;
-      text-align: left;
-      font-family: 'Caveat', cursive;
-      font-size: 1rem;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-family: inherit; font-size: inherit;
       color: var(--dn-sub, #999);
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
     }
-    .nav-dropdown button:hover {
-      background: color-mix(in srgb, var(--dn-accent, #e85d75) 10%, transparent);
+    .chapter-btn:hover {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
       color: var(--dn-text, #555);
     }
-    .nav-dropdown .nav-sep {
-      height: 1px;
-      margin: 4px 12px;
-      background: color-mix(in srgb, var(--dn-accent, #e85d75) 15%, transparent);
+    .chapter-btn.active {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      color: var(--dn-text, #555);
+    }
+    .chapter-dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+      flex-shrink: 0;
     }
 
     /* ── Glowing Adventure Box ── */
@@ -582,9 +571,8 @@
     <span id="heart-count">0</span>
   </div>
 
-  <!-- Nav menu -->
-  <button class="nav-menu-btn" id="nav-menu-btn">skip</button>
-  <div class="nav-dropdown" id="nav-dropdown"></div>
+  <!-- Chapter nav -->
+  <nav class="chapter-nav" id="chapter-nav"></nav>
 
   <div class="intro-text" id="intro-text"></div>
 
@@ -838,14 +826,13 @@
     ];
 
     // ══════════════════════════════════════
-    // NAV SKIP TARGETS
+    // CHAPTER NAV
     // ══════════════════════════════════════
-    const NAV_TARGETS = [
-      { label: 'orb 1 — music',    x: 2750 },
-      { label: 'orb 2 — elements',  x: 5200 },
-      { label: 'orb 3 — mystery',   x: 8000 },
-      { label: 'the gauntlet',      x: 8400 },
-      { label: 'the ending',        x: ENDING_X - 200 },
+    const CHAPTERS = [
+      { label: 'home',      action: 'home' },
+      { label: 'rhythm',    x: 2750 },
+      { label: 'elements',  x: 5200 },
+      { label: 'mystery',   x: 8000 },
     ];
 
     // ══════════════════════════════════════
@@ -1272,8 +1259,7 @@
 
       // Hide game UI
       document.querySelector('.mobile-controls').style.display = 'none';
-      document.getElementById('nav-menu-btn').style.display = 'none';
-      document.getElementById('nav-dropdown').classList.remove('open');
+      document.getElementById('chapter-nav').style.display = 'none';
 
       // Generate stars
       for (let i = 0; i < 80; i++) {
@@ -1378,47 +1364,43 @@
     // NAV MENU
     // ══════════════════════════════════════
     function setupNavMenu() {
-      const btn = document.getElementById('nav-menu-btn');
-      const dropdown = document.getElementById('nav-dropdown');
-      dropdown.innerHTML = '';
+      const nav = document.getElementById('chapter-nav');
+      nav.innerHTML = '';
 
-      NAV_TARGETS.forEach(t => {
-        const b = document.createElement('button');
-        b.textContent = t.label;
-        b.onclick = () => {
-          dropdown.classList.remove('open');
-          if (t.label === 'the ending') {
-            teleportTo(t.x);
-            setTimeout(triggerEnding, 500);
-            return;
-          }
-          teleportTo(t.x);
-        };
-        dropdown.appendChild(b);
-      });
-
-      // Separator
-      const sep = document.createElement('div');
-      sep.className = 'nav-sep';
-      dropdown.appendChild(sep);
-
-      // Home
-      const homeBtn = document.createElement('button');
-      homeBtn.textContent = '\u2190 home';
-      homeBtn.onclick = () => {
-        sessionStorage.setItem('datenight-map-x', Math.round(player.x));
-        window.location.href = '../?from=map';
-      };
-      dropdown.appendChild(homeBtn);
-
-      btn.onclick = () => dropdown.classList.toggle('open');
-
-      // Close dropdown when clicking elsewhere
-      document.addEventListener('click', e => {
-        if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-          dropdown.classList.remove('open');
+      CHAPTERS.forEach((ch, i) => {
+        if (i > 0) {
+          const dot = document.createElement('span');
+          dot.className = 'chapter-dot';
+          nav.appendChild(dot);
         }
+        const btn = document.createElement('button');
+        btn.className = 'chapter-btn';
+        btn.textContent = ch.label;
+        btn.dataset.idx = i;
+        btn.onclick = () => {
+          if (ch.action === 'home') {
+            sessionStorage.setItem('datenight-map-x', Math.round(player.x));
+            window.location.href = '../?from=map';
+          } else {
+            teleportTo(ch.x);
+          }
+        };
+        nav.appendChild(btn);
       });
+
+      updateChapterHighlight();
+    }
+
+    function updateChapterHighlight() {
+      const nav = document.getElementById('chapter-nav');
+      if (!nav) return;
+      const btns = nav.querySelectorAll('.chapter-btn');
+      // Find which chapter the player is closest to (skip home at index 0)
+      let activeIdx = 0;
+      for (let i = CHAPTERS.length - 1; i >= 1; i--) {
+        if (player.x >= CHAPTERS[i].x - 400) { activeIdx = i; break; }
+      }
+      btns.forEach((b, i) => b.classList.toggle('active', i === activeIdx));
     }
 
     function teleportTo(targetX) {
@@ -1554,6 +1536,7 @@
       worldEl.style.transform = `translateX(${camX}px)`;
 
       checkAdventureBoxes();
+      updateChapterHighlight();
 
       const now = Date.now();
       if (now - lastPeerSend > 50) {
