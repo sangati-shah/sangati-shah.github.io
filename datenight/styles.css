@@ -753,6 +753,65 @@ body.lights-off {
   z-index: 10;
 }
 
+/* ── SINGLE JAR ── */
+.jar-prompt-text {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  color: rgba(255, 200, 120, 0.7);
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.single-jar {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.single-jar:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.single-jar .jar {
+  width: 110px;
+  height: 150px;
+}
+
+.single-jar .jar-lid {
+  width: 68px;
+  height: 18px;
+}
+
+.single-jar .jar-lid::after {
+  bottom: -5px;
+  left: -6px;
+  right: -6px;
+  height: 7px;
+}
+
+.single-jar .jar-body {
+  width: 90px;
+  height: 118px;
+  top: 20px;
+}
+
+.single-jar .paper {
+  width: 30px;
+}
+
+.single-jar .paper-1 { height: 52px; bottom: 10px; left: 10px; }
+.single-jar .paper-2 { height: 44px; bottom: 8px; left: 30px; }
+.single-jar .paper-3 { height: 48px; bottom: 12px; right: 10px; }
+
 .deck-jar {
   position: relative;
   cursor: pointer;
