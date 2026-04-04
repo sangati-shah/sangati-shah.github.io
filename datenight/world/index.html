@@ -1128,6 +1128,9 @@
     const partner = { x: spawnAfter ? spawnX : spawnX + 40, y: 0, jumping: false, ducking: false };
     let entering = false;
     let spawnImmunity = spawnAfter ? true : false;
+    let partnerVisible = false;
+    let lastPartnerMsg = 0;
+    let smoothCamX = null;
 
     const playerEl = document.getElementById('player');
     const partnerEl = document.getElementById('partner');
@@ -1249,9 +1252,10 @@
     // ══════════════════════════════════════
     function updateMovingPlatforms() {
       const container = document.getElementById('moving-platforms');
+      const t = Date.now() / 1000;
       movingPlats.forEach((m, i) => {
-        m.phase += m.speed * 0.02;
         const prevX = m.x;
+        m.phase = t * m.speed;
         m.x = m.baseX + Math.sin(m.phase) * m.range;
         m.dx = m.x - prevX;
         const el = container.children[i];
@@ -1283,9 +1287,7 @@
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
       const boxWorldX = adv.x + BOX_SIZE / 2;
       const boxWorldY = lineY - BOX_SIZE - adv.elevation + BOX_SIZE / 2;
-      const vpW = window.innerWidth;
-      let camX = -(player.x - vpW / 2 + 16);
-      camX = Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
+      const camX = smoothCamX !== null ? smoothCamX : computeCamX();
       const boxScreenX = boxWorldX + camX;
       const boxScreenY = boxWorldY;
 
@@ -1601,10 +1603,31 @@
       playerEl.style.left = player.x + 'px';
       playerEl.style.top = player.y + 'px';
 
-      const vpW = window.innerWidth;
-      let camX = -(player.x - vpW / 2 + 16);
-      camX = Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
-      worldEl.style.transform = `translateX(${camX}px)`;
+      // Staleness check — mark partner invisible if no message in 3s
+      if (partnerVisible && Date.now() - lastPartnerMsg > 3000) {
+        partnerVisible = false;
+      }
+
+      // Shared camera: center on midpoint when partner is visible
+      let camX = computeCamX();
+      if (smoothCamX === null) smoothCamX = camX;
+      smoothCamX += (camX - smoothCamX) * 0.12;
+      worldEl.style.transform = `translateX(${smoothCamX}px)`;
+
+      // Tether: prevent player from moving off-screen when partner is visible
+      if (partnerVisible) {
+        const vpW = window.innerWidth;
+        const margin = 40;
+        const playerScreenX = player.x + smoothCamX;
+        if (playerScreenX < margin) {
+          player.x = margin - smoothCamX;
+          player.vx = 0;
+        } else if (playerScreenX + SPRITE_W > vpW - margin) {
+          player.x = vpW - margin - SPRITE_W - smoothCamX;
+          player.vx = 0;
+        }
+        playerEl.style.left = player.x + 'px';
+      }
 
       checkAdventureBoxes();
       updateChapterHighlight();
@@ -1633,6 +1656,20 @@
       partnerEl.classList.toggle('jumping', data.jumping);
       partnerEl.classList.toggle('ducking', !!data.ducking);
       partnerEl.classList.toggle('facing-left', data.facing === 'left');
+      partnerVisible = true;
+      lastPartnerMsg = Date.now();
+    }
+
+    function computeCamX() {
+      const vpW = window.innerWidth;
+      let camX;
+      if (partnerVisible) {
+        const midX = (player.x + partner.x) / 2;
+        camX = -(midX - vpW / 2 + 16);
+      } else {
+        camX = -(player.x - vpW / 2 + 16);
+      }
+      return Math.min(0, Math.max(camX, -(WORLD_W - vpW)));
     }
 
     // ══════════════════════════════════════
