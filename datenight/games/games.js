@@ -1,10 +1,4 @@
 // ══════════════════════════════════════
-// SOLO MODE
-// ══════════════════════════════════════
-const soloCheckbox = document.getElementById('solo-mode');
-function isSolo() { return soloCheckbox.checked; }
-
-// ══════════════════════════════════════
 // TAB SWITCHING (only for inline games)
 // ══════════════════════════════════════
 document.querySelectorAll('.game-tab[data-game]').forEach((tab) => {
