@@ -1548,7 +1548,7 @@
       else if (keys['ArrowRight']) { player.vx = effectiveSpeed; player.facing = 'right'; }
       else { player.vx = 0; }
 
-      if (keys['Space'] && !player.jumping && !player.ducking) {
+      if ((keys['Space'] || keys['ArrowUp']) && !player.jumping && !player.ducking) {
         player.vy = JUMP_VEL;
         player.jumping = true;
       }
