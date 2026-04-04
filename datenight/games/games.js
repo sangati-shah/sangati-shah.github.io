@@ -1,8 +1,15 @@
 // ══════════════════════════════════════
-// TAB SWITCHING
+// SOLO MODE
 // ══════════════════════════════════════
-document.querySelectorAll('.game-tab').forEach((tab) => {
-  tab.addEventListener('click', () => {
+const soloCheckbox = document.getElementById('solo-mode');
+function isSolo() { return soloCheckbox.checked; }
+
+// ══════════════════════════════════════
+// TAB SWITCHING (only for inline games)
+// ══════════════════════════════════════
+document.querySelectorAll('.game-tab[data-game]').forEach((tab) => {
+  tab.addEventListener('click', (e) => {
+    e.preventDefault();
     document.querySelectorAll('.game-tab').forEach((t) => t.classList.remove('active'));
     document.querySelectorAll('.game-panel').forEach((p) => p.classList.remove('active'));
     tab.classList.add('active');
@@ -60,7 +67,39 @@ function tttHandleClick(e) {
   tttTurn = tttTurn === 'X' ? 'O' : 'X';
   const cls = tttTurn === 'X' ? 'player-x' : 'player-o';
   tttUpdateStatus(`your turn, <span class="${cls}">${tttTurn}</span>`);
+
+  if (isSolo() && tttTurn === 'O' && !tttOver) {
+    setTimeout(tttAiMove, 350);
+  }
 }
+
+function tttAiMove() {
+  // Try to win
+  for (let i = 0; i < 9; i++) {
+    if (!tttBoard[i]) {
+      tttBoard[i] = 'O';
+      if (tttCheckWin(tttBoard, 'O')) { tttBoard[i] = null; tttPlayAt(i); return; }
+      tttBoard[i] = null;
+    }
+  }
+  // Block X from winning
+  for (let i = 0; i < 9; i++) {
+    if (!tttBoard[i]) {
+      tttBoard[i] = 'X';
+      if (tttCheckWin(tttBoard, 'X')) { tttBoard[i] = null; tttPlayAt(i); return; }
+      tttBoard[i] = null;
+    }
+  }
+  // Take center, then corners, then any
+  const prefs = [4, 0, 2, 6, 8, 1, 3, 5, 7];
+  for (const i of prefs) {
+    if (!tttBoard[i]) { tttPlayAt(i); return; }
+  }
+}
+
+function tttPlayAt(idx) {
+  const cell = document.querySelector(`.ttt-cell[data-index="${idx}"]`);
+  cell.click();
 
 function tttReset() {
   tttBoard.fill(null);
@@ -168,7 +207,34 @@ function c4HandleClick(col) {
   c4Turn = c4Turn === 'red' ? 'yellow' : 'red';
   const cls = c4Turn === 'red' ? 'player-red' : 'player-yellow';
   c4UpdateStatus(`your turn, <span class="${cls}">${c4Turn}</span>`);
+
+  if (isSolo() && c4Turn === 'yellow' && !c4Over) {
+    setTimeout(c4AiMove, 400);
+  }
 }
+
+function c4AiMove() {
+  // Try to win
+  for (let c = 0; c < C4_COLS; c++) {
+    const r = c4DropRow(c);
+    if (r < 0) continue;
+    c4Board[r][c] = 'yellow';
+    if (c4CheckWin(c4Board, 'yellow')) { c4Board[r][c] = null; c4HandleClick(c); return; }
+    c4Board[r][c] = null;
+  }
+  // Block red from winning
+  for (let c = 0; c < C4_COLS; c++) {
+    const r = c4DropRow(c);
+    if (r < 0) continue;
+    c4Board[r][c] = 'red';
+    if (c4CheckWin(c4Board, 'red')) { c4Board[r][c] = null; c4HandleClick(c); return; }
+    c4Board[r][c] = null;
+  }
+  // Prefer center columns
+  const prefs = [3, 2, 4, 1, 5, 0, 6];
+  for (const c of prefs) {
+    if (c4DropRow(c) >= 0) { c4HandleClick(c); return; }
+  }
 
 function c4Reset() {
   c4Board = Array.from({ length: C4_ROWS }, () => Array(C4_COLS).fill(null));

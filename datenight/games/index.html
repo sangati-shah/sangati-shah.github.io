@@ -19,37 +19,20 @@
     <p class="games-sub">pick a game, loser gets the dishes</p>
 
     <div class="game-tabs">
-      <button class="game-tab active" data-game="rhythm">rhythm</button>
-      <button class="game-tab" data-game="elements">elements</button>
-      <button class="game-tab" data-game="mystery">mystery</button>
-      <button class="game-tab" data-game="gallery">gallery</button>
-      <button class="game-tab" data-game="tictactoe">tic tac toe</button>
-      <button class="game-tab" data-game="connect4">connect 4</button>
-      <button class="game-tab" data-game="endless">endless</button>
+      <a class="game-tab" href="../puzzle/music/?from=games">rhythm</a>
+      <a class="game-tab" href="../puzzle/elements/?from=games">elements</a>
+      <a class="game-tab" href="../puzzle/mystery/?from=games">mystery</a>
+      <a class="game-tab" href="../art/?from=games">gallery</a>
+      <a class="game-tab" data-game="tictactoe">tic tac toe</a>
+      <a class="game-tab" data-game="connect4">connect 4</a>
     </div>
 
-    <!-- Rhythm -->
-    <div class="game-panel active" id="rhythm-panel">
-      <p class="game-desc">feel the beat together</p>
-      <a href="../puzzle/music/" class="play-link">play rhythm</a>
-    </div>
-
-    <!-- Elements -->
-    <div class="game-panel" id="elements-panel">
-      <p class="game-desc">fire and water, side by side</p>
-      <a href="../puzzle/elements/" class="play-link">play elements</a>
-    </div>
-
-    <!-- Mystery -->
-    <div class="game-panel" id="mystery-panel">
-      <p class="game-desc">match the hidden tiles</p>
-      <a href="../puzzle/mystery/" class="play-link">play mystery</a>
-    </div>
-
-    <!-- Gallery -->
-    <div class="game-panel" id="gallery-panel">
-      <p class="game-desc">guess the art, impress your date</p>
-      <a href="../art/" class="play-link">play gallery</a>
+    <div class="solo-toggle">
+      <label class="toggle-label">
+        <input type="checkbox" id="solo-mode" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">solo mode</span>
+      </label>
     </div>
 
     <!-- Tic Tac Toe -->
@@ -76,12 +59,6 @@
         <!-- 7 columns x 6 rows, built by JS -->
       </div>
       <button class="reset-btn" id="c4-reset">play again</button>
-    </div>
-
-    <!-- Endless -->
-    <div class="game-panel" id="endless-panel">
-      <p class="game-desc">an endless adventure that only gets harder</p>
-      <a href="../world/?mode=endless" class="play-link">start endless</a>
     </div>
   </div>
 
