@@ -6,8 +6,10 @@
   <title>art guessing</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../hud.css" />
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@400;600&family=Comfortaa:wght@400;600&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&family=Lora:wght@400;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
   <script src="../theme.js"></script>
+  <script src="../hud.js"></script>
   <style>
     body {
       height: 100dvh;
@@ -15,7 +17,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem 1.5rem;
+      padding: 3rem 1.5rem 1rem;
       box-sizing: border-box;
       transition: background 1.5s ease;
     }
@@ -383,6 +385,45 @@
     }
     .art-info-link:hover { opacity: 0.6; }
 
+    /* Chapter nav */
+    .chapter-nav {
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 0.15rem;
+      z-index: 200;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.85rem;
+      background: color-mix(in srgb, var(--dn-bg, #f7f2e7) 85%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      border-radius: 20px;
+      padding: 3px 4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .chapter-btn {
+      background: none; border: none;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-family: inherit; font-size: inherit;
+      color: var(--dn-sub, #999);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .chapter-btn:hover {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
+      color: var(--dn-text, #555);
+    }
+    .chapter-btn.active {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      color: var(--dn-text, #555);
+    }
+    .chapter-dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+      flex-shrink: 0;
+    }
+
     /* ── Mobile ── */
     @media (max-width: 768px) {
       body {
@@ -424,7 +465,17 @@
 </head>
 <body>
 
-  <a href="../" class="back-btn">&#8592; back</a>
+  <nav class="chapter-nav">
+    <a class="chapter-btn" href="../world/">home</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../puzzle/music/">rhythm</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../puzzle/elements/">elements</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../puzzle/mystery/">mystery</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn active" href="../art/">gallery</a>
+  </nav>
 
   <div class="art-header">
     <h1 class="art-title" id="art-title" data-dn-cycle>art gallery</h1>
