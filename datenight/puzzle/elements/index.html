@@ -1420,7 +1420,7 @@ function setupPeer(){
       conn=c;partnerConnected=true;soloMode=false;
       document.getElementById('waiting-overlay').classList.add('hidden');
       document.getElementById('switch-hint').innerHTML='';
-      c.on('data',handlePeerData);c.on('close',()=>{conn=null;});
+      c.on('data',handlePeerData);c.on('close',()=>{conn=null;window.location.href='../../world/?after=elements';});
       sendPeerData({type:'character',char:myChar});
     });});peer.on('error',()=>{});
   } else {
@@ -1434,7 +1434,7 @@ function tryConnect(attempt){
   c.on('open',()=>{if(settled)return;settled=true;conn=c;partnerConnected=true;soloMode=false;
     document.getElementById('waiting-overlay').classList.add('hidden');
     document.getElementById('switch-hint').innerHTML='';
-    c.on('data',handlePeerData);sendPeerData({type:'character',char:myChar});});
+    c.on('data',handlePeerData);c.on('close',()=>{conn=null;window.location.href='../../world/?after=elements';});sendPeerData({type:'character',char:myChar});});
   c.on('error',()=>{if(settled)return;settled=true;setTimeout(()=>tryConnect(attempt+1),1000);});
   setTimeout(()=>{if(!settled){settled=true;try{c.close();}catch(e){}tryConnect(attempt+1);}},3000);
 }
