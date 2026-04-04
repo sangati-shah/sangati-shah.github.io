@@ -728,7 +728,7 @@
     function onTileClick(index) {
       if (gameOver) return;
       if (waitingForFlipBack) return;
-      if (!soloMode && !myTurn) return;
+      if (!soloMode && !myTurn && conn && conn.open) return;
       if (tiles[index].matched) return;
       if (flipped.includes(index)) return;
       if (flipped.length >= 2) return;
@@ -794,7 +794,7 @@
           flipped = [];
           waitingForFlipBack = false;
 
-          if (!soloMode) {
+          if (!soloMode && conn && conn.open) {
             myTurn = !myTurn;
             updateTurnIndicator();
             sendPeerData({ type: 'turn-switch' });
