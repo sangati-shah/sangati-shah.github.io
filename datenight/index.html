@@ -344,6 +344,58 @@
       }
     }
 
+    // ── Reconnect peer after returning from sub-pages ──
+    function reconnectPeer() {
+      if (!roomCode) return;
+      if (isHost) {
+        peer = new Peer(peerIdFromCode(roomCode));
+        peer.on('open', () => {
+          peer.on('connection', (c) => {
+            conn = c;
+            c.on('open', () => {
+              setupCursorSharing();
+              document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner connected)';
+            });
+            c.on('data', handleData);
+            c.on('close', onPartnerDisconnect);
+          });
+        });
+        peer.on('error', () => {});
+      } else {
+        peer = new Peer();
+        peer.on('open', () => {
+          function tryReconnect(attempt) {
+            if (attempt > 20) return;
+            const c = peer.connect(peerIdFromCode(roomCode), { reliable: true });
+            let settled = false;
+            c.on('open', () => {
+              if (settled) return;
+              settled = true;
+              conn = c;
+              setupCursorSharing();
+              document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner connected)';
+              c.on('data', handleData);
+              c.on('close', onPartnerDisconnect);
+            });
+            c.on('error', () => {
+              if (settled) return;
+              settled = true;
+              setTimeout(() => tryReconnect(attempt + 1), 1000);
+            });
+            setTimeout(() => {
+              if (!settled) {
+                settled = true;
+                try { c.close(); } catch(e) {}
+                tryReconnect(attempt + 1);
+              }
+            }, 3000);
+          }
+          tryReconnect(0);
+        });
+        peer.on('error', () => {});
+      }
+    }
+
     // ── URL params ──
     const params = new URLSearchParams(window.location.search);
     const urlRoom = params.get('room');
@@ -362,6 +414,8 @@
       history.replaceState(null, '', './');
       showHomeChar();
       showCongrats();
+      // Re-establish peer connection for cursor sharing
+      reconnectPeer();
     } else if (params.get('scared') === '1') {
       showStep(stepHome);
       document.getElementById('home-flavor').textContent = 'phew that was scary, should we try something different?';
