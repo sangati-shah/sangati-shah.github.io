@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
 
 :root {
     --ghibli-bg: #f7f2e7;
@@ -12,7 +12,7 @@
 * { box-sizing: border-box; }
 
 body {
-    font-family: 'Quicksand', system-ui, sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     margin: 0;
     padding: 0;
     background: var(--ghibli-bg);
@@ -315,7 +315,7 @@ footer {
     align-items: center;
     gap: 10px;
     padding: 10px;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito', sans-serif;
     color: var(--ghibli-sub);
     font-size: 0.9rem;
     margin-top: 3em;
