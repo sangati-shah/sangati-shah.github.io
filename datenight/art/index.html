@@ -307,6 +307,8 @@
       color: var(--dn-btn-text);
       cursor: pointer;
       transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
     }
     .art-btn:hover {
       transform: translateY(-2px);
@@ -602,6 +604,7 @@
       <div class="art-buttons">
         <button class="art-btn" id="reveal-btn">submit guess</button>
         <button class="art-btn" id="next-btn" style="display:none;">next artwork</button>
+        <a class="art-btn" id="done-btn" href="../world/" style="display:none;">back to map</a>
       </div>
 
       <div id="reveal-card" class="reveal-card" style="display:none;"></div>
@@ -617,6 +620,9 @@
 
     let currentArtwork = null;
     let selectedRegion = null;
+    let roundNumber = 0;
+    const mapMode = new URLSearchParams(window.location.search).get('from') === 'map';
+    const MAX_ROUNDS = 3;
 
     const API_BASE = 'https://api.artic.edu/api/v1/artworks';
     const FIELDS = 'id,title,artist_display,date_display,date_start,date_end,place_of_origin,image_id,thumbnail';
@@ -795,6 +801,12 @@
       revealBtn.disabled = false;
       revealBtn.style.display = '';
 
+      // Track rounds
+      roundNumber++;
+      if (mapMode) {
+        document.getElementById('art-sub').textContent = `round ${roundNumber} of ${MAX_ROUNDS}`;
+      }
+
       // Reset guesses
       selectedRegion = null;
       regions.forEach(el => {
@@ -963,8 +975,16 @@
       void card.offsetWidth;
 
       document.getElementById('reveal-btn').style.display = 'none';
-      document.getElementById('next-btn').style.display = '';
       document.getElementById('art-link').style.display = '';
+
+      if (mapMode && roundNumber >= MAX_ROUNDS) {
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.style.display = 'none';
+        const doneBtn = document.getElementById('done-btn');
+        if (doneBtn) doneBtn.style.display = '';
+      } else {
+        document.getElementById('next-btn').style.display = '';
+      }
     }
 
     document.getElementById('reveal-btn').addEventListener('click', revealAnswers);
