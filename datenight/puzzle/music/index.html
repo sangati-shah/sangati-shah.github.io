@@ -369,6 +369,46 @@
       grid-template-columns: repeat(3, 1fr);
     }
 
+    /* -- Versus Mode -- */
+    .versus-banner {
+      width: 100%; max-width: 400px;
+      text-align: center;
+      padding: 0.8rem 1rem;
+      border-radius: 14px;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.15rem;
+      transition: all 0.3s ease;
+    }
+    .versus-banner.creator {
+      background: color-mix(in srgb, var(--dn-accent) 10%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent) 25%, transparent);
+      color: var(--dn-accent);
+    }
+    .versus-banner.replicator {
+      background: color-mix(in srgb, #8e44ad 10%, transparent);
+      border: 1.5px solid color-mix(in srgb, #8e44ad 25%, transparent);
+      color: #8e44ad;
+    }
+    .versus-score {
+      width: 100%; max-width: 400px;
+      text-align: center;
+      padding: 1.2rem;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--dn-accent) 6%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent) 15%, transparent);
+    }
+    .versus-score-title {
+      font-family: var(--dn-heading-font, 'Abril Fatface', serif);
+      font-size: 1.4rem; color: var(--dn-text); margin-bottom: 0.5rem;
+    }
+    .versus-score-detail {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.1rem; color: var(--dn-sub); line-height: 1.6;
+    }
+    .versus-score-pts {
+      font-size: 1.3rem; color: var(--dn-accent); font-weight: 600;
+    }
+
     /* -- Responsive -- */
     @media (max-width: 420px) {
       .pad-grid { gap: 0.4rem; max-width: 300px; }
@@ -408,6 +448,9 @@
       </ol>
     </div>
 
+    <!-- Versus Banner (hidden by default) -->
+    <div class="versus-banner" id="versus-banner" style="display:none"></div>
+
     <!-- Beat Timeline -->
     <div class="timeline" id="timeline"></div>
 
@@ -430,6 +473,7 @@
     <div class="controls" id="controls">
       <button class="ctrl-btn" id="listen-btn">listen</button>
       <button class="ctrl-btn" id="record-btn">tap the beat</button>
+      <button class="ctrl-btn" id="versus-btn" style="display:none">versus mode</button>
       <button class="ctrl-btn-small" id="skip-btn">skip &rarr;</button>
     </div>
   </div>
@@ -817,6 +861,20 @@
     // ======================================
     function startRecording() {
       if (mode === 'listening') return;
+      if (mode === 'recording') {
+        // Stop recording early - fill remaining beats as missed
+        clearTimeout(metronomeTimer);
+        for (let i = currentBeatIndex; i < 8; i++) {
+          if (playerBeat[i] === null) {
+            const dot = document.querySelector(`.beat-dot[data-index="${i}"]`);
+            dot.classList.remove('current-beat');
+            dot.innerHTML = `<span style="font-size:0.7rem; opacity:0.3">-</span>`;
+          }
+        }
+        currentBeatIndex = 8;
+        finishRecording();
+        return;
+      }
       mode = 'recording';
       playerBeat = Array(8).fill(null);
       currentBeatIndex = 0;
@@ -827,7 +885,7 @@
       });
 
       document.getElementById('record-btn').classList.add('active');
-      document.getElementById('record-btn').textContent = 'recording...';
+      document.getElementById('record-btn').textContent = 'stop';
       setStatus(soloMode ? 'tap the right instrument for each beat!' : 'tap your instruments when your beat comes up!', 'gold');
 
       sendPeerData({ type: 'recording-start' });
@@ -1020,6 +1078,248 @@
     }
 
     // ======================================
+    // VERSUS MODE
+    // ======================================
+    let versusMode = false;
+    let versusPhase = 'idle'; // idle, creating, listening, replicating, results
+    let versusBeat = []; // the beat player 1 created
+    let versusReplicaBeat = []; // player 2's attempt
+    let versusCreateIndex = 0;
+    let versusRound = 0; // track rounds for swapping roles
+
+    function enterVersusMode() {
+      versusMode = true;
+      soloMode = true;
+      myInstruments = INSTRUMENTS.map(i => i.id);
+      partnerInstruments = [];
+      document.querySelector('.music-app').classList.add('solo-mode');
+      document.getElementById('partner-section').style.display = 'none';
+      document.getElementById('page-sub').textContent = 'create a beat, then challenge your partner to replicate it';
+      document.getElementById('versus-btn').style.display = 'none';
+      document.getElementById('listen-btn').style.display = 'none';
+
+      const howToPlay = document.querySelector('.how-to-play ol');
+      howToPlay.innerHTML = `
+        <li>Player 1 taps instruments to <strong>create</strong> an 8-beat pattern</li>
+        <li>The beat plays back for Player 2 to hear</li>
+        <li>Player 2 tries to <strong>replicate</strong> the beat from memory</li>
+        <li>Points awarded based on how many beats match!</li>
+      `;
+      buildPads();
+      startVersusCreate();
+    }
+
+    function startVersusCreate() {
+      versusPhase = 'creating';
+      versusBeat = [];
+      versusCreateIndex = 0;
+      versusRound++;
+
+      const banner = document.getElementById('versus-banner');
+      banner.style.display = 'block';
+      banner.className = 'versus-banner creator';
+      banner.textContent = 'player ' + (versusRound % 2 === 1 ? '1' : '2') + ' -- create your beat!';
+
+      document.getElementById('record-btn').textContent = 'done creating';
+      document.getElementById('record-btn').classList.remove('active');
+      document.getElementById('record-btn').onclick = finishVersusCreate;
+
+      // Reset timeline
+      document.querySelectorAll('.beat-dot').forEach((d, i) => {
+        d.className = 'beat-dot';
+        d.innerHTML = `<span class="dot-label">${i+1}</span>`;
+      });
+      if (versusCreateIndex < 8) highlightCurrentBeat();
+
+      setStatus('tap instruments to build your 8-beat pattern!', 'gold');
+      mode = 'idle'; // pads still work via versus override
+    }
+
+    function versusRecordCreate(id) {
+      if (versusPhase !== 'creating' || versusCreateIndex >= 8) return;
+      versusBeat.push(id);
+      const dot = document.querySelector(`.beat-dot[data-index="${versusCreateIndex}"]`);
+      dot.classList.add('active');
+      dot.classList.remove('current-beat');
+      dot.innerHTML = getInstIcon(id);
+      versusCreateIndex++;
+      if (versusCreateIndex >= 8) {
+        setStatus('8 beats recorded! press "done creating" or keep going', 'good');
+        document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('current-beat'));
+      } else {
+        currentBeatIndex = versusCreateIndex;
+        highlightCurrentBeat();
+      }
+    }
+
+    function finishVersusCreate() {
+      if (versusBeat.length === 0) {
+        setStatus('tap at least one instrument first!', 'bad');
+        return;
+      }
+      // Pad remaining beats if fewer than 8
+      while (versusBeat.length < 8) versusBeat.push(null);
+      versusBeat = versusBeat.slice(0, 8);
+
+      versusPhase = 'listening';
+      document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('current-beat'));
+
+      const banner = document.getElementById('versus-banner');
+      banner.className = 'versus-banner replicator';
+      banner.textContent = 'player ' + (versusRound % 2 === 1 ? '2' : '1') + ' -- listen carefully!';
+
+      setStatus('playing back the beat...', 'gold');
+      document.getElementById('record-btn').textContent = '...';
+      document.getElementById('record-btn').disabled = true;
+
+      // Play back the created beat
+      const ctx = getCtx();
+      let time = ctx.currentTime + 0.3;
+
+      // Reset timeline for playback
+      document.querySelectorAll('.beat-dot').forEach((d, i) => {
+        d.className = 'beat-dot';
+        d.innerHTML = `<span class="dot-label">${i+1}</span>`;
+      });
+
+      versusBeat.forEach((inst, i) => {
+        if (!inst) return;
+        const playAt = time;
+        setTimeout(() => {
+          const dot = document.querySelector(`.beat-dot[data-index="${i}"]`);
+          dot.classList.add('playing');
+          dot.innerHTML = getInstIcon(inst);
+          setTimeout(() => {
+            dot.classList.remove('playing');
+            dot.innerHTML = `<span class="dot-label">${i+1}</span>`;
+          }, BEAT_GAP * 800);
+        }, (playAt - ctx.currentTime) * 1000);
+        playSoundAt(inst, playAt);
+        time += BEAT_GAP;
+      });
+
+      const total = 8 * BEAT_GAP + 0.5;
+      setTimeout(() => startVersusReplicate(), total * 1000);
+    }
+
+    function startVersusReplicate() {
+      versusPhase = 'replicating';
+      mode = 'recording';
+      versusReplicaBeat = Array(8).fill(null);
+      playerBeat = Array(8).fill(null);
+      currentBeatIndex = 0;
+
+      document.querySelectorAll('.beat-dot').forEach((d, i) => {
+        d.className = 'beat-dot';
+        d.innerHTML = `<span class="dot-label">${i+1}</span>`;
+      });
+
+      const banner = document.getElementById('versus-banner');
+      banner.className = 'versus-banner replicator';
+      banner.textContent = 'player ' + (versusRound % 2 === 1 ? '2' : '1') + ' -- replicate the beat!';
+
+      document.getElementById('record-btn').disabled = false;
+      document.getElementById('record-btn').classList.add('active');
+      document.getElementById('record-btn').textContent = 'stop';
+      document.getElementById('record-btn').onclick = function() {
+        // Stop early
+        clearTimeout(metronomeTimer);
+        for (let i = currentBeatIndex; i < 8; i++) {
+          if (playerBeat[i] === null) {
+            const dot = document.querySelector(`.beat-dot[data-index="${i}"]`);
+            dot.classList.remove('current-beat');
+            dot.innerHTML = `<span style="font-size:0.7rem; opacity:0.3">-</span>`;
+          }
+        }
+        currentBeatIndex = 8;
+        finishVersusReplicate();
+      };
+
+      setStatus('tap the instruments to match the beat!', 'gold');
+      highlightCurrentBeat();
+      startMetronomeTick();
+    }
+
+    function finishVersusReplicate() {
+      versusPhase = 'results';
+      mode = 'checking';
+      clearTimeout(metronomeTimer);
+      document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('current-beat'));
+      document.getElementById('record-btn').classList.remove('active');
+
+      let correct = 0;
+      let totalBeats = 0;
+      playerBeat.forEach((hit, i) => {
+        const dot = document.querySelector(`.beat-dot[data-index="${i}"]`);
+        const target = versusBeat[i];
+        if (target === null) return; // skip empty slots in original
+        totalBeats++;
+        if (hit === target) {
+          dot.classList.add('correct');
+          correct++;
+        } else {
+          dot.classList.add('wrong');
+        }
+      });
+
+      if (totalBeats === 0) totalBeats = 1;
+      const pct = Math.round((correct / totalBeats) * 100);
+      const pts = Math.round((correct / totalBeats) * 50);
+      if (pts > 0) addPoints(pts);
+
+      const banner = document.getElementById('versus-banner');
+      banner.style.display = 'none';
+
+      if (pct === 100) {
+        setStatus('perfect match! +' + pts + ' pts', 'good');
+      } else if (pct >= 75) {
+        setStatus(correct + '/' + totalBeats + ' beats matched (' + pct + '%) -- nice! +' + pts + ' pts', 'gold');
+      } else if (pct >= 50) {
+        setStatus(correct + '/' + totalBeats + ' beats matched (' + pct + '%) -- not bad! +' + pts + ' pts');
+      } else {
+        setStatus(correct + '/' + totalBeats + ' beats matched (' + pct + '%) -- keep trying!' + (pts > 0 ? ' +' + pts + ' pts' : ''));
+      }
+
+      // Show play again / swap roles button
+      document.getElementById('record-btn').textContent = 'swap & play again';
+      document.getElementById('record-btn').disabled = false;
+      document.getElementById('record-btn').onclick = function() {
+        document.getElementById('record-btn').onclick = null;
+        startVersusCreate();
+      };
+    }
+
+    // Override hitPad for versus create mode
+    const originalHitPad = hitPad;
+    hitPad = function(id, padEl) {
+      if (versusMode && versusPhase === 'creating') {
+        playSound(id);
+        padEl.classList.add('hit');
+        setTimeout(() => padEl.classList.remove('hit'), 150);
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        const color = padEl.style.getPropertyValue('--pad-color') ||
+                      getComputedStyle(padEl).getPropertyValue('--pad-color') || '#d49b3c';
+        ripple.style.cssText = `width:100%;height:100%;top:0;left:0;background:${color};`;
+        padEl.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+        versusRecordCreate(id);
+        return;
+      }
+      originalHitPad(id, padEl);
+    };
+
+    // Override finishRecording for versus replicate mode
+    const originalFinishRecording = finishRecording;
+    finishRecording = function() {
+      if (versusMode && versusPhase === 'replicating') {
+        finishVersusReplicate();
+        return;
+      }
+      originalFinishRecording();
+    };
+
+    // ======================================
     // INIT
     // ======================================
     buildTimeline();
@@ -1027,6 +1327,7 @@
 
     document.getElementById('listen-btn').addEventListener('click', startListening);
     document.getElementById('record-btn').addEventListener('click', startRecording);
+    document.getElementById('versus-btn').addEventListener('click', enterVersusMode);
     document.getElementById('skip-btn').addEventListener('click', () => {
       markCompleted('music');
       window.location.href = '../../world/?after=music';
@@ -1036,6 +1337,8 @@
       setupPeer();
     } else {
       enterSoloMode();
+      // Show versus mode option in solo
+      document.getElementById('versus-btn').style.display = '';
     }
   </script>
 </body>
