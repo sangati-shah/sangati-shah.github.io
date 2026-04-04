@@ -850,8 +850,6 @@
       { x: 9400, w: 30, h: 10 },   // bounce chain
       { x: 9500, w: 30, h: 10 },
       { x: 9600, w: 30, h: 10 },
-      // After obstacle course
-      { x: 10650, w: 30, h: 10 },
       // Victory bounce
       { x: 11850, w: 40, h: 10 },
     ];
@@ -1629,7 +1627,7 @@
         const flash = document.getElementById('enter-flash');
         flash.style.background = orbColor;
         flash.classList.add('show');
-        setTimeout(() => { window.location.href = adv.url; }, 500);
+        setTimeout(() => { window.location.href = adv.url + '?from=map'; }, 500);
       }, 600);
     }
 
