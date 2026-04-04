@@ -376,7 +376,7 @@
 </head>
 <body>
   <!-- Top bar -->
-  <nav class="chapter-nav">
+  <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../../world/">home</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn" href="../music/">rhythm</a>
@@ -387,7 +387,7 @@
   </nav>
 
   <div class="top-bar">
-    <a href="../../world/?after=mystery" class="back-link">&larr; back to adventure</a>
+    <a href="../../world/?after=mystery" class="back-link" id="back-link">&larr; back to adventure</a>
     <div class="pts-display">points <span class="pts-num" id="pts-num">0</span></div>
   </div>
 
@@ -1135,6 +1135,14 @@
       }
     } else {
       enterSoloMode();
+    }
+
+    // If entered from game center, hide chapter nav and show return link
+    if (new URLSearchParams(window.location.search).get('from') === 'games') {
+      document.getElementById('chapter-nav').style.display = 'none';
+      const bl = document.getElementById('back-link');
+      bl.href = '../../games/';
+      bl.innerHTML = '&larr; return to games';
     }
   </script>
 </body>

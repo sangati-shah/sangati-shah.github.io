@@ -694,7 +694,7 @@
   </style>
 </head>
 <body class="dark-hud">
-  <nav class="chapter-nav">
+  <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../../world/">home</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn" href="../music/">rhythm</a>
@@ -704,7 +704,7 @@
     <a class="chapter-btn" href="../mystery/">mystery</a>
   </nav>
 
-  <a href="../../world/" class="back-link">&larr; back</a>
+  <a href="../../world/" class="back-link" id="back-link">&larr; back</a>
   <a href="../../world/" class="skip-btn">skip &rarr;</a>
   <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
   <div class="level-info" id="level-info"></div>
@@ -1552,6 +1552,14 @@ showLevelTransition();
 setupPeer();
 if(!roomCode)document.getElementById('waiting-overlay').classList.add('hidden');
 requestAnimationFrame(gameLoop);
+
+// If entered from game center, hide chapter nav and show return link
+if (new URLSearchParams(window.location.search).get('from') === 'games') {
+  document.getElementById('chapter-nav').style.display = 'none';
+  const bl = document.getElementById('back-link');
+  bl.href = '../../games/';
+  bl.innerHTML = '&larr; return to games';
+}
 </script>
 </body>
 </html>
