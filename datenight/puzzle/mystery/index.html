@@ -878,7 +878,7 @@
           peer.on('connection', c => {
             conn = c;
             c.on('data', handlePeerData);
-            c.on('close', () => { conn = null; });
+            c.on('close', () => { conn = null; window.location.href = '../../world/?after=mystery'; });
             const seed = Math.floor(Math.random() * 2147483646) + 1;
             buildBoard(seed);
             myTurn = true;
@@ -904,6 +904,7 @@
         if (settled) return;
         settled = true;
         conn = c; c.on('data', handlePeerData);
+        c.on('close', () => { conn = null; window.location.href = '../../world/?after=mystery'; });
       });
       c.on('error', () => {
         if (settled) return;

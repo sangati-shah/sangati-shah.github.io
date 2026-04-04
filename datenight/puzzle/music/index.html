@@ -908,7 +908,7 @@
           peer.on('connection', c => {
             conn = c;
             c.on('data', handlePeerData);
-            c.on('close', () => { conn = null; });
+            c.on('close', () => { conn = null; window.location.href = '../../world/?after=music'; });
           });
         });
         peer.on('error', () => {});
@@ -927,6 +927,7 @@
         if (settled) return;
         settled = true;
         conn = c; c.on('data', handlePeerData);
+        c.on('close', () => { conn = null; window.location.href = '../../world/?after=music'; });
       });
       c.on('error', () => {
         if (settled) return;
