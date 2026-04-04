@@ -11,38 +11,58 @@
   <style>
     body {
       height: 100dvh;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.5rem 1rem 2rem;
+      padding: 1rem 1.5rem;
       box-sizing: border-box;
       transition: background 1.5s ease;
     }
 
+    .art-header {
+      text-align: center;
+      flex-shrink: 0;
+    }
     .art-title {
       font-family: var(--dn-heading-font);
-      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-size: clamp(1.4rem, 4vw, 2rem);
       color: var(--dn-text);
-      margin: 0 0 0.3rem;
-      text-align: center;
+      margin: 0 0 0.2rem;
       cursor: pointer;
       user-select: none;
     }
     .art-sub {
       font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--dn-sub);
-      margin: 0 0 1.2rem;
+      margin: 0 0 0.6rem;
     }
 
-    /* Artwork + frame */
+    /* Main game layout: artwork left, controls right */
+    .game-layout {
+      display: flex;
+      gap: 1.5rem;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* Left: artwork */
+    .art-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
     .frame-container {
       position: relative;
       display: inline-block;
-      max-width: min(90vw, 500px);
-      margin-bottom: 1.2rem;
+      max-width: 100%;
+      max-height: 100%;
     }
     .artwork-frame {
       padding: 18px;
@@ -52,8 +72,8 @@
     }
     .artwork-frame img {
       display: block;
-      width: 100%;
-      max-height: 50vh;
+      max-width: 100%;
+      max-height: calc(100dvh - 10rem);
       object-fit: contain;
       border-radius: 2px;
     }
@@ -122,18 +142,19 @@
       50% { opacity: 0.7; }
     }
 
-    /* Guess section */
-    .guess-section {
-      width: min(90vw, 520px);
+    /* Right: controls */
+    .controls-side {
+      width: 320px;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      align-items: center;
+      gap: 0.6rem;
+      justify-content: center;
     }
 
     .guess-heading {
       font-family: var(--dn-heading-font);
-      font-size: 1.15rem;
+      font-size: 1rem;
       color: var(--dn-text);
       opacity: 0.6;
       margin: 0;
@@ -143,41 +164,64 @@
     .map-container {
       width: 100%;
       position: relative;
+      background: var(--dn-bg, #f5f0e8);
+      border-radius: 8px;
+      padding: 8px;
+      border: 1px solid var(--dn-btn-border, #ccc);
     }
     .world-map {
       width: 100%;
       height: auto;
+      display: block;
+    }
+    .world-map .ocean {
+      fill: none;
     }
     .world-map .region {
       fill: var(--dn-input-bg, #e8e0d4);
-      stroke: var(--dn-btn-border, #999);
-      stroke-width: 0.5;
+      stroke: var(--dn-sub, #888);
+      stroke-width: 0.3;
       cursor: pointer;
-      transition: fill 0.2s, opacity 0.2s;
-      opacity: 0.6;
+      transition: fill 0.25s, opacity 0.25s, stroke-width 0.25s;
+      opacity: 0.7;
     }
     .world-map .region:hover {
-      opacity: 0.9;
-      fill: var(--dn-accent, #c9a84c);
+      opacity: 1;
+      fill: color-mix(in srgb, var(--dn-accent, #c9a84c) 40%, var(--dn-input-bg, #e8e0d4));
     }
     .world-map .region.selected {
       fill: var(--dn-accent, #c9a84c);
       opacity: 1;
-      stroke-width: 1.5;
+      stroke-width: 0.8;
+      stroke: var(--dn-text, #333);
+    }
+    .world-map .region.correct-reveal {
+      fill: #4caf50;
+      opacity: 1;
+      stroke-width: 1;
+      stroke: #2e7d32;
+      animation: regionPulse 0.8s ease;
+    }
+    @keyframes regionPulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 1; }
     }
     .world-map .region-label {
       font-family: 'Inter', sans-serif;
-      font-size: 3.2px;
+      font-size: 2.8px;
       fill: var(--dn-text, #333);
       pointer-events: none;
       text-anchor: middle;
-      opacity: 0.7;
+      opacity: 0.5;
+      font-weight: 300;
+      letter-spacing: 0.3px;
     }
     .selected-region-label {
       font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--dn-accent);
-      min-height: 1.2em;
+      min-height: 1.1em;
       text-align: center;
     }
 
@@ -187,38 +231,47 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.2rem;
     }
     .year-display {
       font-family: var(--dn-heading-font);
-      font-size: 1.6rem;
+      font-size: 1.3rem;
       color: var(--dn-text);
-      min-height: 1.5em;
+      min-height: 1.3em;
+      transition: color 0.5s;
+    }
+    .year-display.reveal-anim {
+      color: #4caf50;
     }
     .year-slider {
       width: 100%;
       -webkit-appearance: none;
       appearance: none;
-      height: 6px;
+      height: 5px;
       border-radius: 3px;
       background: var(--dn-input-border, #ccc);
       outline: none;
       cursor: pointer;
+      transition: opacity 0.3s;
     }
     .year-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: var(--dn-accent, #c9a84c);
       border: 2px solid var(--dn-btn-border, #999);
       cursor: grab;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .year-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
     }
     .year-slider::-moz-range-thumb {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: var(--dn-accent, #c9a84c);
       border: 2px solid var(--dn-btn-border, #999);
@@ -230,23 +283,22 @@
       justify-content: space-between;
       width: 100%;
       font-family: 'Inter', sans-serif;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--dn-sub);
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
     /* Buttons */
     .art-buttons {
       display: flex;
-      gap: 0.6rem;
-      margin-top: 0.2rem;
+      gap: 0.5rem;
       justify-content: center;
       flex-wrap: wrap;
     }
     .art-btn {
       font-family: var(--dn-heading-font);
-      font-size: 1.15rem;
-      padding: 0.5rem 1.4rem;
+      font-size: 1rem;
+      padding: 0.45rem 1.2rem;
       border: 1.5px solid var(--dn-btn-border);
       border-radius: var(--dn-btn-radius);
       background: var(--dn-btn-bg);
@@ -267,129 +319,101 @@
 
     /* Reveal card */
     .reveal-card {
-      width: min(90vw, 520px);
       background: var(--dn-input-bg);
       border: 1.5px solid var(--dn-btn-border);
       border-radius: var(--dn-btn-radius);
-      padding: 1.2rem 1.4rem;
-      margin-top: 0.4rem;
+      padding: 0.8rem 1rem;
       animation: fadeUp 0.5s ease;
+      font-size: 0.85rem;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .reveal-row {
       display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
+      gap: 0.4rem;
+      margin-bottom: 0.35rem;
       align-items: baseline;
     }
     .reveal-label {
       font-family: var(--dn-heading-font);
-      font-size: 1.05rem;
-      min-width: 70px;
+      font-size: 0.9rem;
+      min-width: 55px;
       text-align: right;
       color: var(--dn-text);
       opacity: 0.5;
     }
     .reveal-value {
       font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       opacity: 0.85;
     }
-    .reveal-match {
-      color: #4caf50;
-      font-weight: 600;
-    }
-    .reveal-close {
-      color: #ff9800;
-      font-weight: 500;
-    }
-    .reveal-miss {
-      color: var(--dn-text);
-      opacity: 0.6;
-    }
+    .reveal-match { color: #4caf50; font-weight: 600; }
+    .reveal-close { color: #ff9800; font-weight: 500; }
+    .reveal-miss { color: var(--dn-text); opacity: 0.6; }
     .score-summary {
-      margin-top: 0.8rem;
-      padding-top: 0.8rem;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
       border-top: 1px solid var(--dn-btn-border);
       text-align: center;
     }
     .score-big {
       font-family: var(--dn-heading-font);
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       color: var(--dn-accent);
     }
     .score-detail {
       font-family: 'Inter', sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       opacity: 0.5;
-      margin-top: 0.2rem;
+      margin-top: 0.15rem;
     }
 
-    /* Fade in for artwork */
-    .fade-in {
-      animation: fadeUp 0.6s ease;
-    }
+    .fade-in { animation: fadeUp 0.6s ease; }
 
     .art-info-link {
       font-family: 'Inter', sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       opacity: 0.35;
       text-decoration: none;
       color: inherit;
-      margin-top: 0.3rem;
+      text-align: center;
       transition: opacity 0.3s;
     }
-    .art-info-link:hover {
-      opacity: 0.6;
-    }
+    .art-info-link:hover { opacity: 0.6; }
 
     /* ── Mobile ── */
-    @media (max-width: 500px) {
+    @media (max-width: 768px) {
       body {
-        padding: 1.2rem 0.8rem 1.5rem;
+        overflow-y: auto;
+        padding: 1rem 0.8rem 1.5rem;
       }
-
-      .guess-row {
+      .game-layout {
         flex-direction: column;
-        align-items: stretch;
-        gap: 0.25rem;
+        align-items: center;
       }
-
-      .guess-label {
-        text-align: left;
-        min-width: unset;
-        font-size: 1rem;
+      .art-side {
+        max-height: 45vh;
       }
-
-      .guess-input {
-        font-size: 1rem;
-        padding: 0.6rem 0.8rem;
+      .artwork-frame img {
+        max-height: 40vh;
       }
-
+      .controls-side {
+        width: min(90vw, 420px);
+      }
       .reveal-row {
         flex-direction: column;
-        gap: 0.15rem;
+        gap: 0.1rem;
       }
-
       .reveal-label {
         text-align: left;
         min-width: unset;
-        font-size: 0.95rem;
       }
-
       .art-btn {
-        font-size: 1.1rem;
-        padding: 0.55rem 1.2rem;
         min-height: 44px;
       }
-
-      .artwork-frame {
-        padding: 10px;
-      }
-
+      .artwork-frame { padding: 10px; }
       .frame-baroque { padding: 14px; }
       .frame-ornate { padding: 16px; }
       .frame-gallery { padding: 18px; }
@@ -400,107 +424,112 @@
 </head>
 <body>
 
-  <a href="../" class="back-btn">← back</a>
+  <a href="../" class="back-btn">&#8592; back</a>
 
-  <h1 class="art-title" id="art-title" data-dn-cycle>art gallery</h1>
-  <p class="art-sub" id="art-sub">guess when and where</p>
+  <div class="art-header">
+    <h1 class="art-title" id="art-title" data-dn-cycle>art gallery</h1>
+    <p class="art-sub" id="art-sub">guess when and where</p>
+  </div>
 
   <div id="loading" class="loading">finding a masterpiece...</div>
 
-  <div id="art-area" style="display:none;" class="fade-in">
-    <div class="frame-container">
-      <div class="artwork-frame" id="artwork-frame">
-        <img id="artwork-img" src="" alt="artwork" />
-      </div>
-    </div>
-  </div>
-
-  <div id="guess-section" class="guess-section" style="display:none;">
-
-    <!-- Region: clickable world map -->
-    <p class="guess-heading">where is it from?</p>
-    <div class="map-container">
-      <svg class="world-map" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
-        <!-- North America -->
-        <path class="region" data-region="North America"
-          d="M10,12 L55,12 L58,18 L55,28 L50,38 L42,42 L35,40 L25,38 L18,32 L12,22 Z" />
-        <text class="region-label" x="34" y="28">N. America</text>
-
-        <!-- Central America & Caribbean -->
-        <path class="region" data-region="Central America"
-          d="M25,42 L42,42 L44,48 L40,54 L32,52 L26,48 Z" />
-        <text class="region-label" x="35" y="48">C. America</text>
-
-        <!-- South America -->
-        <path class="region" data-region="South America"
-          d="M32,54 L48,52 L54,58 L56,68 L52,80 L46,88 L38,90 L32,82 L28,70 L30,60 Z" />
-        <text class="region-label" x="42" y="72">S. America</text>
-
-        <!-- Western Europe -->
-        <path class="region" data-region="Western Europe"
-          d="M82,14 L96,12 L100,18 L98,28 L94,34 L86,36 L80,30 L78,22 Z" />
-        <text class="region-label" x="89" y="24">W. Europe</text>
-
-        <!-- Eastern Europe -->
-        <path class="region" data-region="Eastern Europe"
-          d="M96,12 L116,10 L120,18 L118,28 L112,34 L100,32 L98,28 L100,18 Z" />
-        <text class="region-label" x="108" y="22">E. Europe</text>
-
-        <!-- North Africa / Middle East -->
-        <path class="region" data-region="Middle East"
-          d="M86,36 L94,34 L112,34 L118,38 L126,40 L128,48 L120,52 L108,50 L96,48 L86,44 Z" />
-        <text class="region-label" x="106" y="44">Middle East</text>
-
-        <!-- Sub-Saharan Africa -->
-        <path class="region" data-region="Africa"
-          d="M82,44 L96,48 L108,50 L112,56 L110,68 L106,78 L98,84 L90,80 L84,70 L80,58 Z" />
-        <text class="region-label" x="96" y="66">Africa</text>
-
-        <!-- South Asia -->
-        <path class="region" data-region="South Asia"
-          d="M126,40 L138,36 L144,42 L142,52 L136,56 L128,52 L128,48 Z" />
-        <text class="region-label" x="136" y="47">S. Asia</text>
-
-        <!-- East Asia -->
-        <path class="region" data-region="East Asia"
-          d="M138,12 L164,10 L170,18 L168,28 L160,34 L148,36 L138,36 L134,28 L136,18 Z" />
-        <text class="region-label" x="152" y="24">E. Asia</text>
-
-        <!-- Southeast Asia -->
-        <path class="region" data-region="Southeast Asia"
-          d="M144,42 L160,38 L168,42 L172,52 L166,58 L156,60 L148,56 L142,52 Z" />
-        <text class="region-label" x="156" y="50">SE Asia</text>
-
-        <!-- Oceania -->
-        <path class="region" data-region="Oceania"
-          d="M158,64 L180,60 L190,66 L188,78 L178,84 L166,82 L158,76 Z" />
-        <text class="region-label" x="174" y="74">Oceania</text>
-      </svg>
-    </div>
-    <div class="selected-region-label" id="selected-region"></div>
-
-    <!-- Year scrubber -->
-    <p class="guess-heading">when was it made?</p>
-    <div class="year-section">
-      <div class="year-display" id="year-display">1500</div>
-      <input type="range" class="year-slider" id="year-slider"
-        min="-3000" max="2025" value="1500" step="5" />
-      <div class="year-ticks">
-        <span>3000 BCE</span>
-        <span>1000 BCE</span>
-        <span>1 CE</span>
-        <span>1000</span>
-        <span>2025</span>
+  <div id="game-area" class="game-layout" style="display:none;">
+    <!-- Left: artwork -->
+    <div class="art-side">
+      <div class="frame-container">
+        <div class="artwork-frame" id="artwork-frame">
+          <img id="artwork-img" src="" alt="artwork" />
+        </div>
       </div>
     </div>
 
-    <div class="art-buttons">
-      <button class="art-btn" id="reveal-btn">submit guess</button>
-      <button class="art-btn" id="next-btn" style="display:none;">next artwork</button>
-    </div>
+    <!-- Right: controls -->
+    <div class="controls-side" id="controls-side">
+      <p class="guess-heading">where is it from?</p>
+      <div class="map-container">
+        <svg class="world-map" viewBox="-5 -2 210 108" xmlns="http://www.w3.org/2000/svg">
+          <rect class="ocean" x="-5" y="-2" width="210" height="108" rx="4" />
 
-    <div id="reveal-card" class="reveal-card" style="display:none;"></div>
-    <a id="art-link" class="art-info-link" href="#" target="_blank" style="display:none;">view on art institute of chicago →</a>
+          <!-- North America -->
+          <path class="region" data-region="North America"
+            d="M8,8 L18,5 L30,3 L42,5 L52,8 L56,14 L54,22 L50,30 L46,36 L40,40 L34,38 L26,35 L20,30 L14,24 L10,16 Z" />
+          <text class="region-label" x="32" y="22">N. America</text>
+
+          <!-- Central America -->
+          <path class="region" data-region="Central America"
+            d="M28,40 L40,40 L43,44 L42,50 L38,54 L32,52 L28,46 Z" />
+          <text class="region-label" x="36" y="48">C. America</text>
+
+          <!-- South America -->
+          <path class="region" data-region="South America"
+            d="M34,56 L46,54 L52,58 L56,66 L54,76 L50,84 L44,90 L38,88 L32,80 L30,70 L32,62 Z" />
+          <text class="region-label" x="43" y="74">S. America</text>
+
+          <!-- Western Europe -->
+          <path class="region" data-region="Western Europe"
+            d="M82,10 L94,8 L98,14 L97,22 L94,28 L90,32 L84,34 L80,28 L78,20 Z" />
+          <text class="region-label" x="88" y="22">W. Europe</text>
+
+          <!-- Eastern Europe -->
+          <path class="region" data-region="Eastern Europe"
+            d="M94,8 L108,6 L116,10 L118,18 L116,26 L110,30 L102,32 L96,28 L98,14 Z" />
+          <text class="region-label" x="107" y="20">E. Europe</text>
+
+          <!-- Middle East -->
+          <path class="region" data-region="Middle East"
+            d="M84,34 L90,32 L102,32 L110,30 L118,34 L124,38 L126,46 L120,50 L110,48 L98,46 L88,42 Z" />
+          <text class="region-label" x="106" y="42">Middle East</text>
+
+          <!-- Africa -->
+          <path class="region" data-region="Africa"
+            d="M80,42 L88,42 L98,46 L110,48 L112,56 L110,66 L106,76 L100,82 L92,80 L86,72 L82,62 L78,52 Z" />
+          <text class="region-label" x="96" y="64">Africa</text>
+
+          <!-- South Asia -->
+          <path class="region" data-region="South Asia"
+            d="M124,38 L136,34 L142,40 L140,50 L134,54 L128,50 L126,46 Z" />
+          <text class="region-label" x="134" y="46">S. Asia</text>
+
+          <!-- East Asia -->
+          <path class="region" data-region="East Asia"
+            d="M136,8 L150,6 L162,8 L168,14 L166,24 L160,30 L150,34 L140,34 L136,28 L134,18 Z" />
+          <text class="region-label" x="151" y="22">E. Asia</text>
+
+          <!-- Southeast Asia -->
+          <path class="region" data-region="Southeast Asia"
+            d="M142,40 L154,36 L164,38 L170,44 L168,52 L162,58 L152,56 L146,52 L140,50 Z" />
+          <text class="region-label" x="155" y="48">SE Asia</text>
+
+          <!-- Oceania -->
+          <path class="region" data-region="Oceania"
+            d="M160,64 L174,60 L186,62 L192,70 L190,78 L182,84 L172,82 L164,76 L158,70 Z" />
+          <text class="region-label" x="176" y="74">Oceania</text>
+        </svg>
+      </div>
+      <div class="selected-region-label" id="selected-region"></div>
+
+      <p class="guess-heading">when was it made?</p>
+      <div class="year-section">
+        <div class="year-display" id="year-display">1500</div>
+        <input type="range" class="year-slider" id="year-slider"
+          min="-3000" max="2025" value="1500" step="5" />
+        <div class="year-ticks">
+          <span>3000 BCE</span>
+          <span>1000 BCE</span>
+          <span>1 CE</span>
+          <span>1000</span>
+          <span>2025</span>
+        </div>
+      </div>
+
+      <div class="art-buttons">
+        <button class="art-btn" id="reveal-btn">submit guess</button>
+        <button class="art-btn" id="next-btn" style="display:none;">next artwork</button>
+      </div>
+
+      <div id="reveal-card" class="reveal-card" style="display:none;"></div>
+      <a id="art-link" class="art-info-link" href="#" target="_blank" style="display:none;">view on art institute of chicago &#8594;</a>
+    </div>
   </div>
 
   <script>
@@ -531,6 +560,45 @@
       'Oceania': ['australia', 'australian', 'new zealand', 'polynesia', 'polynesian', 'melanesia', 'micronesia', 'aboriginal', 'maori', 'pacific islands', 'hawaiian', 'hawaii', 'samoa', 'fiji', 'tonga', 'papua'],
     };
 
+    // Region adjacency for proximity scoring (distance 1 = neighbor, 2 = two away, etc.)
+    const REGION_NEIGHBORS = {
+      'North America': ['Central America'],
+      'Central America': ['North America', 'South America'],
+      'South America': ['Central America'],
+      'Western Europe': ['Eastern Europe', 'Middle East', 'Africa'],
+      'Eastern Europe': ['Western Europe', 'Middle East', 'South Asia'],
+      'Middle East': ['Western Europe', 'Eastern Europe', 'Africa', 'South Asia'],
+      'Africa': ['Western Europe', 'Middle East'],
+      'South Asia': ['Middle East', 'Eastern Europe', 'East Asia', 'Southeast Asia'],
+      'East Asia': ['South Asia', 'Southeast Asia', 'Eastern Europe'],
+      'Southeast Asia': ['South Asia', 'East Asia', 'Oceania'],
+      'Oceania': ['Southeast Asia'],
+    };
+
+    function regionDistance(a, b) {
+      if (!a || !b) return Infinity;
+      if (a === b) return 0;
+      // BFS
+      const visited = new Set([a]);
+      let queue = [a];
+      let dist = 0;
+      while (queue.length > 0) {
+        dist++;
+        const next = [];
+        for (const node of queue) {
+          for (const neighbor of (REGION_NEIGHBORS[node] || [])) {
+            if (neighbor === b) return dist;
+            if (!visited.has(neighbor)) {
+              visited.add(neighbor);
+              next.push(neighbor);
+            }
+          }
+        }
+        queue = next;
+      }
+      return Infinity;
+    }
+
     function classifyOrigin(origin) {
       if (!origin || origin === 'Unknown') return null;
       const lower = origin.toLowerCase();
@@ -549,7 +617,6 @@
         }
         return artwork.date_start;
       }
-      // Fallback: try to parse from date_display string
       const match = artwork.date?.match(/(-?\d{3,4})/);
       return match ? parseInt(match[1], 10) : null;
     }
@@ -579,6 +646,32 @@
         selectedRegionLabel.textContent = selectedRegion;
       });
     });
+
+    // --- Animated reveal helpers ---
+    function animateSliderTo(targetValue, duration) {
+      const start = parseInt(yearSlider.value, 10);
+      const diff = targetValue - start;
+      const startTime = performance.now();
+      function step(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const current = Math.round(start + diff * eased);
+        yearSlider.value = current;
+        yearDisplay.textContent = formatYear(current);
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function highlightCorrectRegion(regionName) {
+      regions.forEach(el => {
+        el.classList.remove('correct-reveal');
+        if (el.dataset.region === regionName) {
+          el.classList.add('correct-reveal');
+        }
+      });
+    }
 
     // --- Fetch artwork ---
     async function fetchRandomArtwork() {
@@ -610,8 +703,7 @@
 
     async function loadNewArtwork() {
       const loading = document.getElementById('loading');
-      const artArea = document.getElementById('art-area');
-      const guessSection = document.getElementById('guess-section');
+      const gameArea = document.getElementById('game-area');
       const revealCard = document.getElementById('reveal-card');
       const revealBtn = document.getElementById('reveal-btn');
       const nextBtn = document.getElementById('next-btn');
@@ -619,8 +711,7 @@
 
       loading.textContent = 'finding a masterpiece...';
       loading.style.display = '';
-      artArea.style.display = 'none';
-      guessSection.style.display = 'none';
+      gameArea.style.display = 'none';
       revealCard.style.display = 'none';
       nextBtn.style.display = 'none';
       artLink.style.display = 'none';
@@ -629,10 +720,14 @@
 
       // Reset guesses
       selectedRegion = null;
-      regions.forEach(el => el.classList.remove('selected'));
+      regions.forEach(el => {
+        el.classList.remove('selected');
+        el.classList.remove('correct-reveal');
+      });
       selectedRegionLabel.textContent = '';
       yearSlider.value = 1500;
       yearDisplay.textContent = formatYear(1500);
+      yearDisplay.classList.remove('reveal-anim');
 
       let artwork = null;
       let attempts = 0;
@@ -659,11 +754,10 @@
       const img = document.getElementById('artwork-img');
       img.onload = () => {
         loading.style.display = 'none';
-        artArea.style.display = '';
-        artArea.classList.remove('fade-in');
-        void artArea.offsetWidth;
-        artArea.classList.add('fade-in');
-        guessSection.style.display = '';
+        gameArea.style.display = '';
+        gameArea.classList.remove('fade-in');
+        void gameArea.offsetWidth;
+        gameArea.classList.add('fade-in');
       };
       img.onerror = () => {
         imageRetries++;
@@ -694,9 +788,26 @@
         else yearScore = 0;
       }
 
-      // Score region (0 or 100)
-      const regionCorrect = guessedRegion && actualRegion && guessedRegion === actualRegion;
-      const regionScore = regionCorrect ? 100 : 0;
+      // Score region by proximity (0-100): exact=100, neighbor=60, 2 away=30, further=0
+      let regionScore = 0;
+      let regionDist = null;
+      if (guessedRegion && actualRegion) {
+        regionDist = regionDistance(guessedRegion, actualRegion);
+        if (regionDist === 0) regionScore = 100;
+        else if (regionDist === 1) regionScore = 60;
+        else if (regionDist === 2) regionScore = 30;
+        else regionScore = 0;
+      }
+
+      // Animate: slide year to correct answer and highlight correct region
+      if (actualYear !== null) {
+        const clampedYear = Math.max(-3000, Math.min(2025, actualYear));
+        animateSliderTo(clampedYear, 800);
+        setTimeout(() => yearDisplay.classList.add('reveal-anim'), 600);
+      }
+      if (actualRegion) {
+        setTimeout(() => highlightCorrectRegion(actualRegion), 400);
+      }
 
       // Build reveal card
       const card = document.getElementById('reveal-card');
@@ -710,12 +821,12 @@
         const cls = yearScore === 100 ? 'reveal-match' : yearScore > 0 ? 'reveal-close' : 'reveal-miss';
         html += `<span class="${cls}">${currentArtwork.date}</span>`;
         if (yearDiff !== null && yearDiff > 25) {
-          html += ` <span style="opacity:0.5;font-size:0.75rem;">(you guessed ${formatYear(guessedYear)}, off by ${yearDiff} years)</span>`;
+          html += ` <span style="opacity:0.5;font-size:0.7rem;">(off by ${yearDiff} years, ${yearScore} pts)</span>`;
         } else if (yearDiff !== null) {
-          html += ` <span style="opacity:0.5;font-size:0.75rem;">(nailed it!)</span>`;
+          html += ` <span style="opacity:0.5;font-size:0.7rem;">(nailed it! ${yearScore} pts)</span>`;
         }
       } else {
-        html += `<span class="reveal-miss">${currentArtwork.date}</span> <span style="opacity:0.4;font-size:0.75rem;">(couldn't score this one)</span>`;
+        html += `<span class="reveal-miss">${currentArtwork.date}</span> <span style="opacity:0.4;font-size:0.7rem;">(couldn't score)</span>`;
       }
       html += `</span></div>`;
 
@@ -724,21 +835,22 @@
         <span class="reveal-label">region</span>
         <span class="reveal-value">`;
       if (actualRegion) {
-        const cls = regionCorrect ? 'reveal-match' : 'reveal-miss';
+        const cls = regionScore === 100 ? 'reveal-match' : regionScore > 0 ? 'reveal-close' : 'reveal-miss';
         html += `<span class="${cls}">${currentArtwork.origin}</span>`;
-        if (!regionCorrect && guessedRegion) {
-          html += ` <span style="opacity:0.5;font-size:0.75rem;">(you guessed ${guessedRegion})</span>`;
-        } else if (regionCorrect) {
-          html += ` <span style="opacity:0.5;font-size:0.75rem;">(correct!)</span>`;
+        if (regionDist === 0) {
+          html += ` <span style="opacity:0.5;font-size:0.7rem;">(exact! ${regionScore} pts)</span>`;
+        } else if (guessedRegion && regionDist <= 2) {
+          html += ` <span style="opacity:0.5;font-size:0.7rem;">(close - ${guessedRegion}, ${regionScore} pts)</span>`;
+        } else if (guessedRegion) {
+          html += ` <span style="opacity:0.5;font-size:0.7rem;">(${guessedRegion}, ${regionScore} pts)</span>`;
         }
       } else {
-        html += `<span class="reveal-miss">${currentArtwork.origin}</span> <span style="opacity:0.4;font-size:0.75rem;">(couldn't classify region)</span>`;
+        html += `<span class="reveal-miss">${currentArtwork.origin}</span> <span style="opacity:0.4;font-size:0.7rem;">(couldn't classify)</span>`;
       }
       html += `</span></div>`;
 
-      // Divider then full artwork info
-      html += `<div style="border-top:1px solid var(--dn-btn-border);margin:0.8rem 0;"></div>`;
-
+      // Divider then artwork info
+      html += `<div style="border-top:1px solid var(--dn-btn-border);margin:0.5rem 0;"></div>`;
       html += `<div class="reveal-row">
         <span class="reveal-label">title</span>
         <span class="reveal-value">${currentArtwork.title}</span>
@@ -751,7 +863,7 @@
       if (currentArtwork.description) {
         html += `<div class="reveal-row">
           <span class="reveal-label">about</span>
-          <span class="reveal-value" style="font-size:0.8rem;opacity:0.7;">${currentArtwork.description}</span>
+          <span class="reveal-value" style="font-size:0.75rem;opacity:0.7;">${currentArtwork.description}</span>
         </div>`;
       }
 
@@ -763,7 +875,7 @@
           <div class="score-big">${totalScore}/100</div>
           <div class="score-detail">`;
         if (actualYear !== null) html += `year: ${yearScore}/100`;
-        if (actualYear !== null && actualRegion) html += ` · `;
+        if (actualYear !== null && actualRegion) html += ` &middot; `;
         if (actualRegion) html += `region: ${regionScore}/100`;
         html += `</div></div>`;
       }
@@ -773,7 +885,6 @@
       card.classList.remove('fadeUp');
       void card.offsetWidth;
 
-      // Show next button and link, hide submit
       document.getElementById('reveal-btn').style.display = 'none';
       document.getElementById('next-btn').style.display = '';
       document.getElementById('art-link').style.display = '';
