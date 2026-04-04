@@ -34,20 +34,37 @@
       z-index: -1;
     }
 
-    .back-link {
-      position: fixed; top: 0.8rem; left: 0.8rem;
-      font-family: 'Caveat', cursive; font-size: 1rem;
-      color: rgba(240,230,211,0.25); text-decoration: none;
-      z-index: 500; transition: color 0.3s;
-    }
-    .back-link:hover { color: rgba(240,230,211,0.6); }
-
-    .status-bar {
-      position: fixed; top: 0.8rem; right: 0.8rem;
+    /* -- Top controls bar -- */
+    .top-controls {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center;
+      gap: 1.2rem; padding: 0.5rem 1rem;
+      z-index: 500;
       font-family: 'Caveat', cursive; font-size: 0.9rem;
-      color: rgba(240,230,211,0.25); z-index: 500;
+      color: rgba(240,230,211,0.3);
+      background: rgba(14,18,10,0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
-    .status-bar .pts-num { color: #d49b3c; font-weight: 600; }
+    .top-controls a, .top-controls button {
+      font-family: inherit; font-size: inherit;
+      color: rgba(240,230,211,0.3); background: none;
+      border: none; text-decoration: none;
+      cursor: pointer; transition: color 0.3s;
+      white-space: nowrap;
+    }
+    .top-controls a:hover, .top-controls button:hover {
+      color: rgba(240,230,211,0.7);
+    }
+    .top-controls .pts-num { color: #d49b3c; font-weight: 600; }
+    .top-controls .tc-sep {
+      width: 1px; height: 14px;
+      background: rgba(240,230,211,0.08);
+    }
+
+    .back-link { display: none; }
+    .status-bar { display: none; }
 
     .switch-hint {
       position: fixed; bottom: 0.6rem; left: 50%; transform: translateX(-50%);
@@ -66,12 +83,7 @@
     }
 
     /* Level info bar */
-    .level-info {
-      position: fixed; top: 2.2rem; left: 50%; transform: translateX(-50%);
-      font-family: 'Caveat', cursive; font-size: 0.85rem;
-      color: rgba(240,230,211,0.3); z-index: 500;
-      white-space: nowrap;
-    }
+    .level-info { display: none; }
 
     /* ---- Level Container ---- */
     #level-wrap {
@@ -127,81 +139,118 @@
 
     /* Lava — sunk into floor */
     .tile-lava {
-      background: #4a3f2e;
+      background: #1c2218;
       overflow: hidden;
     }
     .tile-lava::after {
       content: '';
-      position: absolute; bottom: 0; left: 3px; right: 3px; height: 55%;
-      background: linear-gradient(180deg, #ff8800 0%, #ee5500 40%, #cc3300 100%);
+      position: absolute; bottom: 0; left: 2px; right: 2px; height: 60%;
+      background:
+        radial-gradient(ellipse at 30% 30%, rgba(255,255,100,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 50%, rgba(255,200,50,0.3) 0%, transparent 40%),
+        linear-gradient(180deg, #ffaa22 0%, #ff7700 25%, #ee5500 50%, #cc3300 80%, #aa2200 100%);
       box-shadow:
-        0 -2px 8px rgba(255,120,0,0.4),
-        inset 0 2px 4px rgba(255,255,100,0.25);
-      border-radius: 3px 3px 0 0;
+        0 -4px 12px rgba(255,120,0,0.5),
+        0 -1px 4px rgba(255,200,50,0.3),
+        inset 0 2px 6px rgba(255,255,100,0.3);
+      border-radius: 6px 6px 0 0;
+      animation: lava-glow 2s ease-in-out infinite alternate;
     }
     .tile-lava::before {
       content: '';
-      position: absolute; bottom: 53%; left: 3px; right: 3px; height: 3px;
+      position: absolute; bottom: 58%; left: 2px; right: 2px; height: 5px;
       background: linear-gradient(90deg,
-        rgba(255,200,50,0.3),
-        rgba(255,255,100,0.5) 25%,
-        rgba(255,200,50,0.3) 50%,
-        rgba(255,255,100,0.5) 75%,
-        rgba(255,200,50,0.3));
-      animation: wave 3s ease-in-out infinite;
+        transparent 5%,
+        rgba(255,200,50,0.4) 15%,
+        rgba(255,255,100,0.6) 30%,
+        rgba(255,200,50,0.3) 45%,
+        rgba(255,255,100,0.5) 60%,
+        rgba(255,200,50,0.4) 80%,
+        transparent 95%);
+      border-radius: 3px;
+      animation: wave 2.5s ease-in-out infinite;
       z-index: 1;
+      filter: blur(1px);
     }
     @keyframes wave {
-      0%, 100% { transform: scaleX(1); opacity: 0.6; }
-      50% { transform: scaleX(1.02); opacity: 1; }
+      0%, 100% { transform: scaleX(1) translateX(0); opacity: 0.6; }
+      50% { transform: scaleX(1.03) translateX(-2px); opacity: 1; }
+    }
+    @keyframes lava-glow {
+      0% { box-shadow: 0 -4px 12px rgba(255,120,0,0.4), 0 -1px 4px rgba(255,200,50,0.2), inset 0 2px 6px rgba(255,255,100,0.2); }
+      100% { box-shadow: 0 -6px 18px rgba(255,120,0,0.6), 0 -2px 8px rgba(255,200,50,0.4), inset 0 3px 8px rgba(255,255,100,0.35); }
     }
 
     /* Water — sunk into floor */
     .tile-water {
-      background: #4a3f2e;
+      background: #1c2218;
       overflow: hidden;
     }
     .tile-water::after {
       content: '';
-      position: absolute; bottom: 0; left: 3px; right: 3px; height: 55%;
-      background: linear-gradient(180deg, #3388cc 0%, #2266aa 40%, #1155aa 100%);
+      position: absolute; bottom: 0; left: 2px; right: 2px; height: 60%;
+      background:
+        radial-gradient(ellipse at 25% 35%, rgba(100,200,255,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 45%, rgba(150,230,255,0.2) 0%, transparent 40%),
+        linear-gradient(180deg, #55bbee 0%, #3399dd 25%, #2277bb 50%, #1155aa 80%, #0e4499 100%);
       box-shadow:
-        0 -2px 8px rgba(30,100,200,0.3),
-        inset 0 2px 4px rgba(100,200,255,0.2);
-      border-radius: 3px 3px 0 0;
+        0 -4px 12px rgba(30,100,200,0.4),
+        0 -1px 4px rgba(100,200,255,0.25),
+        inset 0 2px 6px rgba(150,230,255,0.25);
+      border-radius: 6px 6px 0 0;
+      animation: water-glow 3s ease-in-out infinite alternate;
     }
     .tile-water::before {
       content: '';
-      position: absolute; bottom: 53%; left: 3px; right: 3px; height: 3px;
+      position: absolute; bottom: 58%; left: 2px; right: 2px; height: 5px;
       background: linear-gradient(90deg,
-        rgba(100,200,255,0.2),
-        rgba(150,230,255,0.4) 25%,
-        rgba(100,200,255,0.2) 50%,
-        rgba(150,230,255,0.4) 75%,
-        rgba(100,200,255,0.2));
-      animation: wave 4s ease-in-out infinite;
+        transparent 5%,
+        rgba(100,200,255,0.3) 15%,
+        rgba(150,230,255,0.5) 30%,
+        rgba(100,200,255,0.2) 45%,
+        rgba(150,230,255,0.4) 65%,
+        rgba(100,200,255,0.3) 80%,
+        transparent 95%);
+      border-radius: 3px;
+      animation: wave 3.5s ease-in-out infinite;
       z-index: 1;
+      filter: blur(1px);
+    }
+    @keyframes water-glow {
+      0% { box-shadow: 0 -4px 12px rgba(30,100,200,0.3), 0 -1px 4px rgba(100,200,255,0.15), inset 0 2px 6px rgba(150,230,255,0.15); }
+      100% { box-shadow: 0 -6px 16px rgba(30,100,200,0.5), 0 -2px 6px rgba(100,200,255,0.3), inset 0 3px 8px rgba(150,230,255,0.3); }
     }
 
     /* Green goo — sunk into floor */
     .tile-goo {
-      background: #4a3f2e;
+      background: #1c2218;
       overflow: hidden;
     }
     .tile-goo::after {
       content: '';
-      position: absolute; bottom: 0; left: 3px; right: 3px; height: 55%;
-      background: linear-gradient(180deg, #44aa22 0%, #338818 40%, #2a7a1a 100%);
-      box-shadow: 0 -2px 8px rgba(50,180,50,0.3);
-      border-radius: 3px 3px 0 0;
+      position: absolute; bottom: 0; left: 2px; right: 2px; height: 60%;
+      background:
+        radial-gradient(ellipse at 35% 40%, rgba(100,255,50,0.25) 0%, transparent 45%),
+        linear-gradient(180deg, #55cc33 0%, #44aa22 30%, #338818 60%, #2a7a1a 100%);
+      box-shadow:
+        0 -4px 12px rgba(50,180,50,0.35),
+        inset 0 2px 6px rgba(100,255,50,0.2);
+      border-radius: 6px 6px 0 0;
+      animation: goo-glow 2.5s ease-in-out infinite alternate;
     }
     .tile-goo::before {
       content: '';
-      position: absolute; bottom: 53%; left: 3px; right: 3px; height: 3px;
+      position: absolute; bottom: 58%; left: 2px; right: 2px; height: 5px;
       background: linear-gradient(90deg,
-        rgba(100,255,50,0.2), rgba(150,255,100,0.4) 50%, rgba(100,255,50,0.2));
-      animation: wave 3.5s ease-in-out infinite;
+        transparent, rgba(100,255,50,0.3) 25%, rgba(150,255,100,0.5) 50%, rgba(100,255,50,0.3) 75%, transparent);
+      border-radius: 3px;
+      animation: wave 3s ease-in-out infinite;
       z-index: 1;
+      filter: blur(1px);
+    }
+    @keyframes goo-glow {
+      0% { box-shadow: 0 -4px 10px rgba(50,180,50,0.25), inset 0 2px 6px rgba(100,255,50,0.15); }
+      100% { box-shadow: 0 -6px 14px rgba(50,180,50,0.4), inset 0 3px 8px rgba(100,255,50,0.25); }
     }
 
     /* Fire exit */
@@ -343,8 +392,7 @@
 
     /* Gem counter */
     .gem-counter {
-      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 1rem; z-index: 500;
+      display: flex; gap: 0.8rem;
       font-family: 'Caveat', cursive; font-size: 0.85rem;
     }
     .gem-counter-fire { color: rgba(255,180,100,0.5); }
@@ -566,31 +614,8 @@
     }
     .solo-btn:hover { color: rgba(240,230,211,0.7); background: rgba(255,255,255,0.08); }
 
-    .skip-btn {
-      position: fixed; bottom: 1rem; right: 1rem;
-      font-family: 'Caveat', cursive; font-size: 0.9rem;
-      color: rgba(240,230,211,0.2); background: none;
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 0.3rem 1rem; border-radius: 12px;
-      cursor: pointer; transition: all 0.3s;
-      text-decoration: none; z-index: 500;
-    }
-    .skip-btn:hover {
-      color: rgba(240,230,211,0.5);
-      border-color: rgba(255,255,255,0.15);
-    }
-    @media (pointer: coarse) { .skip-btn { bottom: 4.5rem; } }
-
-    /* Restart button */
-    .restart-btn {
-      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
-      font-family: 'Caveat', cursive; font-size: 0.8rem;
-      color: rgba(240,230,211,0.15); background: none;
-      border: none; cursor: pointer; z-index: 500;
-      transition: color 0.3s;
-    }
-    .restart-btn:hover { color: rgba(240,230,211,0.4); }
-    @media (pointer: coarse) { .restart-btn { bottom: 4.5rem; left: auto; right: 4.5rem; transform: none; } }
+    .skip-btn { display: none; }
+    .restart-btn { display: none; }
 
     /* ---- Return pill (from game center) ---- */
     .return-pill {
@@ -655,15 +680,7 @@
     }
 
     /* ---- Level Menu ---- */
-    .menu-btn {
-      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
-      font-family: 'Caveat', cursive; font-size: 0.85rem;
-      color: rgba(240,230,211,0.25); background: none;
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 0.2rem 0.8rem; border-radius: 10px;
-      cursor: pointer; z-index: 500; transition: all 0.3s;
-    }
-    .menu-btn:hover { color: rgba(240,230,211,0.6); border-color: rgba(255,255,255,0.15); }
+    .menu-btn { display: none; }
 
     .level-menu-overlay {
       position: fixed; inset: 0; background: rgba(14,18,10,0.96);
@@ -718,7 +735,7 @@
 </head>
 <body class="dark-hud">
   <a class="return-pill" id="return-pill" href="../../games/">&larr; return to games</a>
-  <nav class="chapter-nav" id="chapter-nav">
+  <nav class="chapter-nav" id="chapter-nav" style="display:none">
     <a class="chapter-btn" href="../../world/">home</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn" href="../music/">rhythm</a>
@@ -728,11 +745,30 @@
     <a class="chapter-btn" href="../mystery/">mystery</a>
   </nav>
 
-  <a href="../../world/" class="back-link" id="back-link">&larr; back</a>
-  <a href="../../world/" class="skip-btn">skip &rarr;</a>
-  <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
+  <div class="top-controls">
+    <a href="../../world/" id="back-link">&larr; back</a>
+    <div class="tc-sep"></div>
+    <span id="level-info-bar"></span>
+    <div class="tc-sep"></div>
+    <div class="gem-counter" id="gem-counter">
+      <div class="gem-counter-fire" id="gem-counter-fire"></div>
+      <div class="gem-counter-water" id="gem-counter-water"></div>
+    </div>
+    <div class="tc-sep"></div>
+    <span><span class="pts-num" id="pts-num">0</span> pts</span>
+    <div class="tc-sep"></div>
+    <button id="menu-btn">levels</button>
+    <div class="tc-sep"></div>
+    <button id="restart-btn">restart</button>
+    <div class="tc-sep"></div>
+    <a href="../../world/">skip</a>
+  </div>
+
+  <a href="../../world/" class="back-link" style="display:none">&larr; back</a>
+  <a href="../../world/" class="skip-btn" style="display:none">skip</a>
+  <div class="status-bar" style="display:none"><span class="pts-num">0</span> pts</div>
   <div class="level-info" id="level-info"></div>
-  <button class="menu-btn" id="menu-btn">levels</button>
+  <button class="menu-btn" style="display:none">levels</button>
 
   <div class="level-menu-overlay" id="level-menu-overlay">
     <div class="level-menu-title">flameboi & aguagurl</div>
@@ -741,10 +777,6 @@
   </div>
 
   <div class="switch-hint" id="switch-hint"></div>
-  <div class="gem-counter" id="gem-counter">
-    <div class="gem-counter-fire" id="gem-counter-fire"></div>
-    <div class="gem-counter-water" id="gem-counter-water"></div>
-  </div>
 
   <div id="level-wrap"><div id="level"></div></div>
 
@@ -802,7 +834,6 @@
     </div>
   </div>
 
-  <button class="restart-btn" id="restart-btn">restart level</button>
 
 <script>
 // ============================================================
@@ -826,16 +857,16 @@ const LEVEL_DATA = [
       [1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,1],
       [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,1],
       [1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,0,1],
+      [1,0,0,0,0,0,11,0,0,0,1,1,1,1,1,1,1,1,0,0,0,12,0,0,0,0,1],
       [1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -855,6 +886,7 @@ const LEVEL_DATA = [
       [1,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,1],
       [1,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,1,1,1,1,1,0,0,0,0,11,0,0,12,0,0,0,0,1,1,1,1,1,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1],
@@ -863,7 +895,6 @@ const LEVEL_DATA = [
       [1,0,0,0,0,1,1,1,0,0,9,0,0,0,0,0,0,7,0,0,1,1,1,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -880,16 +911,16 @@ const LEVEL_DATA = [
       [1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,11,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,12,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1],
-      [1,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1],
+      [1,0,11,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,12,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1],
       [1,0,0,0,2,2,2,0,4,4,4,0,0,0,0,0,0,4,4,4,0,3,3,3,0,0,0,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -924,6 +955,8 @@ function loadLevel(idx) {
 
   // Update level info
   document.getElementById('level-info').textContent = `${idx + 1}/${LEVEL_DATA.length} — ${data.name}`;
+  const lib = document.getElementById('level-info-bar');
+  if (lib) lib.textContent = `${idx + 1}/${LEVEL_DATA.length} — ${data.name}`;
 }
 
 const isHost = localStorage.getItem('datenight-host') === '1';
@@ -957,11 +990,11 @@ document.getElementById('pts-num').textContent = getPoints();
 
 let tileW, tileH, levelLeft, levelTop;
 function calcTileSize() {
-  const pad = 60, sidePad = 20;
+  const pad = 80, sidePad = 40;
   const availW = window.innerWidth - sidePad * 2;
   const availH = window.innerHeight - pad * 2;
-  const ts = Math.min(Math.floor(availW / COLS), Math.floor(availH / ROWS));
-  tileW = Math.max(ts, 16); tileH = Math.max(ts, 16);
+  const ts = Math.min(Math.floor(availW / COLS), Math.floor(availH / ROWS), 24);
+  tileW = Math.max(ts, 14); tileH = Math.max(ts, 14);
 }
 
 const levelEl = document.getElementById('level');
@@ -1083,8 +1116,8 @@ function applyCharColors() {
 applyCharColors();
 
 // ---- Physics (tuned for fun) ----
-const GRAVITY = 0.6;
-const JUMP_VEL = -11.5;
+const GRAVITY = 0.55;
+const JUMP_VEL = -12.5;
 const MOVE_SPEED = 3.2;
 const MOVE_ACCEL = 1.5;   // Acceleration for snappier feel
 const MOVE_FRICTION = 0.7; // Deceleration when not pressing
