@@ -533,6 +533,23 @@
       transition: color 0.3s;
     }
     .ending-actions a:hover { color: rgba(255,255,255,0.9); }
+    .ending-fire-invite {
+      position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+      opacity: 0; transition: opacity 1s ease; text-align: center; white-space: nowrap;
+    }
+    .ending-fire-invite.visible { opacity: 1; }
+    .ending-fire-invite p {
+      font-family: 'Caveat', cursive; font-size: 1rem;
+      color: rgba(255,255,255,0.35); margin-bottom: 0.5rem;
+    }
+    .ending-fire-invite a {
+      font-family: 'Caveat', cursive; font-size: 1.15rem; color: #f8b724;
+      text-decoration: none; cursor: pointer; padding: 6px 20px;
+      border: 1.5px solid rgba(248,183,36,0.3); border-radius: 20px; transition: all 0.3s;
+    }
+    .ending-fire-invite a:hover {
+      color: #ffd54f; border-color: rgba(248,183,36,0.5); background: rgba(248,183,36,0.08);
+    }
 
     .firework {
       position: absolute;
@@ -708,6 +725,10 @@
     <div class="ending-chars" id="ending-chars"></div>
     <div class="ending-message" id="ending-message"></div>
     <div class="ending-stats" id="ending-stats"></div>
+    <div class="ending-fire-invite" id="ending-fire-invite">
+      <p>if you have some time, stick around</p>
+      <a href="../intrusive/" id="ending-fire-link">chat by the fire</a>
+    </div>
     <div class="ending-actions" id="ending-actions">
       <a id="ending-replay">play again</a>
       <a id="ending-home">home</a>
@@ -1828,10 +1849,15 @@
         statsEl.classList.add('visible');
       }, 5500);
 
+      // Show fire invite
+      setTimeout(() => {
+        document.getElementById('ending-fire-invite').classList.add('visible');
+      }, 6500);
+
       // Show actions
       setTimeout(() => {
         actionsEl.classList.add('visible');
-      }, 7000);
+      }, 7500);
 
       // Action handlers
       document.getElementById('ending-replay').onclick = () => {
