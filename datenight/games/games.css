@@ -66,6 +66,7 @@ body {
 /* ── Game Tabs ── */
 .game-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
   margin-bottom: 2rem;
@@ -270,6 +271,33 @@ body {
 
 .c4-cell.drop {
   animation: drop 0.4s ease-out;
+}
+
+/* ── Adventure Link Panels ── */
+.game-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--dn-sub, #888);
+  margin-bottom: 2rem;
+}
+
+.play-link {
+  display: inline-block;
+  font-family: var(--dn-heading-font, 'Caveat', cursive);
+  font-size: 1.4rem;
+  color: var(--dn-btn-text, #2c2c2c);
+  background: var(--dn-btn-bg, white);
+  border: 1.5px solid var(--dn-btn-border, #d4cfc9);
+  border-radius: var(--dn-btn-radius, 30px);
+  padding: 0.6em 2em;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.play-link:hover {
+  border-color: var(--dn-accent, #e85d75);
+  color: var(--dn-accent, #e85d75);
 }
 
 /* ── Responsive ── */
