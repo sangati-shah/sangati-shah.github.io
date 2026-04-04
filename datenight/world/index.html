@@ -994,9 +994,9 @@
         const adv = ADVENTURES.find(a => a.id === spawnAfter);
         if (adv) return adv.x + BOX_SIZE / 2 - SPRITE_W / 2;
       }
-      const savedX = sessionStorage.getItem('datenight-map-x');
+      const savedX = localStorage.getItem('datenight-map-x');
       if (savedX) {
-        sessionStorage.removeItem('datenight-map-x');
+        localStorage.removeItem('datenight-map-x');
         return parseInt(savedX) || 120;
       }
       return 120;
@@ -1015,19 +1015,19 @@
 
     // Track completed adventures
     function getCompleted() {
-      try { return JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch { return []; }
+      try { return JSON.parse(localStorage.getItem('datenight-completed') || '[]'); } catch { return []; }
     }
     function markCompleted(id) {
       const c = getCompleted();
-      if (!c.includes(id)) { c.push(id); sessionStorage.setItem('datenight-completed', JSON.stringify(c)); }
+      if (!c.includes(id)) { c.push(id); localStorage.setItem('datenight-completed', JSON.stringify(c)); }
     }
 
     // Track collected hearts
     function getCollectedHearts() {
-      try { return JSON.parse(sessionStorage.getItem('datenight-hearts') || '[]'); } catch { return []; }
+      try { return JSON.parse(localStorage.getItem('datenight-hearts') || '[]'); } catch { return []; }
     }
     function saveCollectedHearts(arr) {
-      sessionStorage.setItem('datenight-hearts', JSON.stringify(arr));
+      localStorage.setItem('datenight-hearts', JSON.stringify(arr));
     }
 
     // ══════════════════════════════════════
@@ -1355,7 +1355,7 @@
     }
 
     const HEART_POINTS = 10;
-    let totalPoints = parseInt(sessionStorage.getItem('puzzle-points') || '0');
+    let totalPoints = parseInt(localStorage.getItem('puzzle-points') || '0');
 
     function updateHeartCounter() {
       const count = collectedHearts.length;
@@ -1373,7 +1373,7 @@
 
     function addPoints(amount) {
       totalPoints += amount;
-      sessionStorage.setItem('puzzle-points', totalPoints);
+      localStorage.setItem('puzzle-points', totalPoints);
       updatePointsDisplay();
       spawnPointFloat(amount);
     }
@@ -1398,7 +1398,7 @@
     // ══════════════════════════════════════
     const DEFAULT_CHAR = { name: 'you', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
     let myChar = { ...DEFAULT_CHAR };
-    try { const s = JSON.parse(sessionStorage.getItem('my-character')); if (s) myChar = { ...myChar, ...s }; } catch {}
+    try { const s = JSON.parse(localStorage.getItem('my-character')); if (s) myChar = { ...myChar, ...s }; } catch {}
 
     let partnerChar = { name: 'them', hair: '#4a3728', skin: '#f5cba7', shirt: '#4a7c9b', pants: '#1a1a2e' };
 
@@ -1763,8 +1763,8 @@
 
       // Action handlers
       document.getElementById('ending-replay').onclick = () => {
-        sessionStorage.removeItem('datenight-completed');
-        sessionStorage.removeItem('datenight-hearts');
+        localStorage.removeItem('datenight-completed');
+        localStorage.removeItem('datenight-hearts');
         window.location.reload();
       };
       document.getElementById('ending-home').onclick = () => {
@@ -1791,7 +1791,7 @@
         btn.dataset.idx = i;
         btn.onclick = () => {
           if (ch.action === 'home') {
-            sessionStorage.setItem('datenight-map-x', Math.round(player.x));
+            localStorage.setItem('datenight-map-x', Math.round(player.x));
             window.location.href = '../?from=map';
           } else {
             teleportTo(ch.x);
@@ -2025,8 +2025,8 @@
     // ══════════════════════════════════════
     // PEERJS
     // ══════════════════════════════════════
-    const roomCode = sessionStorage.getItem('datenight-room');
-    const isHost = sessionStorage.getItem('datenight-host') === '1';
+    const roomCode = localStorage.getItem('datenight-room');
+    const isHost = localStorage.getItem('datenight-host') === '1';
     let peer = null, conn = null;
 
     function peerIdForWorld(code) { return 'shahhub-world-' + code; }
@@ -2222,9 +2222,9 @@
     playerEl.style.top = player.y + 'px';
 
     // Drop-in animation
-    const dropIn = sessionStorage.getItem('datenight-drop-in') === '1';
+    const dropIn = localStorage.getItem('datenight-drop-in') === '1';
     if (dropIn) {
-      sessionStorage.removeItem('datenight-drop-in');
+      localStorage.removeItem('datenight-drop-in');
       playerEl.style.opacity = '0';
       document.getElementById('intro-text').style.opacity = '0';
       document.querySelector('.back-btn').style.opacity = '0';
@@ -2272,7 +2272,7 @@
 
     document.getElementById('back-home-btn').addEventListener('click', (e) => {
       e.preventDefault();
-      sessionStorage.setItem('datenight-map-x', Math.round(player.x));
+      localStorage.setItem('datenight-map-x', Math.round(player.x));
       window.location.href = '../?from=map';
     });
 

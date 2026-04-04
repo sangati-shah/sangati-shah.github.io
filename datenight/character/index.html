@@ -253,7 +253,7 @@
 
     let char = { name: '', hair: '#1a1a1a', skin: '#c68642', shirt: '#e85d75', pants: '#3a3a5c' };
     try {
-      const saved = JSON.parse(sessionStorage.getItem('my-character'));
+      const saved = JSON.parse(localStorage.getItem('my-character'));
       if (saved) char = { ...char, ...saved };
     } catch {}
 
@@ -301,7 +301,7 @@
         setTimeout(() => nameInput.style.borderColor = '', 1500);
         return;
       }
-      sessionStorage.setItem('my-character', JSON.stringify(char));
+      localStorage.setItem('my-character', JSON.stringify(char));
       window.location.href = '../?from=character';
     });
 

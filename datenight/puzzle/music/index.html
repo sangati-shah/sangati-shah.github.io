@@ -573,7 +573,7 @@
     const HOST_INSTRUMENTS = ['tabla', 'sitar', 'bansuri'];
     const GUEST_INSTRUMENTS = ['krar', 'kebero', 'masinko'];
 
-    const isHost = sessionStorage.getItem('datenight-host') === '1';
+    const isHost = localStorage.getItem('datenight-host') === '1';
     let soloMode = false;
     let myInstruments = isHost ? HOST_INSTRUMENTS : GUEST_INSTRUMENTS;
     let partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
@@ -722,10 +722,10 @@
     let attempts = 0;
 
     // Points
-    function getPoints() { return parseInt(sessionStorage.getItem('puzzle-points') || '0'); }
+    function getPoints() { return parseInt(localStorage.getItem('puzzle-points') || '0'); }
     function addPoints(n) {
       const total = getPoints() + n;
-      sessionStorage.setItem('puzzle-points', total);
+      localStorage.setItem('puzzle-points', total);
       const el = document.getElementById('pts-num');
       if (el) { el.textContent = total; el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 300); }
       if (window.hudUpdatePoints) window.hudUpdatePoints();
@@ -994,14 +994,14 @@
 
     function markCompleted(id) {
       let completed;
-      try { completed = JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]'); } catch { completed = []; }
-      if (!completed.includes(id)) { completed.push(id); sessionStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
+      try { completed = JSON.parse(localStorage.getItem('puzzle-completed') || '[]'); } catch { completed = []; }
+      if (!completed.includes(id)) { completed.push(id); localStorage.setItem('puzzle-completed', JSON.stringify(completed)); }
     }
 
     // ======================================
     // PEERJS
     // ======================================
-    const roomCode = sessionStorage.getItem('datenight-room');
+    const roomCode = localStorage.getItem('datenight-room');
     let peer = null, conn = null;
 
     function peerIdForPuzzle(code) { return 'shahhub-puzzle-music-' + code; }
