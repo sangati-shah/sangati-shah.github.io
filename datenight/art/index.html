@@ -731,10 +731,10 @@
       const res = await fetch(url);
       const json = await res.json();
 
-      const withImages = json.data.filter(a => a.image_id);
-      if (withImages.length === 0) return null;
+      const usable = json.data.filter(a => a.image_id && classifyOrigin(a.place_of_origin));
+      if (usable.length === 0) return null;
 
-      const artwork = withImages[Math.floor(Math.random() * withImages.length)];
+      const artwork = usable[Math.floor(Math.random() * usable.length)];
       const iiifBase = json.config.iiif_url;
       return {
         id: artwork.id,
