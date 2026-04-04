@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -7,21 +7,18 @@
 }
 
 :root {
-    --saffron: rgba(232, 131, 58, 1);
-    --terracotta: rgba(180, 87, 72, 1);
-    --peacock: rgba(0, 115, 130, 1);
-    --rose: rgba(207, 76, 126, 1);
-    --sage: rgba(139, 168, 104, 1);
-    --green: rgba(85, 120, 65, 1);
-    --marigold: rgba(243, 176, 43, 1);
-    --cream: #fdf6ee;
-    --warm-white: #fefcf8;
+    --ghibli-bg: #f7f2e7;
+    --ghibli-text: #3a5743;
+    --ghibli-sub: #9bb5a0;
+    --ghibli-accent: #c25b56;
+    --ghibli-btn-border: #c2b8a3;
+    --ghibli-warm-white: #faf8f2;
 }
 
 body {
-    font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--cream);
-    color: #4a3f36;
+    font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--ghibli-bg);
+    color: var(--ghibli-text);
     overflow-x: hidden;
 }
 
@@ -33,11 +30,11 @@ a {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(253, 246, 238, 0.95);
+    background: rgba(247, 242, 231, 0.95);
     backdrop-filter: blur(12px);
     padding: 1rem 2rem;
     z-index: 1000;
-    box-shadow: 0 2px 20px rgba(180, 87, 72, 0.06);
+    box-shadow: 0 2px 20px rgba(58, 87, 67, 0.06);
 }
 
 .nav-content {
@@ -49,13 +46,10 @@ a {
 }
 
 .nav-logo {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 1.5rem;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--saffron), var(--rose));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--ghibli-text);
 }
 
 .nav-links {
@@ -65,7 +59,7 @@ a {
 }
 
 .nav-links a {
-    color: #5a4a3f;
+    color: var(--ghibli-text);
     text-decoration: none;
     transition: color 0.3s;
     position: relative;
@@ -79,13 +73,13 @@ a {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--saffron);
+    background: var(--ghibli-accent);
     transition: width 0.3s;
     border-radius: 1px;
 }
 
 .nav-links a:hover {
-    color: var(--saffron);
+    color: var(--ghibli-accent);
 }
 
 .nav-links a:hover::after {
@@ -109,7 +103,7 @@ section.visible {
 }
 
 section:nth-child(even) {
-    background: rgba(253, 246, 238, 0.6);
+    background: rgba(247, 242, 231, 0.6);
 }
 
 .container {
@@ -123,15 +117,11 @@ section:nth-child(even) {
 }
 
 .hero h1 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 4rem;
+    font-weight: 700;
     margin-bottom: 1rem;
-    background: linear-gradient(45deg, var(--rose), var(--saffron), var(--peacock));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient 4s ease infinite;
-    background-size: 200% 200%;
+    color: var(--ghibli-text);
 }
 
 .name-heading {
@@ -146,22 +136,16 @@ section:nth-child(even) {
   height: 90px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(232, 131, 58, 0.3);
-  box-shadow: 0 0 20px rgba(207, 76, 126, 0.15);
-}
-
-@keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  border: 3px solid rgba(155, 181, 160, 0.4);
+  box-shadow: 0 0 20px rgba(58, 87, 67, 0.1);
 }
 
 .hero h2 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 2rem;
-    color: var(--peacock);
+    color: var(--ghibli-sub);
     margin-bottom: 2rem;
-    font-weight: 400;
+    font-weight: 500;
     font-style: italic;
 }
 
@@ -170,7 +154,7 @@ section:nth-child(even) {
     line-height: 1.8;
     max-width: 800px;
     margin: 0 auto;
-    color: #6b5b50;
+    color: var(--ghibli-text);
 }
 
 .hero-stats {
@@ -186,17 +170,14 @@ section:nth-child(even) {
 }
 
 .stat-number {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 2.5rem;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--saffron));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--ghibli-accent);
 }
 
 .stat-label {
-    color: #8a7b70;
+    color: var(--ghibli-sub);
     font-size: 0.9rem;
     margin-top: 0.5rem;
 }
@@ -219,7 +200,19 @@ section:nth-child(even) {
 }
 
 .henna-design svg {
-    filter: drop-shadow(0 2px 6px rgba(180, 87, 72, 0.08));
+    filter: drop-shadow(0 2px 6px rgba(58, 87, 67, 0.06));
+}
+
+.henna-design svg path,
+.henna-design svg circle,
+.henna-design svg line {
+    stroke: rgba(155, 181, 160, 0.6) !important;
+    fill: none !important;
+}
+
+.henna-design svg circle[fill]:not([fill="none"]) {
+    fill: rgba(155, 181, 160, 0.4) !important;
+    stroke: none !important;
 }
 
 .henna-design:nth-child(1) {
@@ -323,14 +316,15 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .section-title {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 3rem;
+    font-weight: 700;
     margin-bottom: 3rem;
     text-align: center;
     position: relative;
     display: inline-block;
     width: 100%;
-    color: var(--peacock);
+    color: var(--ghibli-text);
 }
 
 .section-title::after {
@@ -341,7 +335,7 @@ animation: drawPath 2.5s ease-out forwards;
     transform: translateX(-50%);
     width: 100px;
     height: 4px;
-    background: linear-gradient(90deg, var(--saffron), var(--rose));
+    background: linear-gradient(90deg, var(--ghibli-sub), var(--ghibli-accent));
     border-radius: 2px;
 }
 
@@ -353,29 +347,30 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .skill-card {
-    background: var(--warm-white);
+    background: var(--ghibli-warm-white);
     padding: 2rem;
-    border-radius: 20px;
-    border: 2px solid rgba(232, 131, 58, 0.12);
+    border-radius: 14px;
+    border: 2px solid rgba(194, 184, 163, 0.3);
     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     cursor: pointer;
 }
 
 .skill-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 35px rgba(232, 131, 58, 0.15);
-    border-color: var(--saffron);
+    box-shadow: 0 12px 35px rgba(58, 87, 67, 0.1);
+    border-color: var(--ghibli-sub);
 }
 
 .skill-card h3 {
-    font-family: 'Playfair Display', Georgia, serif;
-    color: var(--peacock);
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ghibli-text);
     margin-bottom: 1rem;
     font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .skill-card p {
-    color: #6b5b50;
+    color: var(--ghibli-text);
     line-height: 1.6;
 }
 
@@ -387,10 +382,10 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .tag {
-    background: linear-gradient(135deg, var(--sage), var(--sage));
+    background: var(--ghibli-sub);
     color: white;
     padding: 0.5rem 1rem;
-    border-radius: 20px;
+    border-radius: 14px;
     font-size: 0.9rem;
     font-weight: 600;
 }
@@ -407,7 +402,7 @@ animation: drawPath 2.5s ease-out forwards;
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, var(--saffron), var(--rose), var(--peacock));
+    background: linear-gradient(180deg, var(--ghibli-sub), var(--ghibli-accent), var(--ghibli-text));
     border-radius: 2px;
 }
 
@@ -415,16 +410,16 @@ animation: drawPath 2.5s ease-out forwards;
     position: relative;
     margin-bottom: 3rem;
     padding: 2rem;
-    background: var(--warm-white);
-    border-radius: 20px;
-    border-left: 4px solid var(--saffron);
-    box-shadow: 0 4px 18px rgba(180, 87, 72, 0.06);
+    background: var(--ghibli-warm-white);
+    border-radius: 14px;
+    border-left: 4px solid var(--ghibli-sub);
+    box-shadow: 0 4px 18px rgba(58, 87, 67, 0.05);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .timeline-item:hover {
     transform: translateX(8px);
-    box-shadow: 0 8px 28px rgba(180, 87, 72, 0.1);
+    box-shadow: 0 8px 28px rgba(58, 87, 67, 0.08);
 }
 
 .timeline-item::before {
@@ -434,65 +429,66 @@ animation: drawPath 2.5s ease-out forwards;
     top: 2rem;
     width: 15px;
     height: 15px;
-    background: var(--saffron);
+    background: var(--ghibli-sub);
     border-radius: 50%;
-    border: 3px solid var(--cream);
-    box-shadow: 0 0 0 3px rgba(232, 131, 58, 0.2);
+    border: 3px solid var(--ghibli-bg);
+    box-shadow: 0 0 0 3px rgba(155, 181, 160, 0.2);
 }
 
 .timeline-date {
-    color: var(--marigold);
+    color: var(--ghibli-accent);
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
 
 .timeline-title {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 1.5rem;
-    color: var(--peacock);
+    font-weight: 700;
+    color: var(--ghibli-text);
     margin-bottom: 0.5rem;
 }
 
 .timeline-company {
-    color: var(--sage);
+    color: var(--ghibli-sub);
     margin-bottom: 1rem;
     font-size: 1.1rem;
     font-weight: 600;
 }
 
 .timeline-description {
-    color: #6b5b50;
+    color: var(--ghibli-text);
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
 
 .tech-tag {
-    background: var(--green);
+    background: var(--ghibli-text);
     color: white;
     padding: 0.3rem 0.8rem;
-    border-radius: 15px;
+    border-radius: 14px;
     font-size: 0.85rem;
 }
 
 .cta-button {
     display: inline-block;
     padding: 1rem 2.5rem;
-    background: linear-gradient(135deg, var(--rose), var(--saffron));
+    background: var(--ghibli-accent);
     color: #fff;
     text-decoration: none;
-    border-radius: 30px;
+    border-radius: 14px;
     font-weight: bold;
     margin-top: 2rem;
     transition: transform 0.3s, box-shadow 0.3s;
     border: none;
     cursor: pointer;
     font-size: 1.1rem;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Quicksand', sans-serif;
 }
 
 .cta-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(207, 76, 126, 0.3);
+    box-shadow: 0 10px 30px rgba(194, 91, 86, 0.25);
 }
 
 .contact-section {
@@ -500,11 +496,11 @@ animation: drawPath 2.5s ease-out forwards;
 }
 
 .contact-section p {
-    color: #6b5b50;
+    color: var(--ghibli-text);
 }
 
 .highlight {
-    color: var(--saffron);
+    color: var(--ghibli-accent);
     font-weight: 600;
 }
 

@@ -1,38 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
 :root {
-    --saffron: rgba(232, 131, 58, 1);
-    --terracotta: rgba(180, 87, 72, 1);
-    --peacock: rgba(0, 115, 130, 1);
-    --rose: rgba(207, 76, 126, 1);
-    --sage: rgba(139, 168, 104, 1);
-    --green: rgba(85, 120, 65, 1);
-    --marigold: rgba(243, 176, 43, 1);
-    --cream: #fdf6ee;
-    --warm-white: #fefcf8;
+    --ghibli-bg: #f7f2e7;
+    --ghibli-text: #3a5743;
+    --ghibli-sub: #9bb5a0;
+    --ghibli-accent: #c25b56;
+    --ghibli-btn-border: #c2b8a3;
+    --ghibli-warm-white: #faf8f2;
 }
 
 * { box-sizing: border-box; }
 
 body {
-    font-family: 'Nunito', system-ui, sans-serif;
+    font-family: 'Quicksand', system-ui, sans-serif;
     margin: 0;
     padding: 0;
-    background: var(--cream);
-    color: #4a3f36;
+    background: var(--ghibli-bg);
+    color: var(--ghibli-text);
     overflow-x: hidden;
 }
 
-/* ── floating doodles background ── */
+/* soft background wash */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
     z-index: -1;
     background:
-        radial-gradient(circle at 10% 20%, rgba(207, 76, 126, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 85% 60%, rgba(232, 131, 58, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 50% 90%, rgba(139, 168, 104, 0.06) 0%, transparent 50%);
+        radial-gradient(circle at 10% 20%, rgba(155, 181, 160, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 60%, rgba(194, 91, 86, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(58, 87, 67, 0.05) 0%, transparent 50%);
 }
 
 main {
@@ -45,16 +42,16 @@ a {
     text-decoration: none;
 }
 
-/* ── nav ── */
+/* nav */
 .nav {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(253, 246, 238, 0.95);
+    background: rgba(247, 242, 231, 0.95);
     backdrop-filter: blur(12px);
     padding: 0.8rem 2rem;
     z-index: 1000;
-    box-shadow: 0 2px 20px rgba(180, 87, 72, 0.06);
+    box-shadow: 0 2px 20px rgba(58, 87, 67, 0.06);
 }
 
 .nav-content {
@@ -66,38 +63,32 @@ a {
 }
 
 .nav-logo {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     font-size: 1.5rem;
     font-weight: bold;
-    background: linear-gradient(45deg, var(--saffron), var(--rose));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--ghibli-text);
 }
 
-/* ── header ── */
+/* header */
 h2 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     text-align: center;
     margin-top: 4.5rem;
     margin-bottom: 0.5rem;
     font-size: 2.4rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--rose), var(--saffron), var(--marigold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--ghibli-text);
 }
 
 .subtitle {
     text-align: center;
-    color: var(--terracotta);
+    color: var(--ghibli-sub);
     font-size: 1rem;
     margin-bottom: 3rem;
     opacity: 0.7;
 }
 
-/* ── project grid ── */
+/* project grid */
 .project-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -105,11 +96,11 @@ h2 {
     margin-bottom: 2rem;
 }
 
-/* ── project cards ── */
+/* project cards */
 .project-card {
     position: relative;
-    background: var(--warm-white);
-    border-radius: 1.2rem;
+    background: var(--ghibli-warm-white);
+    border-radius: 14px;
     overflow: hidden;
     border: 2px solid transparent;
     opacity: 0;
@@ -122,9 +113,9 @@ h2 {
     content: '';
     position: absolute;
     inset: -2px;
-    border-radius: 1.3rem;
+    border-radius: 15px;
     padding: 2px;
-    background: linear-gradient(135deg, var(--rose), var(--saffron), var(--marigold), var(--sage));
+    background: linear-gradient(135deg, var(--ghibli-sub), var(--ghibli-accent), var(--ghibli-text));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -153,8 +144,8 @@ h2 {
 .project-card:hover {
     transform: rotate(0deg) translateY(-6px) !important;
     box-shadow:
-        0 20px 40px rgba(207, 76, 126, 0.12),
-        0 8px 16px rgba(232, 131, 58, 0.08);
+        0 20px 40px rgba(58, 87, 67, 0.1),
+        0 8px 16px rgba(155, 181, 160, 0.08);
 }
 
 .project-card img {
@@ -168,27 +159,28 @@ h2 {
     transform: scale(1.05);
 }
 
-/* ── card info ── */
+/* card info */
 .project-info {
     padding: 1.2rem 1.4rem 1.4rem;
 }
 
 .project-info h3 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Quicksand', sans-serif;
     margin: 0 0 0.5rem;
-    color: var(--peacock);
+    color: var(--ghibli-text);
     font-size: 1.3rem;
     font-weight: 700;
 }
 
 .project-info p {
     margin: 0 0 1rem;
-    color: #6b5b50;
+    color: var(--ghibli-text);
     line-height: 1.5;
     font-size: 0.9rem;
+    opacity: 0.8;
 }
 
-/* ── tech pills ── */
+/* tech pills */
 .tech-stack {
     display: flex;
     flex-wrap: wrap;
@@ -197,9 +189,9 @@ h2 {
 }
 
 .tech-pill {
-    background: linear-gradient(135deg, var(--sage), var(--green));
+    background: var(--ghibli-sub);
     color: #fff;
-    border-radius: 999px;
+    border-radius: 14px;
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
     font-weight: 600;
@@ -213,18 +205,19 @@ h2 {
 
 /* alternate pill colors per card */
 .project-card:nth-child(2) .tech-pill {
-    background: linear-gradient(135deg, var(--peacock), #1a8a8a);
+    background: var(--ghibli-text);
 }
 
 .project-card:nth-child(3) .tech-pill {
-    background: linear-gradient(135deg, var(--terracotta), #c06050);
+    background: var(--ghibli-accent);
 }
 
 .project-card:nth-child(4) .tech-pill {
-    background: linear-gradient(135deg, var(--rose), #e0608a);
+    background: rgba(194, 184, 163, 0.9);
+    color: var(--ghibli-text);
 }
 
-/* ── view buttons ── */
+/* view buttons */
 .card-links {
     display: flex;
     gap: 0.5rem;
@@ -235,10 +228,10 @@ h2 {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    background: linear-gradient(135deg, var(--rose), var(--saffron));
+    background: var(--ghibli-accent);
     color: white;
     padding: 0.5rem 1rem;
-    border-radius: 999px;
+    border-radius: 14px;
     text-decoration: none;
     font-size: 0.82rem;
     font-weight: 600;
@@ -248,32 +241,31 @@ h2 {
 }
 
 .view-btn::after {
-    content: ' →';
+    content: ' \2192';
 }
 
 .view-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(207, 76, 126, 0.35);
-    background: linear-gradient(135deg, var(--rose), var(--saffron));
+    box-shadow: 0 6px 20px rgba(194, 91, 86, 0.25);
 }
 
 .view-btn.secondary {
     background: transparent;
-    color: var(--rose);
-    border: 1.5px solid var(--rose);
+    color: var(--ghibli-accent);
+    border: 1.5px solid var(--ghibli-accent);
 }
 
 .view-btn.secondary:hover {
-    background: var(--rose);
+    background: var(--ghibli-accent);
     color: white;
 }
 
-/* ── featured card (datenight) ── */
+/* featured card (datenight) */
 .project-card.featured {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background: linear-gradient(135deg, #fef5f0, var(--cream), #fefcf0);
+    background: linear-gradient(135deg, rgba(247, 242, 231, 0.8), var(--ghibli-bg), rgba(250, 248, 242, 0.8));
 }
 
 .project-card.featured img {
@@ -296,13 +288,13 @@ h2 {
     font-size: 1rem;
 }
 
-/* ── wip badge ── */
+/* wip badge */
 .wip {
     opacity: 0.6;
     pointer-events: none;
 }
 
-/* ── sparkle decoration ── */
+/* sparkle decoration */
 .sparkle {
     position: fixed;
     pointer-events: none;
@@ -316,21 +308,21 @@ h2 {
     100% { opacity: 0; transform: scale(0.5) rotate(360deg); }
 }
 
-/* ── footer ── */
+/* footer */
 footer {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
     padding: 10px;
-    font-family: 'Nunito', sans-serif;
-    color: var(--rose);
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ghibli-sub);
     font-size: 0.9rem;
     margin-top: 3em;
     opacity: 0.7;
 }
 
-/* ── responsive ── */
+/* responsive */
 @media (max-width: 700px) {
     .project-grid {
         grid-template-columns: 1fr;
