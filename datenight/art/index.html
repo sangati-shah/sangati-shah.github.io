@@ -385,6 +385,29 @@
     }
     .art-info-link:hover { opacity: 0.6; }
 
+    /* Return pill (from game center / map) */
+    .return-pill {
+      display: none;
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      z-index: 200;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.85rem;
+      color: var(--dn-sub, #999);
+      background: color-mix(in srgb, var(--dn-bg, #f7f2e7) 85%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      border-radius: 20px;
+      padding: 4px 14px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .return-pill:hover {
+      color: var(--dn-text, #555);
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
+    }
+
     /* Chapter nav */
     .chapter-nav {
       position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
@@ -465,7 +488,8 @@
 </head>
 <body>
 
-  <nav class="chapter-nav">
+  <a class="return-pill" id="return-pill" href="../games/">&larr; return to games</a>
+  <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../world/">home</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn" href="../puzzle/music/">rhythm</a>
@@ -475,6 +499,8 @@
     <a class="chapter-btn" href="../puzzle/mystery/">mystery</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn active" href="../art/">gallery</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../world/">ending</a>
   </nav>
 
   <div class="art-header">
@@ -945,6 +971,18 @@
     document.getElementById('next-btn').addEventListener('click', loadNewArtwork);
 
     loadNewArtwork();
+
+    // If entered from game center or map, hide chapter nav and show return pill
+    const fromParam = new URLSearchParams(window.location.search).get('from');
+    if (fromParam === 'games' || fromParam === 'map') {
+      document.getElementById('chapter-nav').style.display = 'none';
+      const pill = document.getElementById('return-pill');
+      pill.style.display = '';
+      if (fromParam === 'map') {
+        pill.href = '../world/';
+        pill.textContent = '\u2190 back to map';
+      }
+    }
   </script>
 </body>
 </html>

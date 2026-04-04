@@ -1,4 +1,10 @@
 // ══════════════════════════════════════
+// SOLO MODE
+// ══════════════════════════════════════
+const soloCheckbox = document.getElementById('solo-mode');
+function isSolo() { return soloCheckbox && soloCheckbox.checked; }
+
+// ══════════════════════════════════════
 // TAB SWITCHING (only for inline games)
 // ══════════════════════════════════════
 document.querySelectorAll('.game-tab[data-game]').forEach((tab) => {
@@ -94,6 +100,7 @@ function tttAiMove() {
 function tttPlayAt(idx) {
   const cell = document.querySelector(`.ttt-cell[data-index="${idx}"]`);
   cell.click();
+}
 
 function tttReset() {
   tttBoard.fill(null);
@@ -229,6 +236,7 @@ function c4AiMove() {
   for (const c of prefs) {
     if (c4DropRow(c) >= 0) { c4HandleClick(c); return; }
   }
+}
 
 function c4Reset() {
   c4Board = Array.from({ length: C4_ROWS }, () => Array(C4_COLS).fill(null));

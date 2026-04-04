@@ -499,6 +499,10 @@
     <a class="chapter-btn" href="../elements/">elements</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn" href="../mystery/">mystery</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../../art/">gallery</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../../world/">ending</a>
   </nav>
 
   <div class="top-bar">
@@ -1414,11 +1418,18 @@
       document.getElementById('versus-btn').style.display = '';
     }
 
-    // If entered from game center, hide chapter nav and show return pill
-    if (new URLSearchParams(window.location.search).get('from') === 'games') {
+    // If entered from game center or map, hide chapter nav and show return pill
+    const fromParam = new URLSearchParams(window.location.search).get('from');
+    if (fromParam === 'games' || fromParam === 'map') {
       document.getElementById('chapter-nav').style.display = 'none';
       document.getElementById('back-link').style.display = 'none';
-      document.getElementById('return-pill').style.display = '';
+      document.getElementById('skip-btn').style.display = 'none';
+      const pill = document.getElementById('return-pill');
+      pill.style.display = '';
+      if (fromParam === 'map') {
+        pill.href = '../../world/';
+        pill.textContent = '\u2190 back to map';
+      }
     }
   </script>
 </body>

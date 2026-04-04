@@ -743,6 +743,10 @@
     <a class="chapter-btn active" href="../elements/">elements</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn" href="../mystery/">mystery</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../../art/">gallery</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../../world/">ending</a>
   </nav>
 
   <div class="top-controls">
@@ -1611,10 +1615,17 @@ if(!roomCode)document.getElementById('waiting-overlay').classList.add('hidden');
 requestAnimationFrame(gameLoop);
 
 // If entered from game center, hide chapter nav and show return pill
-if (new URLSearchParams(window.location.search).get('from') === 'games') {
+const fromParam = new URLSearchParams(window.location.search).get('from');
+if (fromParam === 'games' || fromParam === 'map') {
   document.getElementById('chapter-nav').style.display = 'none';
   document.getElementById('back-link').style.display = 'none';
-  document.getElementById('return-pill').style.display = '';
+  document.querySelector('.top-controls').style.display = 'none';
+  const pill = document.getElementById('return-pill');
+  pill.style.display = '';
+  if (fromParam === 'map') {
+    pill.href = '../../world/';
+    pill.textContent = '\u2190 back to map';
+  }
 }
 </script>
 </body>
