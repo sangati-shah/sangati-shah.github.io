@@ -224,6 +224,11 @@
       background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
       color: var(--dn-text, #555);
     }
+    .chapter-sep {
+      width: 1px; height: 16px;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+      margin: 0 4px;
+    }
     .chapter-btn.active {
       background: color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
       color: var(--dn-text, #555);
@@ -400,17 +405,6 @@
       .ctrl-btn.jump-btn { width: 50px; height: 50px; }
       .mobile-controls { padding: 0 0.8rem; bottom: 0.8rem; }
     }
-
-    .back-btn {
-      position: fixed; top: 1.2rem; left: 1.2rem;
-      font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 1.1rem; color: var(--dn-sub, #999);
-      text-decoration: none; z-index: 300;
-      transition: color 0.3s;
-      min-width: 44px; min-height: 44px;
-      display: flex; align-items: center;
-    }
-    .back-btn:hover { color: var(--dn-text, #555); }
 
     /* ── Drop-in animation ── */
     .drop-in-overlay {
@@ -1800,10 +1794,15 @@
       nav.innerHTML = '';
 
       CHAPTERS.forEach((ch, i) => {
-        if (i > 0) {
+        if (i > 0 && i !== 2) {
           const dot = document.createElement('span');
           dot.className = 'chapter-dot';
           nav.appendChild(dot);
+        }
+        if (i === 2) {
+          const sep = document.createElement('span');
+          sep.className = 'chapter-sep';
+          nav.appendChild(sep);
         }
         const btn = document.createElement('button');
         btn.className = 'chapter-btn';
@@ -1811,7 +1810,7 @@
         btn.dataset.idx = i;
         btn.onclick = () => {
           if (ch.action === 'home') {
-            localStorage.setItem('datenight-map-x', Math.round(player.x));
+            sessionStorage.setItem('datenight-map-x', Math.round(player.x));
             window.location.href = '../?from=map';
           } else {
             teleportTo(ch.x);
@@ -2247,7 +2246,7 @@
       localStorage.removeItem('datenight-drop-in');
       playerEl.style.opacity = '0';
       document.getElementById('intro-text').style.opacity = '0';
-      document.querySelector('.back-btn').style.opacity = '0';
+      document.getElementById('chapter-nav').style.opacity = '0';
 
       const overlay = document.getElementById('drop-in-overlay');
       const wrapper = document.getElementById('drop-in-wrapper');
@@ -2282,8 +2281,8 @@
             const intro = document.getElementById('intro-text');
             intro.style.transition = 'opacity 0.8s ease';
             intro.style.opacity = '1';
-            document.querySelector('.back-btn').style.transition = 'opacity 0.5s';
-            document.querySelector('.back-btn').style.opacity = '1';
+            document.getElementById('chapter-nav').style.transition = 'opacity 0.5s';
+            document.getElementById('chapter-nav').style.opacity = '1';
             setTimeout(() => overlay.remove(), 500);
           }, 400);
         }, 650);
