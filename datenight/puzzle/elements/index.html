@@ -592,6 +592,29 @@
     .restart-btn:hover { color: rgba(240,230,211,0.4); }
     @media (pointer: coarse) { .restart-btn { bottom: 4.5rem; left: auto; right: 4.5rem; transform: none; } }
 
+    /* ---- Return pill (from game center) ---- */
+    .return-pill {
+      display: none;
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      z-index: 600;
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      color: rgba(240,230,211,0.3);
+      background: rgba(14,18,10,0.85);
+      border: 1.5px solid rgba(212,155,60,0.18);
+      border-radius: 20px;
+      padding: 4px 14px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .return-pill:hover {
+      color: #d49b3c;
+      background: rgba(212,155,60,0.12);
+    }
+
     /* ---- Chapter nav ---- */
     .chapter-nav {
       position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
@@ -694,6 +717,7 @@
   </style>
 </head>
 <body class="dark-hud">
+  <a class="return-pill" id="return-pill" href="../../games/">&larr; return to games</a>
   <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../../world/">home</a>
     <span class="chapter-dot"></span>
@@ -1553,12 +1577,11 @@ setupPeer();
 if(!roomCode)document.getElementById('waiting-overlay').classList.add('hidden');
 requestAnimationFrame(gameLoop);
 
-// If entered from game center, hide chapter nav and show return link
+// If entered from game center, hide chapter nav and show return pill
 if (new URLSearchParams(window.location.search).get('from') === 'games') {
   document.getElementById('chapter-nav').style.display = 'none';
-  const bl = document.getElementById('back-link');
-  bl.href = '../../games/';
-  bl.innerHTML = '&larr; return to games';
+  document.getElementById('back-link').style.display = 'none';
+  document.getElementById('return-pill').style.display = '';
 }
 </script>
 </body>

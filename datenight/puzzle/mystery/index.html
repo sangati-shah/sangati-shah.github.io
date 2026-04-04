@@ -45,6 +45,29 @@
     .pts-num { color: var(--dn-accent); font-weight: 600; transition: transform 0.3s; }
     .pts-num.bump { transform: scale(1.4); display: inline-block; }
 
+    /* -- Return pill (from game center) -- */
+    .return-pill {
+      display: none;
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      z-index: 200;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.85rem;
+      color: var(--dn-sub, #999);
+      background: color-mix(in srgb, var(--dn-bg, #f7f2e7) 85%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      border-radius: 20px;
+      padding: 4px 14px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .return-pill:hover {
+      color: var(--dn-text, #555);
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
+    }
+
     /* -- Chapter nav -- */
     .chapter-nav {
       position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
@@ -376,6 +399,7 @@
 </head>
 <body>
   <!-- Top bar -->
+  <a class="return-pill" id="return-pill" href="../../games/">&larr; return to games</a>
   <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../../world/">home</a>
     <span class="chapter-dot"></span>
@@ -1137,12 +1161,11 @@
       enterSoloMode();
     }
 
-    // If entered from game center, hide chapter nav and show return link
+    // If entered from game center, hide chapter nav and show return pill
     if (new URLSearchParams(window.location.search).get('from') === 'games') {
       document.getElementById('chapter-nav').style.display = 'none';
-      const bl = document.getElementById('back-link');
-      bl.href = '../../games/';
-      bl.innerHTML = '&larr; return to games';
+      document.getElementById('back-link').style.display = 'none';
+      document.getElementById('return-pill').style.display = '';
     }
   </script>
 </body>
