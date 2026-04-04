@@ -46,9 +46,8 @@ a {
 }
 
 .nav-logo {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 1.5rem;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
     color: var(--ghibli-text);
 }
 

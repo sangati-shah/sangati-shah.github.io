@@ -113,7 +113,7 @@ const htmlTemplate = `<!DOCTYPE html>
 <body>
   <nav class="nav">
     <div class="nav-content">
-        <a href="/"><div class="nav-logo">&lt;s /&gt;</div></a>
+        <a href="/"><div class="nav-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="32" height="32"><ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="currentColor" stroke-width="2.5" transform="rotate(-50 64 64)"/><ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="currentColor" stroke-width="2.5" transform="rotate(-25 64 64)"/><ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="currentColor" stroke-width="2.5" transform="rotate(0 64 64)"/><ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="currentColor" stroke-width="2.5" transform="rotate(25 64 64)"/><ellipse cx="64" cy="38" rx="14" ry="36" fill="none" stroke="currentColor" stroke-width="2.5" transform="rotate(50 64 64)"/><circle cx="64" cy="58" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="64" cy="58" r="4" fill="currentColor"/><path d="M44 78 Q54 68 64 74 Q74 68 84 78" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M38 86 Q50 74 64 80 Q78 74 90 86" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></div></a>
     </div>
   </nav>
 
