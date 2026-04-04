@@ -467,7 +467,7 @@
 </head>
 <body>
 
-  <nav class="chapter-nav">
+  <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../../world/">home</a>
     <span class="chapter-dot"></span>
     <a class="chapter-btn active" href="../music/">rhythm</a>
@@ -478,7 +478,7 @@
   </nav>
 
   <div class="top-bar">
-    <a href="../../world/" class="back-link">&larr; back to adventure</a>
+    <a href="../../world/" class="back-link" id="back-link">&larr; back to adventure</a>
     <div class="pts-display"><span class="pts-num" id="pts-num">0</span> pts</div>
   </div>
 
@@ -1388,6 +1388,14 @@
       enterSoloMode();
       // Show versus mode option in solo
       document.getElementById('versus-btn').style.display = '';
+    }
+
+    // If entered from game center, hide chapter nav and show return link
+    if (new URLSearchParams(window.location.search).get('from') === 'games') {
+      document.getElementById('chapter-nav').style.display = 'none';
+      const bl = document.getElementById('back-link');
+      bl.href = '../../games/';
+      bl.innerHTML = '&larr; return to games';
     }
   </script>
 </body>
