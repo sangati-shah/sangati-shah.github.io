@@ -946,6 +946,7 @@
       { id: 'music',    x: 2850, elevation: 70,  url: '../puzzle/music/',    hint: 'reach the light to begin your first adventure', color: '#d49b3c' },
       { id: 'elements', x: 5300, elevation: 130, url: '../puzzle/elements/', hint: 'this one is high... try standing on each other!', color: '#4fc3f7' },
       { id: 'mystery',  x: 8100, elevation: 70,  url: '../puzzle/mystery/',  hint: 'one more light ahead...', color: '#b388ff' },
+      { id: 'art',      x: 10600, elevation: 70, url: '../art/',             hint: 'a little gallery before the grand finale...', color: '#e8a87c' },
     ];
 
     // ══════════════════════════════════════
@@ -956,6 +957,7 @@
       { label: 'rhythm',    x: 2750 },
       { label: 'elements',  x: 5200 },
       { label: 'mystery',   x: 8000 },
+      { label: 'gallery',   x: 10500 },
     ];
 
     // ══════════════════════════════════════
@@ -1714,10 +1716,20 @@
         passedThirdOrb = true;
         introEl.classList.remove('fade');
         introEl.style.whiteSpace = '';
-        introEl.textContent = 'the final stretch... are you ready?';
+        introEl.textContent = 'almost there... one last stop';
         introFaded = false; introTimerDone = false; introPlayerMoved = true;
         setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 12000);
         introPhase = 4;
+      }
+
+      if (!passedFourthOrb && introPhase === 4 && player.x > 10700) {
+        passedFourthOrb = true;
+        introEl.classList.remove('fade');
+        introEl.style.whiteSpace = '';
+        introEl.textContent = 'the final stretch... are you ready?';
+        introFaded = false; introTimerDone = false; introPlayerMoved = true;
+        setTimeout(() => { introTimerDone = true; fadeIntroIfReady(); }, 12000);
+        introPhase = 5;
       }
 
       // Check for ending trigger
@@ -1949,9 +1961,12 @@
     const firstOrbDone = completed.includes('music');
     const secondOrbDone = completed.includes('elements');
     const thirdOrbDone = completed.includes('mystery');
+    const fourthOrbDone = completed.includes('art');
 
-    if (thirdOrbDone) {
+    if (fourthOrbDone) {
       introEl.textContent = 'the final stretch... are you ready?';
+    } else if (thirdOrbDone) {
+      introEl.textContent = 'almost there... one last stop';
     } else if (secondOrbDone) {
       introEl.textContent = 'one more light ahead...';
     } else if (firstOrbDone) {
@@ -1964,7 +1979,7 @@
     let introTimerDone = false;
     let introPlayerMoved = false;
     let introFaded = false;
-    let introPhase = thirdOrbDone ? 4 : (secondOrbDone ? 3 : (firstOrbDone ? 2 : 1));
+    let introPhase = fourthOrbDone ? 5 : (thirdOrbDone ? 4 : (secondOrbDone ? 3 : (firstOrbDone ? 2 : 1)));
 
     function fadeIntroIfReady() {
       if (introFaded) return;
@@ -1976,6 +1991,7 @@
     let passedFirstOrb = false;
     let passedSecondOrb = false;
     let passedThirdOrb = false;
+    let passedFourthOrb = false;
 
     worldEl.style.width = WORLD_W + 'px';
 
