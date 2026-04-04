@@ -1548,11 +1548,34 @@
     function updateMovingPlatforms() {
       const container = document.getElementById('moving-platforms');
       const t = Date.now() / 1000;
-      movingPlats.forEach((m, i) => {
-        const prevX = m.x;
+      // Save previous positions for dx calculation
+      const prevPositions = movingPlats.map(m => m.x);
+
+      movingPlats.forEach((m) => {
         m.phase = t * m.speed;
         m.x = m.baseX + Math.sin(m.phase) * m.range;
-        m.dx = m.x - prevX;
+      });
+
+      // Resolve overlaps — push apart platforms at similar Y
+      const gap = 4;
+      for (let i = 0; i < movingPlats.length; i++) {
+        for (let j = i + 1; j < movingPlats.length; j++) {
+          const a = movingPlats[i], b = movingPlats[j];
+          if (Math.abs(a.y - b.y) > 30) continue;
+          const left = a.x < b.x ? a : b;
+          const right = a.x < b.x ? b : a;
+          const overlap = (left.x + left.w + gap) - right.x;
+          if (overlap > 0) {
+            const half = overlap / 2;
+            left.x -= half;
+            right.x += half;
+          }
+        }
+      }
+
+      // Compute dx from final positions and update DOM
+      movingPlats.forEach((m, i) => {
+        m.dx = m.x - prevPositions[i];
         const el = container.children[i];
         if (el) el.style.left = m.x + 'px';
       });
