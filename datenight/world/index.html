@@ -606,7 +606,7 @@
       background: rgba(255,255,255,0.15);
     }
 
-    /* ── Tunnel enter animation ── */
+    /* ── Tunnel enter animation (Mario pipe sink) ── */
     .ending-tunnel-overlay {
       position: fixed; inset: 0;
       z-index: 6500;
@@ -616,13 +616,27 @@
     }
     .ending-tunnel-overlay.active { opacity: 1; }
 
-    @keyframes walk-into-tunnel {
-      0% { transform: translateX(0) scale(1); opacity: 1; }
-      60% { transform: translateX(30px) scale(0.7); opacity: 0.8; }
-      100% { transform: translateX(35px) scale(0.2); opacity: 0; }
+    .pipe-cover {
+      display: none;
+      position: absolute;
+      z-index: 56;
+      background: linear-gradient(90deg, #2a6e2a 0%, #3d9b3d 30%, #2d7a2d 70%, #1f5c1f 100%);
+      border-left: 3px solid #1a4d1a;
+      border-right: 3px solid #1a4d1a;
     }
+    .pipe-cover.active { display: block; }
+    .pipe-lip-cover {
+      display: none;
+      position: absolute;
+      z-index: 57;
+      border-radius: 8px 8px 4px 4px;
+      background: linear-gradient(90deg, #235f23 0%, #3d9b3d 25%, #4aad4a 50%, #3d9b3d 75%, #235f23 100%);
+      border: 3px solid #1a4d1a;
+    }
+    .pipe-lip-cover.active { display: block; }
+
     .player-entering-tunnel {
-      animation: walk-into-tunnel 1.2s ease-in forwards;
+      z-index: 55;
     }
 
     /* ── Improved ending overlay ── */
@@ -735,6 +749,8 @@
       <div id="end-tunnel"></div>
       <div class="sprite" id="player"></div>
       <div class="sprite" id="partner" style="display:none;"></div>
+      <div class="pipe-lip-cover" id="pipe-lip-cover"></div>
+      <div class="pipe-cover" id="pipe-cover"></div>
     </div>
   </div>
 
@@ -1637,24 +1653,65 @@
       document.querySelector('.mobile-controls').style.display = 'none';
       document.getElementById('chapter-nav').style.display = 'none';
 
-      // Phase 1: Walk player into the tunnel
-      playerEl.classList.add('player-entering-tunnel');
-      if (partnerEl.style.display !== 'none') {
-        partnerEl.classList.add('player-entering-tunnel');
-        partnerEl.style.animationDelay = '0.2s';
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
+      const tunnelTop = lineY - TUNNEL_H;
+      const lipH = 18;
+      const pipeStandY = tunnelTop - SPRITE_H; // stand on top of pipe lip
+      const pipeSinkY = lineY + 10;             // sink below ground level
+
+      // Position the cover elements (these hide sprites as they sink past the lip)
+      const lipCover = document.getElementById('pipe-lip-cover');
+      lipCover.style.cssText = `left:${TUNNEL_X}px; top:${tunnelTop}px; width:${TUNNEL_W}px; height:${lipH}px;`;
+      lipCover.classList.add('active');
+
+      const bodyCover = document.getElementById('pipe-cover');
+      bodyCover.style.cssText = `left:${TUNNEL_X + 6}px; top:${tunnelTop + lipH}px; width:${TUNNEL_W - 12}px; height:${TUNNEL_H - lipH}px;`;
+      bodyCover.classList.add('active');
+
+      // Phase 1: Walk both players on top of the tunnel (side by side)
+      const centerX = TUNNEL_X + TUNNEL_W / 2;
+      const hasPartner = partnerEl.style.display !== 'none';
+      const playerTargetX = hasPartner ? centerX - SPRITE_W - 1 : centerX - SPRITE_W / 2;
+      const partnerTargetX = centerX + 1;
+
+      // Smooth walk to pipe position
+      playerEl.style.transition = 'left 0.8s ease-out, top 0.8s ease-out';
+      playerEl.style.left = playerTargetX + 'px';
+      playerEl.style.top = pipeStandY + 'px';
+      playerEl.classList.remove('walking', 'jumping', 'ducking');
+
+      if (hasPartner) {
+        partnerEl.style.transition = 'left 0.8s ease-out, top 0.8s ease-out';
+        partnerEl.style.left = partnerTargetX + 'px';
+        partnerEl.style.top = pipeStandY + 'px';
+        partnerEl.classList.remove('walking', 'jumping', 'ducking');
       }
 
-      // Phase 2: Screen fade to black, then celebration
+      // Phase 2: Brief pause on top, then sink into the pipe together
+      setTimeout(() => {
+        playerEl.classList.add('player-entering-tunnel');
+        playerEl.style.transition = 'top 1.4s cubic-bezier(0.4, 0, 0.6, 1)';
+        playerEl.style.top = pipeSinkY + 'px';
+
+        if (hasPartner) {
+          partnerEl.classList.add('player-entering-tunnel');
+          partnerEl.style.transition = 'top 1.4s cubic-bezier(0.4, 0, 0.6, 1)';
+          partnerEl.style.top = pipeSinkY + 'px';
+        }
+      }, 1200);
+
+      // Phase 3: Screen fade to black after they've sunk
       setTimeout(() => {
         document.body.style.transition = 'opacity 0.8s ease';
         document.body.style.opacity = '0';
-      }, 1000);
+      }, 2600);
 
+      // Phase 4: Show celebration
       setTimeout(() => {
         showEndingCelebration();
         document.body.style.transition = 'opacity 1.5s ease';
         document.body.style.opacity = '1';
-      }, 2000);
+      }, 3600);
     }
 
     function showEndingCelebration() {
