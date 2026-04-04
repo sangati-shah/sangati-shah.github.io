@@ -882,7 +882,7 @@
     function getSpawnX() {
       if (spawnAfter) {
         const adv = ADVENTURES.find(a => a.id === spawnAfter);
-        if (adv) return adv.x + 80;
+        if (adv) return adv.x + BOX_SIZE / 2 - SPRITE_W / 2;
       }
       const savedX = sessionStorage.getItem('datenight-map-x');
       if (savedX) {
@@ -890,6 +890,17 @@
         return parseInt(savedX) || 120;
       }
       return 120;
+    }
+
+    function getSpawnY() {
+      if (spawnAfter) {
+        const adv = ADVENTURES.find(a => a.id === spawnAfter);
+        if (adv) {
+          const lineY = window.innerHeight - LINE_BOTTOM - 3;
+          return lineY - BOX_SIZE - adv.elevation - SPRITE_H;
+        }
+      }
+      return null;
     }
 
     // Track completed adventures
@@ -1124,9 +1135,11 @@
     // PLAYER STATE
     // ══════════════════════════════════════
     const spawnX = getSpawnX();
+    const orbSpawnY = getSpawnY();
     const player = { x: spawnX, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right', speedBoost: 0 };
-    const partner = { x: spawnX + 40, y: 0, jumping: false, ducking: false };
+    const partner = { x: spawnAfter ? spawnX : spawnX + 40, y: 0, jumping: false, ducking: false };
     let entering = false;
+    let spawnImmunity = spawnAfter ? true : false;
 
     const playerEl = document.getElementById('player');
     const partnerEl = document.getElementById('partner');
@@ -1262,6 +1275,7 @@
     // ADVENTURE BOX
     // ══════════════════════════════════════
     function checkAdventureBoxes() {
+      if (spawnImmunity) return;
       const lineY = window.innerHeight - LINE_BOTTOM - 3;
       ADVENTURES.forEach(adv => {
         const bx = adv.x, by = lineY - BOX_SIZE - adv.elevation;
@@ -1567,7 +1581,7 @@
           player.jumping = false;
         }
       } else {
-        if (player.y >= gy) { player.y = gy; player.vy = 0; player.jumping = false; }
+        if (player.y >= gy) { player.y = gy; player.vy = 0; player.jumping = false; spawnImmunity = false; }
       }
       if (player.x < 0) player.x = 0;
       if (player.x > WORLD_W - SPRITE_W) player.x = WORLD_W - SPRITE_W;
@@ -1765,8 +1779,16 @@
     renderAdventureBoxes();
     setupNavMenu();
 
-    player.y = groundY();
-    partner.y = groundY();
+    if (orbSpawnY !== null) {
+      player.y = orbSpawnY;
+      player.vy = 0;
+      player.jumping = true;
+      partner.y = orbSpawnY - SPRITE_H;
+      partner.jumping = true;
+    } else {
+      player.y = groundY();
+      partner.y = groundY();
+    }
 
     buildSprite(playerEl, myChar);
     buildSprite(partnerEl, partnerChar);
