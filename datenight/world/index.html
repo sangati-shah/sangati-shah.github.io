@@ -700,19 +700,17 @@
     // BOUNCE PADS
     // ══════════════════════════════════════
     const BOUNCE_DEFS = [
-      // Section 1
-      { x: 700, w: 30, h: 10 },
-      { x: 1700, w: 30, h: 10 },
-      // Section 2
-      { x: 3100, w: 30, h: 10 },
-      { x: 4050, w: 30, h: 10 },
-      { x: 4900, w: 30, h: 10 },
-      // Section 3
-      { x: 5800, w: 30, h: 10 },
-      { x: 6450, w: 30, h: 10 },
-      { x: 7050, w: 30, h: 10 },
-      // Section 4 — bounce chain (3 in a row!)
-      { x: 9400, w: 30, h: 10 },
+      // Section 1 — bounce right before the gap at 1800
+      { x: 1770, w: 30, h: 10 },
+      // Section 2 — bounce before each gap
+      { x: 3590, w: 30, h: 10 },   // gap at 3620
+      { x: 4650, w: 30, h: 10 },   // gap at 4680
+      // Section 3 — bounce before each gap
+      { x: 5860, w: 30, h: 10 },   // gap at 5890
+      { x: 7070, w: 30, h: 10 },   // gap at 7100
+      // Section 4 — bounce before gauntlet gap + chain
+      { x: 9050, w: 30, h: 10 },   // gap at 9080
+      { x: 9400, w: 30, h: 10 },   // bounce chain
       { x: 9500, w: 30, h: 10 },
       { x: 9600, w: 30, h: 10 },
       // After obstacle course
