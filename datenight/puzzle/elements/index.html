@@ -1100,6 +1100,21 @@ function updatePlayer(p,role) {
   }
   p.y=ny;
 
+  // Stacking — land on the other player's shoulders
+  const otherRole = role === 'fire' ? 'water' : 'fire';
+  const other = players[otherRole];
+  if (other.alive && p.vy >= 0) {
+    const pFeetY = p.y + PLAYER_H;
+    const otherTopY = other.y;
+    const xOverlap = p.x + PLAYER_W > other.x && p.x < other.x + PLAYER_W;
+    if (xOverlap && pFeetY >= otherTopY && pFeetY <= otherTopY + 8) {
+      p.y = other.y - PLAYER_H;
+      if (p.vy > 3 && !p.wasOnGround) spawnLandDust(p.x, p.y);
+      p.vy = 0;
+      p.onGround = true;
+    }
+  }
+
   // Hazard check — only check feet (lava/water are floor pools)
   const cx=p.x+PLAYER_W/2;
   const checkPoints = [
