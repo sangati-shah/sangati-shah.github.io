@@ -125,23 +125,23 @@
       background: linear-gradient(90deg, transparent 20%, rgba(80,140,50,0.3) 50%, transparent 80%);
     }
 
-    /* Lava — built into floor */
+    /* Lava — sunk into floor */
     .tile-lava {
-      background: #2a1508;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(0,0,0,0.4);
+      background: #4a3f2e;
+      overflow: hidden;
     }
     .tile-lava::after {
       content: '';
-      position: absolute; bottom: 0; left: 2px; right: 2px; top: 3px;
+      position: absolute; bottom: 0; left: 3px; right: 3px; height: 55%;
       background: linear-gradient(180deg, #ff8800 0%, #ee5500 40%, #cc3300 100%);
       box-shadow:
-        0 0 8px rgba(255,120,0,0.35),
-        inset 0 1px 3px rgba(255,255,100,0.2);
-      border-radius: 2px;
+        0 -2px 8px rgba(255,120,0,0.4),
+        inset 0 2px 4px rgba(255,255,100,0.25);
+      border-radius: 3px 3px 0 0;
     }
     .tile-lava::before {
       content: '';
-      position: absolute; top: 3px; left: 2px; right: 2px; height: 3px;
+      position: absolute; bottom: 53%; left: 3px; right: 3px; height: 3px;
       background: linear-gradient(90deg,
         rgba(255,200,50,0.3),
         rgba(255,255,100,0.5) 25%,
@@ -156,23 +156,23 @@
       50% { transform: scaleX(1.02); opacity: 1; }
     }
 
-    /* Water — built into floor */
+    /* Water — sunk into floor */
     .tile-water {
-      background: #081520;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(0,0,0,0.4);
+      background: #4a3f2e;
+      overflow: hidden;
     }
     .tile-water::after {
       content: '';
-      position: absolute; bottom: 0; left: 2px; right: 2px; top: 3px;
+      position: absolute; bottom: 0; left: 3px; right: 3px; height: 55%;
       background: linear-gradient(180deg, #3388cc 0%, #2266aa 40%, #1155aa 100%);
       box-shadow:
-        0 0 8px rgba(30,100,200,0.25),
-        inset 0 1px 3px rgba(100,200,255,0.15);
-      border-radius: 2px;
+        0 -2px 8px rgba(30,100,200,0.3),
+        inset 0 2px 4px rgba(100,200,255,0.2);
+      border-radius: 3px 3px 0 0;
     }
     .tile-water::before {
       content: '';
-      position: absolute; top: 3px; left: 2px; right: 2px; height: 3px;
+      position: absolute; bottom: 53%; left: 3px; right: 3px; height: 3px;
       background: linear-gradient(90deg,
         rgba(100,200,255,0.2),
         rgba(150,230,255,0.4) 25%,
@@ -183,21 +183,21 @@
       z-index: 1;
     }
 
-    /* Green goo — built into floor */
+    /* Green goo — sunk into floor */
     .tile-goo {
-      background: #0e1a08;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(0,0,0,0.4);
+      background: #4a3f2e;
+      overflow: hidden;
     }
     .tile-goo::after {
       content: '';
-      position: absolute; bottom: 0; left: 2px; right: 2px; top: 3px;
+      position: absolute; bottom: 0; left: 3px; right: 3px; height: 55%;
       background: linear-gradient(180deg, #44aa22 0%, #338818 40%, #2a7a1a 100%);
-      box-shadow: 0 0 8px rgba(50,180,50,0.25);
-      border-radius: 2px;
+      box-shadow: 0 -2px 8px rgba(50,180,50,0.3);
+      border-radius: 3px 3px 0 0;
     }
     .tile-goo::before {
       content: '';
-      position: absolute; top: 3px; left: 2px; right: 2px; height: 3px;
+      position: absolute; bottom: 53%; left: 3px; right: 3px; height: 3px;
       background: linear-gradient(90deg,
         rgba(100,255,50,0.2), rgba(150,255,100,0.4) 50%, rgba(100,255,50,0.2));
       animation: wave 3.5s ease-in-out infinite;
@@ -753,17 +753,17 @@ const LEVEL_DATA = [
       [1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,1],
       [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,11,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,12,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,1],
       [1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,0,1],
       [1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -782,15 +782,15 @@ const LEVEL_DATA = [
       [1,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,1],
       [1,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,11,0,0,12,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,1,1,1,1,1,0,0,0,0,11,0,0,12,0,0,0,0,1,1,1,1,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,1],
       [1,0,0,0,0,1,1,1,0,0,9,0,0,0,0,0,0,7,0,0,1,1,1,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -811,12 +811,12 @@ const LEVEL_DATA = [
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,11,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,12,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,1,1,0,0,0,0,0,7,0,0,0,0,9,0,0,0,0,0,1,1,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,11,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,0,12,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1],
+      [1,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,2,2,2,0,4,4,4,0,0,0,0,0,0,4,4,4,0,3,3,3,0,0,0,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -927,12 +927,28 @@ function renderLevel() {
           break;
         case LAVA:
           el.classList.add('tile-lava');
+          // Extend down into the floor wall below so it looks embedded
+          if (r + 1 < ROWS && LEVEL[r+1][c] === WALL) {
+            el.style.height = Math.floor(tileH * 1.5) + 'px';
+            el.style.top = Math.floor(r * tileH + tileH * 0.5) + 'px';
+            el.style.zIndex = '2';
+          }
           break;
         case WATER:
           el.classList.add('tile-water');
+          if (r + 1 < ROWS && LEVEL[r+1][c] === WALL) {
+            el.style.height = Math.floor(tileH * 1.5) + 'px';
+            el.style.top = Math.floor(r * tileH + tileH * 0.5) + 'px';
+            el.style.zIndex = '2';
+          }
           break;
         case GOO:
           el.classList.add('tile-goo');
+          if (r + 1 < ROWS && LEVEL[r+1][c] === WALL) {
+            el.style.height = Math.floor(tileH * 1.5) + 'px';
+            el.style.top = Math.floor(r * tileH + tileH * 0.5) + 'px';
+            el.style.zIndex = '2';
+          }
           break;
         case FIRE_EXIT:
           el.classList.add('tile-fire-exit');
