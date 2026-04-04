@@ -566,6 +566,102 @@
       text-align: center;
       pointer-events: none;
     }
+
+    /* ── End tunnel (Mario pipe style) ── */
+    .end-tunnel {
+      position: absolute;
+      z-index: 25;
+    }
+    .tunnel-body {
+      position: absolute;
+      bottom: 0;
+      border-radius: 6px 6px 0 0;
+      background: linear-gradient(90deg, #2a6e2a 0%, #3d9b3d 30%, #2d7a2d 70%, #1f5c1f 100%);
+      border: 3px solid #1a4d1a;
+      border-bottom: none;
+    }
+    .tunnel-lip {
+      position: absolute;
+      border-radius: 8px 8px 4px 4px;
+      background: linear-gradient(90deg, #235f23 0%, #3d9b3d 25%, #4aad4a 50%, #3d9b3d 75%, #235f23 100%);
+      border: 3px solid #1a4d1a;
+    }
+    .tunnel-opening {
+      position: absolute;
+      border-radius: 4px 4px 0 0;
+      background: #0a0a0a;
+    }
+    .tunnel-shine {
+      position: absolute;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* ── Tunnel enter animation ── */
+    .ending-tunnel-overlay {
+      position: fixed; inset: 0;
+      z-index: 6500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .ending-tunnel-overlay.active { opacity: 1; }
+
+    @keyframes walk-into-tunnel {
+      0% { transform: translateX(0) scale(1); opacity: 1; }
+      60% { transform: translateX(30px) scale(0.7); opacity: 0.8; }
+      100% { transform: translateX(35px) scale(0.2); opacity: 0; }
+    }
+    .player-entering-tunnel {
+      animation: walk-into-tunnel 1.2s ease-in forwards;
+    }
+
+    /* ── Improved ending overlay ── */
+    .ending-shooting-star {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      animation: shoot-star 1.5s ease-out forwards;
+    }
+    .ending-shooting-star::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 40px; height: 1px;
+      background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+      transform-origin: right center;
+      transform: rotate(0deg);
+    }
+    @keyframes shoot-star {
+      0% { opacity: 0; transform: translate(0, 0); }
+      10% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-200px, 120px); }
+    }
+
+    .ending-moon {
+      position: absolute;
+      top: 8%;
+      right: 15%;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffeebb, #f5d98a);
+      box-shadow: 0 0 40px rgba(255,238,187,0.4), 0 0 80px rgba(255,238,187,0.15);
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+    .ending-moon.visible { opacity: 1; }
+
+    .ending-message-line {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .ending-message-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -584,6 +680,7 @@
   <!-- Ending overlay -->
   <div class="ending-overlay" id="ending-overlay">
     <div class="ending-sky" id="ending-sky"></div>
+    <div class="ending-moon" id="ending-moon"></div>
     <div class="ending-ground"></div>
     <div class="ending-chars" id="ending-chars"></div>
     <div class="ending-message" id="ending-message"></div>
@@ -622,6 +719,7 @@
       <div id="hearts"></div>
       <div id="moving-platforms"></div>
       <div id="adventure-boxes"></div>
+      <div id="end-tunnel"></div>
       <div class="sprite" id="player"></div>
       <div class="sprite" id="partner" style="display:none;"></div>
     </div>
@@ -1059,6 +1157,49 @@
       });
     }
 
+    // ══════════════════════════════════════
+    // END TUNNEL (Mario pipe)
+    // ══════════════════════════════════════
+    const TUNNEL_X = 11920;
+    const TUNNEL_W = 60;
+    const TUNNEL_H = 90;
+
+    function renderEndTunnel() {
+      const container = document.getElementById('end-tunnel');
+      container.innerHTML = '';
+      const lineY = window.innerHeight - LINE_BOTTOM - 3;
+
+      const tunnel = document.createElement('div');
+      tunnel.className = 'end-tunnel';
+      tunnel.style.cssText = `left:${TUNNEL_X}px; top:${lineY - TUNNEL_H}px; width:${TUNNEL_W}px; height:${TUNNEL_H}px;`;
+
+      // Main pipe body
+      const body = document.createElement('div');
+      body.className = 'tunnel-body';
+      body.style.cssText = `left:6px; width:${TUNNEL_W - 12}px; height:${TUNNEL_H - 14}px;`;
+      tunnel.appendChild(body);
+
+      // Lip (wider top rim)
+      const lip = document.createElement('div');
+      lip.className = 'tunnel-lip';
+      lip.style.cssText = `top:0; left:0; width:${TUNNEL_W}px; height:18px;`;
+      tunnel.appendChild(lip);
+
+      // Dark opening
+      const opening = document.createElement('div');
+      opening.className = 'tunnel-opening';
+      opening.style.cssText = `top:18px; left:10px; width:${TUNNEL_W - 20}px; height:24px;`;
+      tunnel.appendChild(opening);
+
+      // Highlight shine
+      const shine = document.createElement('div');
+      shine.className = 'tunnel-shine';
+      shine.style.cssText = `top:20px; left:14px; width:4px; height:${TUNNEL_H - 40}px;`;
+      tunnel.appendChild(shine);
+
+      container.appendChild(tunnel);
+    }
+
     const HEART_POINTS = 10;
     let totalPoints = parseInt(sessionStorage.getItem('puzzle-points') || '0');
 
@@ -1316,29 +1457,52 @@
     }
 
     // ══════════════════════════════════════
-    // ENDING — stargazing celebration
+    // ENDING — tunnel enter + stargazing celebration
     // ══════════════════════════════════════
     function triggerEnding() {
       if (endingTriggered) return;
       endingTriggered = true;
       sendPeer({ type: 'ending' });
 
+      // Hide game UI
+      document.querySelector('.mobile-controls').style.display = 'none';
+      document.getElementById('chapter-nav').style.display = 'none';
+
+      // Phase 1: Walk player into the tunnel
+      playerEl.classList.add('player-entering-tunnel');
+      if (partnerEl.style.display !== 'none') {
+        partnerEl.classList.add('player-entering-tunnel');
+        partnerEl.style.animationDelay = '0.2s';
+      }
+
+      // Phase 2: Screen fade to black, then celebration
+      setTimeout(() => {
+        document.body.style.transition = 'opacity 0.8s ease';
+        document.body.style.opacity = '0';
+      }, 1000);
+
+      setTimeout(() => {
+        showEndingCelebration();
+        document.body.style.transition = 'opacity 1.5s ease';
+        document.body.style.opacity = '1';
+      }, 2000);
+    }
+
+    function showEndingCelebration() {
       const overlay = document.getElementById('ending-overlay');
       const sky = document.getElementById('ending-sky');
+      const moon = document.getElementById('ending-moon');
       const charsContainer = document.getElementById('ending-chars');
       const msgEl = document.getElementById('ending-message');
       const statsEl = document.getElementById('ending-stats');
       const actionsEl = document.getElementById('ending-actions');
 
-      // Hide game UI
-      document.querySelector('.mobile-controls').style.display = 'none';
-      document.getElementById('chapter-nav').style.display = 'none';
-
-      // Generate stars
-      for (let i = 0; i < 80; i++) {
+      // Generate stars (more of them, varied sizes)
+      for (let i = 0; i < 120; i++) {
         const star = document.createElement('div');
         star.className = 'ending-star';
-        star.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 60}%;width:${2 + Math.random() * 3}px;height:${2 + Math.random() * 3}px;animation-delay:${Math.random() * 3}s;animation-duration:${1.5 + Math.random() * 2}s;`;
+        const size = 1.5 + Math.random() * 3;
+        star.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 65}%;width:${size}px;height:${size}px;animation-delay:${Math.random() * 4}s;animation-duration:${1.5 + Math.random() * 2.5}s;`;
         sky.appendChild(star);
       }
 
@@ -1354,20 +1518,35 @@
       }
       charsContainer.innerHTML = makeEndingChar(myChar) + makeEndingChar(partnerChar);
 
-      // Fade in
+      // Fade in overlay
       overlay.classList.add('active');
+
+      // Moon fade in
+      setTimeout(() => moon.classList.add('visible'), 800);
+
+      // Shooting stars periodically
+      let shootCount = 0;
+      const shootInterval = setInterval(() => {
+        const star = document.createElement('div');
+        star.className = 'ending-shooting-star';
+        star.style.cssText = `left:${30 + Math.random() * 50}%;top:${5 + Math.random() * 25}%;animation-duration:${1 + Math.random() * 0.8}s;`;
+        sky.appendChild(star);
+        setTimeout(() => star.remove(), 2500);
+        shootCount++;
+        if (shootCount > 8) clearInterval(shootInterval);
+      }, 2500);
 
       // Fireworks sequence
       const colors = [myChar.shirt, partnerChar.shirt, '#d49b3c', '#4fc3f7', '#b388ff', '#e85d75'];
       function spawnFirework(cx, cy) {
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const particles = 12;
+        const particles = 14;
         for (let i = 0; i < particles; i++) {
-          const angle = (Math.PI * 2 / particles) * i;
-          const dist = 40 + Math.random() * 60;
+          const angle = (Math.PI * 2 / particles) * i + (Math.random() - 0.5) * 0.3;
+          const dist = 45 + Math.random() * 65;
           const fw = document.createElement('div');
           fw.className = 'firework';
-          fw.style.cssText = `left:${cx}px;top:${cy}px;background:${color};--fw-dx:${Math.cos(angle) * dist}px;--fw-dy:${Math.sin(angle) * dist}px;animation-delay:${Math.random() * 0.1}s;`;
+          fw.style.cssText = `left:${cx}px;top:${cy}px;background:${color};--fw-dx:${Math.cos(angle) * dist}px;--fw-dy:${Math.sin(angle) * dist}px;animation-delay:${Math.random() * 0.15}s;`;
           sky.appendChild(fw);
           setTimeout(() => fw.remove(), 1500);
         }
@@ -1376,12 +1555,12 @@
       // Launch fireworks over time
       let fwCount = 0;
       const fwInterval = setInterval(() => {
-        const x = 20 + Math.random() * 60;
-        const y = 10 + Math.random() * 40;
+        const x = 15 + Math.random() * 70;
+        const y = 10 + Math.random() * 35;
         spawnFirework(window.innerWidth * x / 100, window.innerHeight * y / 100);
         fwCount++;
-        if (fwCount > 20) clearInterval(fwInterval);
-      }, 600);
+        if (fwCount > 25) clearInterval(fwInterval);
+      }, 500);
 
       // Float hearts up from characters
       let heartCount = 0;
@@ -1389,24 +1568,30 @@
         const heart = document.createElement('div');
         heart.className = 'ending-heart-float';
         const hColor = colors[Math.floor(Math.random() * colors.length)];
-        heart.style.cssText = `left:${window.innerWidth / 2 + (Math.random() - 0.5) * 100}px;bottom:160px;animation-delay:${Math.random() * 0.5}s;`;
+        heart.style.cssText = `left:${window.innerWidth / 2 + (Math.random() - 0.5) * 120}px;bottom:160px;animation-delay:${Math.random() * 0.5}s;`;
         heart.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="${hColor}"/></svg>`;
         sky.appendChild(heart);
         setTimeout(() => heart.remove(), 4500);
         heartCount++;
-        if (heartCount > 30) clearInterval(heartInterval);
-      }, 400);
+        if (heartCount > 35) clearInterval(heartInterval);
+      }, 350);
 
-      // Type out message
+      // Message — line by line with staggered fade-in
       setTimeout(() => {
         const lines = [
-          "thanks for adventuring together",
+          "to many more adventures to come",
           "",
-          "every step was better with you"
+          "to my favorite adventure buddy"
         ];
-        msgEl.textContent = lines.join('\n');
-        msgEl.classList.add('visible');
-      }, 2500);
+        msgEl.innerHTML = lines.map((line, i) => {
+          if (!line) return '<br>';
+          return `<div class="ending-message-line" style="transition-delay:${i * 0.6}s">${line}</div>`;
+        }).join('');
+        requestAnimationFrame(() => {
+          msgEl.classList.add('visible');
+          msgEl.querySelectorAll('.ending-message-line').forEach(el => el.classList.add('visible'));
+        });
+      }, 2000);
 
       // Show stats
       setTimeout(() => {
@@ -1415,12 +1600,12 @@
         const totalHearts = HEART_DEFS.length;
         statsEl.textContent = `${completed.length} adventures completed  \u00b7  ${heartsFound} / ${totalHearts} hearts found  \u00b7  ${totalPoints} pts`;
         statsEl.classList.add('visible');
-      }, 5000);
+      }, 5500);
 
       // Show actions
       setTimeout(() => {
         actionsEl.classList.add('visible');
-      }, 6500);
+      }, 7000);
 
       // Action handlers
       document.getElementById('ending-replay').onclick = () => {
@@ -1802,6 +1987,7 @@
     renderMovingPlatforms();
     renderGroundSegments();
     renderAdventureBoxes();
+    renderEndTunnel();
     setupNavMenu();
 
     if (orbSpawnY !== null) {
@@ -1887,6 +2073,7 @@
       renderMovingPlatforms();
       renderGroundSegments();
       renderAdventureBoxes();
+      renderEndTunnel();
       player.y = Math.min(player.y, groundY());
     });
   </script>
