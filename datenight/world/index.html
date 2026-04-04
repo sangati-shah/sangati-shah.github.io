@@ -684,11 +684,7 @@
       // Bounce chain valley
       ob(9300, 30, 45),           // wall before bounce zone
       ob(9700, 30, 45),           // wall after bounce zone
-      // Floating obstacle course
-      ob(9900, 100, 18, 'float'),
-      ob(10100, 80, 18, 'float'),
-      ob(10300, 100, 18, 'float'),
-      ob(10500, 80, 18, 'float'),
+      // (moving platforms bridge this gap — no floating obstacles here)
       // Final push — duck-under barriers + tall walls
       ob(10750, 100, 18, 'float'),  // duck under this
       ob(10900, 30, 50),            // tall wall
@@ -796,18 +792,18 @@
     // ══════════════════════════════════════
     const MOVING_PLAT_DEFS = [
       // Section 1
-      { x: 1900, w: 80, h: 14, range: 120, speed: 0.8, elevation: 50 },
+      { x: 1900, w: 100, h: 14, range: 100, speed: 0.65, elevation: 50 },
       // Section 2
-      { x: 3700, w: 80, h: 14, range: 100, speed: 0.9, elevation: 55 },
-      { x: 4800, w: 90, h: 14, range: 140, speed: 0.7, elevation: 45 },
+      { x: 3700, w: 100, h: 14, range: 90, speed: 0.7, elevation: 55 },
+      { x: 4800, w: 110, h: 14, range: 110, speed: 0.6, elevation: 45 },
       // Section 3
-      { x: 6000, w: 80, h: 14, range: 130, speed: 0.85, elevation: 50 },
-      { x: 7200, w: 90, h: 14, range: 110, speed: 0.75, elevation: 55 },
-      // Section 4 — gauntlet moving platforms (faster, trickier)
-      { x: 9150, w: 70, h: 14, range: 80, speed: 1.2, elevation: 65 },   // between staircase and bounce chain
-      { x: 10000, w: 70, h: 14, range: 90, speed: 1.0, elevation: 80 },  // gap filler in float course
-      { x: 10200, w: 70, h: 14, range: 90, speed: 1.1, elevation: 80 },  // gap filler
-      { x: 10400, w: 70, h: 14, range: 90, speed: 0.9, elevation: 80 },  // gap filler
+      { x: 6000, w: 100, h: 14, range: 110, speed: 0.7, elevation: 50 },
+      { x: 7200, w: 110, h: 14, range: 100, speed: 0.65, elevation: 55 },
+      // Section 4 — gauntlet moving platforms
+      { x: 9150, w: 90, h: 14, range: 70, speed: 0.9, elevation: 65 },   // between staircase and bounce chain
+      { x: 10050, w: 90, h: 14, range: 80, speed: 0.8, elevation: 80 },  // gap filler in float course
+      { x: 10250, w: 90, h: 14, range: 80, speed: 0.85, elevation: 80 }, // gap filler
+      { x: 10400, w: 90, h: 14, range: 80, speed: 0.75, elevation: 80 }, // gap filler
     ];
 
     // ══════════════════════════════════════
@@ -815,16 +811,16 @@
     // ══════════════════════════════════════
     const GROUND_GAPS = [
       // Section 1
-      { start: 1760, end: 2100, respawnX: 1720 },
+      { start: 1800, end: 2060, respawnX: 1760 },
       // Section 2
-      { start: 3580, end: 3900, respawnX: 3540 },
-      { start: 4640, end: 5030, respawnX: 4600 },
+      { start: 3620, end: 3860, respawnX: 3580 },
+      { start: 4680, end: 4960, respawnX: 4640 },
       // Section 3
-      { start: 5850, end: 6230, respawnX: 5810 },
-      { start: 7070, end: 7420, respawnX: 7030 },
+      { start: 5890, end: 6180, respawnX: 5850 },
+      { start: 7100, end: 7380, respawnX: 7060 },
       // Section 4
-      { start: 9050, end: 9310, respawnX: 9010 },
-      { start: 9890, end: 10580, respawnX: 9850 },  // big gap — 3 moving platforms
+      { start: 9080, end: 9280, respawnX: 9040 },
+      { start: 9920, end: 10500, respawnX: 9880 },  // big gap — 3 moving platforms
     ];
 
     function isOverGap(px) {
@@ -1645,14 +1641,29 @@
     }
 
     function tryConnect(attempt) {
-      if (attempt > 15) return;
+      if (attempt > 20) return;
       const c = peer.connect(peerIdForWorld(roomCode), { reliable: true });
+      let settled = false;
       c.on('open', () => {
+        if (settled) return;
+        settled = true;
         conn = c;
         c.send({ type: 'character', data: myChar });
         c.on('data', handlePeerData);
       });
-      c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
+      c.on('error', () => {
+        if (settled) return;
+        settled = true;
+        setTimeout(() => tryConnect(attempt + 1), 1000);
+      });
+      // Timeout fallback — peer-unavailable errors fire on the peer object, not the connection
+      setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          try { c.close(); } catch(e) {}
+          tryConnect(attempt + 1);
+        }
+      }, 3000);
     }
 
     // ══════════════════════════════════════

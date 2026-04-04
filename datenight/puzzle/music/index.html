@@ -486,8 +486,8 @@
     let partnerInstruments = isHost ? GUEST_INSTRUMENTS : HOST_INSTRUMENTS;
 
     // Target beat uses instruments from BOTH players
-    const TARGET_BEAT = ['tabla', 'kebero', 'sitar', 'krar', 'bansuri', 'masinko', 'tabla', 'kebero'];
-    const BEAT_GAP = 0.45; // seconds between beats
+    const TARGET_BEAT = ['tabla', 'tabla', 'kebero', 'krar', 'sitar', 'masinko', 'bansuri', 'tabla'];
+    const BEAT_GAP = 0.40; // seconds between beats
 
     // ======================================
     // AUDIO SYNTHESIS
@@ -920,10 +920,26 @@
     }
 
     function tryConnect(attempt) {
-      if (attempt > 15) return;
+      if (attempt > 20) return;
       const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
-      c.on('open', () => { conn = c; c.on('data', handlePeerData); });
-      c.on('error', () => setTimeout(() => tryConnect(attempt + 1), 1000));
+      let settled = false;
+      c.on('open', () => {
+        if (settled) return;
+        settled = true;
+        conn = c; c.on('data', handlePeerData);
+      });
+      c.on('error', () => {
+        if (settled) return;
+        settled = true;
+        setTimeout(() => tryConnect(attempt + 1), 1000);
+      });
+      setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          try { c.close(); } catch(e) {}
+          tryConnect(attempt + 1);
+        }
+      }, 3000);
     }
 
     function handlePeerData(data) {
