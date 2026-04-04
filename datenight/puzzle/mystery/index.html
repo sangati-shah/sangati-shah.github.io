@@ -99,25 +99,28 @@
       color: var(--dn-accent); font-weight: 600;
     }
 
-    /* -- Turn indicator -- */
-    .turn-indicator {
+    /* -- Timer -- */
+    .timer-display {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 1.6rem; color: #1565c0; font-weight: 600;
+      text-align: center; letter-spacing: 0.05em;
+      min-height: 1.5em;
+    }
+
+    /* -- Status indicator -- */
+    .status-indicator {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
       font-size: 1.15rem; color: var(--dn-sub);
       text-align: center; transition: color 0.3s;
       min-height: 1.5em;
     }
-    .turn-indicator.your-turn { color: #1565c0; font-weight: 600; }
-    .turn-indicator.their-turn { color: var(--dn-sub); }
 
-    /* -- Score row -- */
-    .score-row {
-      display: flex; gap: 2rem; justify-content: center;
+    /* -- Pairs left -- */
+    .pairs-left {
       font-family: var(--dn-heading-font, 'Caveat', cursive);
-      font-size: 1.1rem; color: var(--dn-sub);
+      font-size: 1rem; color: var(--dn-sub);
+      text-align: center; opacity: 0.7;
     }
-    .score-row .score-label { opacity: 0.7; }
-    .score-row .score-val { color: #1565c0; font-weight: 600; }
-    .score-row .score-val.partner { color: #c0392b; }
 
     /* -- Tile grid -- */
     .tile-grid {
@@ -314,25 +317,23 @@
   <!-- Main app -->
   <div class="mystery-app">
     <h1 class="page-title" data-dn-cycle>azulejos</h1>
-    <p class="page-sub" id="page-sub">flip tiles and find matching pairs together</p>
+    <p class="page-sub" id="page-sub">race to match all the pairs -- fastest time wins!</p>
 
     <!-- How to play -->
     <div class="how-to-play">
       <div class="how-to-play-title">how to play</div>
       <ol>
-        <li>Take turns flipping two tiles at a time</li>
-        <li>Try to remember where each pattern is</li>
-        <li>If both tiles match, you score a point!</li>
-        <li>The player with the most matches wins</li>
+        <li>Both players play at the same time on their own board</li>
+        <li>Flip two tiles at a time to find matching pairs</li>
+        <li>Match all pairs as fast as you can</li>
+        <li>The player who finishes first gets more points!</li>
       </ol>
     </div>
 
-    <!-- Turn / score -->
-    <div class="turn-indicator your-turn" id="turn-indicator">your turn</div>
-    <div class="score-row">
-      <div><span class="score-label">you </span><span class="score-val" id="my-score">0</span></div>
-      <div><span class="score-label">them </span><span class="score-val partner" id="their-score">0</span></div>
-    </div>
+    <!-- Timer / status -->
+    <div class="timer-display" id="timer-display">0:00</div>
+    <div class="status-indicator" id="status-indicator"></div>
+    <div class="pairs-left" id="pairs-left"></div>
 
     <!-- Tile grid -->
     <div class="tile-grid" id="tile-grid"></div>
@@ -623,12 +624,16 @@
     const TOTAL_TILES = TOTAL_PAIRS * 2;
     let tiles = [];
     let flipped = [];
-    let myScore = 0;
-    let theirScore = 0;
-    let myTurn = true;
+    let matchedCount = 0;
     let waitingForFlipBack = false;
     let gameOver = false;
     let soloMode = false;
+
+    // Timer
+    let timerStart = null;
+    let timerInterval = null;
+    let myTime = null;       // ms when I finished
+    let theirTime = null;    // ms when partner finished
 
     // Points
     function getPoints() { return parseInt(sessionStorage.getItem('puzzle-points') || '0'); }
@@ -677,11 +682,14 @@
       grid.innerHTML = '';
       tiles = [];
       flipped = [];
-      myScore = 0;
-      theirScore = 0;
+      matchedCount = 0;
       waitingForFlipBack = false;
       gameOver = false;
-      updateScores();
+      myTime = null;
+      theirTime = null;
+      stopTimer();
+      startTimer();
+      updatePairsLeft();
 
       let indices = [];
       for (let i = 0; i < TOTAL_PAIRS; i++) {
@@ -718,8 +726,6 @@
 
         tiles.push({ id: i, patternIndex, matched: false, element: tile });
       });
-
-      updateTurnIndicator();
     }
 
     // ======================================
@@ -728,13 +734,11 @@
     function onTileClick(index) {
       if (gameOver) return;
       if (waitingForFlipBack) return;
-      if (!soloMode && !myTurn && conn && conn.open) return;
       if (tiles[index].matched) return;
       if (flipped.includes(index)) return;
       if (flipped.length >= 2) return;
 
       flipTile(index);
-      sendPeerData({ type: 'flip', index });
 
       if (flipped.length === 2) {
         checkMatch();
@@ -764,19 +768,18 @@
           tiles[a].element.classList.add('matched');
           tiles[b].element.classList.add('matched');
 
-          if (myTurn || soloMode) {
-            myScore++;
-            addPoints(10);
-          } else {
-            theirScore++;
-          }
-          updateScores();
+          matchedCount++;
+          addPoints(10);
+          updatePairsLeft();
 
           flipped = [];
           waitingForFlipBack = false;
 
-          if (tiles.every(t => t.matched)) {
-            endGame();
+          if (matchedCount === TOTAL_PAIRS) {
+            myTime = Date.now() - timerStart;
+            stopTimer();
+            sendPeerData({ type: 'finished', time: myTime });
+            checkBothDone();
           }
         }, 600);
       } else {
@@ -793,60 +796,88 @@
           unflipTile(b);
           flipped = [];
           waitingForFlipBack = false;
-
-          if (!soloMode && conn && conn.open) {
-            myTurn = !myTurn;
-            updateTurnIndicator();
-            sendPeerData({ type: 'turn-switch' });
-          }
         }, 1000);
+      }
+    }
+
+    // ======================================
+    // TIMER
+    // ======================================
+    function formatTime(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      const tenths = Math.floor((ms % 1000) / 100);
+      return min + ':' + String(sec).padStart(2, '0') + '.' + tenths;
+    }
+
+    function startTimer() {
+      timerStart = Date.now();
+      document.getElementById('timer-display').textContent = '0:00.0';
+      timerInterval = setInterval(() => {
+        const elapsed = Date.now() - timerStart;
+        document.getElementById('timer-display').textContent = formatTime(elapsed);
+      }, 100);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
       }
     }
 
     // ======================================
     // UI UPDATES
     // ======================================
-    function updateScores() {
-      document.getElementById('my-score').textContent = myScore;
-      document.getElementById('their-score').textContent = theirScore;
+    function updatePairsLeft() {
+      const remaining = TOTAL_PAIRS - matchedCount;
+      document.getElementById('pairs-left').textContent = remaining + ' pair' + (remaining !== 1 ? 's' : '') + ' left';
     }
 
-    function updateTurnIndicator() {
-      const el = document.getElementById('turn-indicator');
+    function checkBothDone() {
+      gameOver = true;
+
       if (soloMode) {
-        el.textContent = 'find all the pairs!';
-        el.className = 'turn-indicator your-turn';
+        endGame();
         return;
       }
-      if (myTurn) {
-        el.textContent = 'your turn';
-        el.className = 'turn-indicator your-turn';
-      } else {
-        el.textContent = 'their turn';
-        el.className = 'turn-indicator their-turn';
+
+      // Show waiting state if partner hasn't finished
+      if (myTime !== null && theirTime === null) {
+        document.getElementById('status-indicator').textContent = 'done! waiting for partner...';
+        document.getElementById('timer-display').textContent = formatTime(myTime);
+        return;
+      }
+
+      // Both done
+      if (myTime !== null && theirTime !== null) {
+        endGame();
       }
     }
 
     function endGame() {
-      gameOver = true;
       markCompleted('mystery');
 
-      let title, sub;
+      let title, sub, bonus;
       if (soloMode) {
         title = 'beautiful!';
-        sub = 'you matched all ' + TOTAL_PAIRS + ' pairs';
-      } else if (myScore > theirScore) {
+        sub = 'your time: ' + formatTime(myTime);
+        bonus = 50;
+      } else if (myTime < theirTime) {
         title = 'you win!';
-        sub = myScore + ' \u2013 ' + theirScore;
-      } else if (theirScore > myScore) {
+        sub = 'you: ' + formatTime(myTime) + '  --  them: ' + formatTime(theirTime);
+        bonus = 60;
+      } else if (theirTime < myTime) {
         title = 'they win!';
-        sub = theirScore + ' \u2013 ' + myScore;
+        sub = 'you: ' + formatTime(myTime) + '  --  them: ' + formatTime(theirTime);
+        bonus = 30;
       } else {
         title = "it's a tie!";
-        sub = myScore + ' \u2013 ' + theirScore;
+        sub = 'both finished in ' + formatTime(myTime);
+        bonus = 45;
       }
 
-      const bonus = soloMode ? 50 : (myScore >= theirScore ? 60 : 30);
       addPoints(bonus);
 
       document.getElementById('victory-title').textContent = title;
@@ -856,8 +887,6 @@
       setTimeout(() => {
         document.getElementById('victory-overlay').classList.add('visible');
       }, 800);
-
-      sendPeerData({ type: 'game-over' });
     }
 
     // ======================================
@@ -881,10 +910,8 @@
             c.on('close', () => { conn = null; window.location.href = '../../world/?after=mystery'; });
             const seed = Math.floor(Math.random() * 2147483646) + 1;
             buildBoard(seed);
-            myTurn = true;
-            updateTurnIndicator();
             c.on('open', () => {
-              c.send({ type: 'init', seed, hostStarts: true });
+              c.send({ type: 'init', seed });
             });
           });
         });
@@ -923,24 +950,14 @@
     function handlePeerData(data) {
       if (data.type === 'init') {
         buildBoard(data.seed);
-        myTurn = !data.hostStarts;
-        updateTurnIndicator();
-      } else if (data.type === 'flip') {
-        flipTile(data.index);
-        if (flipped.length === 2) {
-          checkMatch();
-        }
-      } else if (data.type === 'turn-switch') {
-        myTurn = !myTurn;
-        updateTurnIndicator();
       } else if (data.type === 'restart') {
         buildBoard(data.seed);
-        myTurn = !data.hostStarts;
-        updateTurnIndicator();
-      } else if (data.type === 'game-over') {
-        if (!gameOver) {
-          gameOver = true;
-          markCompleted('mystery');
+      } else if (data.type === 'finished') {
+        theirTime = data.time;
+        if (myTime !== null) {
+          checkBothDone();
+        } else {
+          document.getElementById('status-indicator').textContent = 'partner finished in ' + formatTime(theirTime) + ' -- hurry!';
         }
       }
     }
@@ -951,10 +968,10 @@
     document.getElementById('restart-btn').addEventListener('click', () => {
       const seed = Math.floor(Math.random() * 2147483646) + 1;
       buildBoard(seed);
-      myTurn = isHost || soloMode;
-      updateTurnIndicator();
+      document.getElementById('victory-overlay').classList.remove('visible');
+      document.getElementById('status-indicator').textContent = '';
       if (!soloMode) {
-        sendPeerData({ type: 'restart', seed, hostStarts: true });
+        sendPeerData({ type: 'restart', seed });
       }
     });
 
@@ -968,15 +985,13 @@
     // ======================================
     function enterSoloMode() {
       soloMode = true;
-      myTurn = true;
-      document.getElementById('page-sub').textContent = 'flip tiles and find all the matching pairs';
-      document.querySelector('.score-row').style.display = 'none';
+      document.getElementById('page-sub').textContent = 'match all the pairs as fast as you can!';
       const howToPlay = document.querySelector('.how-to-play ol');
       howToPlay.innerHTML =
         '<li>Click any tile to flip it over</li>' +
         '<li>Flip a second tile to try for a match</li>' +
         '<li>If they match, they stay revealed!</li>' +
-        '<li>Find all ' + TOTAL_PAIRS + ' pairs to win</li>';
+        '<li>Match all ' + TOTAL_PAIRS + ' pairs -- beat your best time!</li>';
       buildBoard();
     }
 
@@ -997,9 +1012,9 @@
     if (roomCode) {
       setupPeer();
       if (isHost) {
-        document.getElementById('turn-indicator').textContent = 'waiting for partner...';
+        document.getElementById('status-indicator').textContent = 'waiting for partner...';
       } else {
-        document.getElementById('turn-indicator').textContent = 'connecting...';
+        document.getElementById('status-indicator').textContent = 'connecting...';
       }
     } else {
       enterSoloMode();
