@@ -592,6 +592,45 @@
     .restart-btn:hover { color: rgba(240,230,211,0.4); }
     @media (pointer: coarse) { .restart-btn { bottom: 4.5rem; left: auto; right: 4.5rem; transform: none; } }
 
+    /* ---- Chapter nav ---- */
+    .chapter-nav {
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 0.15rem;
+      z-index: 600;
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      background: rgba(14,18,10,0.85);
+      border: 1.5px solid rgba(212,155,60,0.18);
+      border-radius: 20px;
+      padding: 3px 4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .chapter-btn {
+      background: none; border: none;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-family: inherit; font-size: inherit;
+      color: rgba(240,230,211,0.3);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .chapter-btn:hover {
+      background: rgba(212,155,60,0.12);
+      color: rgba(240,230,211,0.6);
+    }
+    .chapter-btn.active {
+      background: rgba(212,155,60,0.18);
+      color: #d49b3c;
+    }
+    .chapter-dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(212,155,60,0.25);
+      flex-shrink: 0;
+    }
+
     /* ---- Level Menu ---- */
     .menu-btn {
       position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
@@ -655,6 +694,16 @@
   </style>
 </head>
 <body class="dark-hud">
+  <nav class="chapter-nav">
+    <a class="chapter-btn" href="../../world/">home</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../music/">rhythm</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn active" href="../elements/">elements</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../mystery/">mystery</a>
+  </nav>
+
   <a href="../../world/" class="back-link">&larr; back</a>
   <a href="../../world/" class="skip-btn">skip &rarr;</a>
   <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>

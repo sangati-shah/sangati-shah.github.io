@@ -45,6 +45,45 @@
     .pts-num { color: var(--dn-accent); font-weight: 600; transition: transform 0.3s; }
     .pts-num.bump { transform: scale(1.4); display: inline-block; }
 
+    /* -- Chapter nav -- */
+    .chapter-nav {
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 0.15rem;
+      z-index: 200;
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.85rem;
+      background: color-mix(in srgb, var(--dn-bg, #f7f2e7) 85%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      border-radius: 20px;
+      padding: 3px 4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .chapter-btn {
+      background: none; border: none;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-family: inherit; font-size: inherit;
+      color: var(--dn-sub, #999);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .chapter-btn:hover {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
+      color: var(--dn-text, #555);
+    }
+    .chapter-btn.active {
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      color: var(--dn-text, #555);
+    }
+    .chapter-dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+      flex-shrink: 0;
+    }
+
     /* -- Main -- */
     .music-app {
       position: relative; z-index: 1;
@@ -427,6 +466,16 @@
   </style>
 </head>
 <body>
+
+  <nav class="chapter-nav">
+    <a class="chapter-btn" href="../../world/">home</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn active" href="../music/">rhythm</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../elements/">elements</a>
+    <span class="chapter-dot"></span>
+    <a class="chapter-btn" href="../mystery/">mystery</a>
+  </nav>
 
   <div class="top-bar">
     <a href="../../world/" class="back-link">&larr; back to adventure</a>
