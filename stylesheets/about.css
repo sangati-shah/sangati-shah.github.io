@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -16,7 +16,7 @@
 }
 
 body {
-    font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--ghibli-bg);
     color: var(--ghibli-text);
     overflow-x: hidden;
@@ -64,6 +64,7 @@ a {
     transition: color 0.3s;
     position: relative;
     font-weight: 600;
+    font-family: 'Nunito', sans-serif;
 }
 
 .nav-links a::after {
