@@ -24,8 +24,18 @@
     <!-- Fireflies -->
     <div id="fireflies"></div>
 
-    <!-- Jar Grid (one jar per category, built by JS) -->
-    <div class="jar-grid" id="jar-grid"></div>
+    <!-- Single Jar -->
+    <p class="jar-prompt-text">open a jar for questions</p>
+    <div class="single-jar" id="single-jar">
+      <div class="jar">
+        <div class="jar-lid"></div>
+        <div class="jar-body">
+          <div class="paper paper-1"></div>
+          <div class="paper paper-2"></div>
+          <div class="paper paper-3"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Campfire scene (bottom of screen) -->
     <div class="campfire-scene">
@@ -99,27 +109,7 @@
 
   <script src="../app.js"></script>
   <script>
-    // Build jar grid from deck names
-    const deckNames = ['deep', 'dreams', 'memories', 'vulnerable', 'gratitude', 'spicy', 'silly'];
-    const grid = document.getElementById('jar-grid');
-    deckNames.forEach((name, i) => {
-      const jar = document.createElement('div');
-      jar.className = 'deck-jar' + (i === 0 ? ' active' : '');
-      jar.dataset.deck = name;
-      jar.addEventListener('click', () => selectDeckAndDraw(name));
-      jar.innerHTML = `
-        <div class="jar">
-          <div class="jar-lid"></div>
-          <div class="jar-body">
-            <div class="paper paper-1"></div>
-            <div class="paper paper-2"></div>
-            <div class="paper paper-3"></div>
-          </div>
-        </div>
-        <div class="tape-label">${name}</div>`;
-      grid.appendChild(jar);
-    });
-
+    document.getElementById('single-jar').addEventListener('click', drawQuestion);
     document.getElementById('draw-btn').addEventListener('click', drawQuestion);
     document.getElementById('close-btn').addEventListener('click', closeQuestion);
   </script>
