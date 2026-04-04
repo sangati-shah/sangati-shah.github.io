@@ -131,7 +131,7 @@ const DN_THEMES = [
   },
 ];
 
-let dnThemeIndex = parseInt(sessionStorage.getItem('datenight-theme') || '0');
+let dnThemeIndex = parseInt(localStorage.getItem('datenight-theme') || '0');
 if (dnThemeIndex >= DN_THEMES.length) dnThemeIndex = 0;
 let dnTransitioning = false;
 let dnTransitionSafety;
@@ -188,7 +188,7 @@ function dnCycleTheme(e) {
 
   // Apply theme immediately behind the flash
   dnThemeIndex = nextIndex;
-  sessionStorage.setItem('datenight-theme', dnThemeIndex);
+  localStorage.setItem('datenight-theme', dnThemeIndex);
   dnApplyTheme(dnThemeIndex);
 
   // Fade the flash out fast

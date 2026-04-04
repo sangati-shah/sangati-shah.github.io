@@ -207,18 +207,18 @@
     }
     function clearExpiredRoom() {
       localStorage.removeItem('datenight-room-created');
-      sessionStorage.removeItem('datenight-room');
-      sessionStorage.removeItem('datenight-host');
-      sessionStorage.removeItem('datenight-completed');
-      sessionStorage.removeItem('datenight-hearts');
-      sessionStorage.removeItem('partner-character');
-      sessionStorage.removeItem('puzzle-points');
+      localStorage.removeItem('datenight-room');
+      localStorage.removeItem('datenight-host');
+      localStorage.removeItem('datenight-completed');
+      localStorage.removeItem('datenight-hearts');
+      localStorage.removeItem('partner-character');
+      localStorage.removeItem('puzzle-points');
     }
 
     function enterRoom(code) {
       roomCode = code;
-      sessionStorage.setItem('datenight-room', code);
-      sessionStorage.setItem('datenight-host', isHost ? '1' : '0');
+      localStorage.setItem('datenight-room', code);
+      localStorage.setItem('datenight-host', isHost ? '1' : '0');
       saveRoomExpiry(code);
 
       // Smooth transition to home step (same component, no overlay shift)
@@ -364,7 +364,7 @@
         partnerCursor.style.left = (data.x * window.innerWidth) + 'px';
         partnerCursor.style.top = (data.y * window.innerHeight) + 'px';
       } else if (data.type === 'character') {
-        sessionStorage.setItem('partner-character', JSON.stringify(data.char));
+        localStorage.setItem('partner-character', JSON.stringify(data.char));
         showPartnerChar(data.char);
         // Update cursor label with partner name
         const label = document.querySelector('.partner-label');
@@ -416,9 +416,9 @@
       const labelEl = document.getElementById('adventure-label');
 
       let completed = [];
-      try { completed = JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch {}
+      try { completed = JSON.parse(localStorage.getItem('datenight-completed') || '[]'); } catch {}
       let heartCount = 0;
-      try { heartCount = JSON.parse(sessionStorage.getItem('datenight-hearts') || '[]').length; } catch {}
+      try { heartCount = JSON.parse(localStorage.getItem('datenight-hearts') || '[]').length; } catch {}
 
       const allDone = completed.length >= 3;
       const someDone = completed.length > 0;
@@ -505,9 +505,9 @@
       joinCodeInput.value = urlRoom;
       history.replaceState(null, '', './');
       setTimeout(() => joinBtn.click(), 300);
-    } else if ((fromParam === 'character' || fromParam === 'map') && sessionStorage.getItem('datenight-room')) {
-      roomCode = sessionStorage.getItem('datenight-room');
-      isHost = sessionStorage.getItem('datenight-host') === '1';
+    } else if ((fromParam === 'character' || fromParam === 'map') && localStorage.getItem('datenight-room')) {
+      roomCode = localStorage.getItem('datenight-room');
+      isHost = localStorage.getItem('datenight-host') === '1';
       showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + roomCode;
       history.replaceState(null, '', './');
@@ -542,10 +542,10 @@
 
     function ensureMyChar() {
       let c = null;
-      try { c = JSON.parse(sessionStorage.getItem('my-character')); } catch {}
+      try { c = JSON.parse(localStorage.getItem('my-character')); } catch {}
       if (!c || !c.name) {
         c = generateRandomChar();
-        sessionStorage.setItem('my-character', JSON.stringify(c));
+        localStorage.setItem('my-character', JSON.stringify(c));
       }
       return c;
     }
@@ -570,12 +570,12 @@
 
       // Show partner if we have their data
       let pc = null;
-      try { pc = JSON.parse(sessionStorage.getItem('partner-character')); } catch {}
+      try { pc = JSON.parse(localStorage.getItem('partner-character')); } catch {}
       if (pc && pc.name) showPartnerChar(pc);
 
       // Update flavor text
       let completed = [];
-      try { completed = JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch {}
+      try { completed = JSON.parse(localStorage.getItem('datenight-completed') || '[]'); } catch {}
       if (completed.length === 0) {
         const greetings = [
           'ready for an adventure, ' + c.name + '?',
@@ -664,7 +664,7 @@
       setTimeout(() => {
         document.body.style.transition = 'opacity 0.25s ease';
         document.body.style.opacity = '0';
-        sessionStorage.setItem('datenight-drop-in', '1');
+        localStorage.setItem('datenight-drop-in', '1');
         setTimeout(() => { window.location.href = 'world/'; }, 280);
       }, 550);
     }

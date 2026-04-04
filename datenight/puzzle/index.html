@@ -48,17 +48,17 @@
     ];
 
     function getPoints() {
-      return parseInt(sessionStorage.getItem('puzzle-points') || '0');
+      return parseInt(localStorage.getItem('puzzle-points') || '0');
     }
 
     function setPoints(n) {
-      sessionStorage.setItem('puzzle-points', n);
+      localStorage.setItem('puzzle-points', n);
       document.getElementById('pts-num').textContent = n;
     }
 
     function getCompleted() {
       try {
-        return JSON.parse(sessionStorage.getItem('puzzle-completed') || '[]');
+        return JSON.parse(localStorage.getItem('puzzle-completed') || '[]');
       } catch { return []; }
     }
 
@@ -101,7 +101,7 @@
     // Easter egg on hub page
     const hubGem = document.getElementById('gem-hub');
     const gemToast = document.getElementById('gem-toast');
-    let hubGemFound = sessionStorage.getItem('gem-hub-found') === '1';
+    let hubGemFound = localStorage.getItem('gem-hub-found') === '1';
 
     if (hubGemFound) {
       hubGem.style.display = 'none';
@@ -110,7 +110,7 @@
     hubGem.addEventListener('click', () => {
       if (hubGemFound) return;
       hubGemFound = true;
-      sessionStorage.setItem('gem-hub-found', '1');
+      localStorage.setItem('gem-hub-found', '1');
       hubGem.classList.add('found');
 
       const bonus = 15;

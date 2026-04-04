@@ -7,10 +7,10 @@
 
   let myChar = DEFAULT_ME;
   let partnerChar = DEFAULT_PARTNER;
-  try { const s = JSON.parse(sessionStorage.getItem('my-character')); if (s) myChar = { ...DEFAULT_ME, ...s }; } catch {}
-  try { const s = JSON.parse(sessionStorage.getItem('partner-character')); if (s) partnerChar = { ...DEFAULT_PARTNER, ...s }; } catch {}
+  try { const s = JSON.parse(localStorage.getItem('my-character')); if (s) myChar = { ...DEFAULT_ME, ...s }; } catch {}
+  try { const s = JSON.parse(localStorage.getItem('partner-character')); if (s) partnerChar = { ...DEFAULT_PARTNER, ...s }; } catch {}
 
-  const pts = parseInt(sessionStorage.getItem('puzzle-points') || '0');
+  const pts = parseInt(localStorage.getItem('puzzle-points') || '0');
 
   function miniSprite(c) {
     return `
@@ -44,7 +44,7 @@
 
   // Expose updater so pages can refresh points
   window.hudUpdatePoints = function () {
-    const p = parseInt(sessionStorage.getItem('puzzle-points') || '0');
+    const p = parseInt(localStorage.getItem('puzzle-points') || '0');
     const l = document.getElementById('hud-pts-left');
     const r = document.getElementById('hud-pts-right');
     if (l) l.textContent = p + ' pts';
@@ -53,7 +53,7 @@
 
   // Expose partner updater (called when PeerJS receives partner character)
   window.hudUpdatePartner = function (charData) {
-    sessionStorage.setItem('partner-character', JSON.stringify(charData));
+    localStorage.setItem('partner-character', JSON.stringify(charData));
     const slot = document.getElementById('hud-partner-slot');
     if (!slot) return;
     partnerChar = { ...DEFAULT_PARTNER, ...charData };
