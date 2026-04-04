@@ -141,6 +141,37 @@
       100% { transform: scale(1); }
     }
 
+    /* ── Points Counter ── */
+    .points-counter {
+      position: fixed;
+      top: 3rem; right: 1.2rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--dn-sub, #999);
+      z-index: 300;
+      display: flex; align-items: center; gap: 6px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .points-counter.visible { opacity: 1; }
+    .points-label { font-size: 0.85rem; opacity: 0.7; }
+
+    .point-float {
+      position: fixed;
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      color: var(--dn-accent, #e85d75);
+      pointer-events: none;
+      z-index: 400;
+      animation: float-up 1.2s ease-out forwards;
+      white-space: nowrap;
+    }
+    @keyframes float-up {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      60% { opacity: 1; transform: translateY(-30px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+    }
+
     /* ── Moving Platforms ── */
     .moving-platform {
       position: absolute;
@@ -569,6 +600,12 @@
   <div class="heart-counter" id="heart-counter">
     <span class="hc-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="var(--dn-accent, #e85d75)"/></svg></span>
     <span id="heart-count">0</span>
+  </div>
+
+  <!-- Points counter -->
+  <div class="points-counter" id="points-counter">
+    <span class="points-label">pts</span>
+    <span id="points-display">0</span>
   </div>
 
   <!-- Chapter nav -->
@@ -1023,6 +1060,9 @@
       });
     }
 
+    const HEART_POINTS = 10;
+    let totalPoints = parseInt(sessionStorage.getItem('puzzle-points') || '0');
+
     function updateHeartCounter() {
       const count = collectedHearts.length;
       const total = HEART_DEFS.length;
@@ -1030,6 +1070,34 @@
       const counter = document.getElementById('heart-counter');
       if (count > 0) counter.classList.add('visible');
     }
+
+    function updatePointsDisplay() {
+      document.getElementById('points-display').textContent = totalPoints;
+      const el = document.getElementById('points-counter');
+      el.classList.add('visible');
+    }
+
+    function addPoints(amount) {
+      totalPoints += amount;
+      sessionStorage.setItem('puzzle-points', totalPoints);
+      updatePointsDisplay();
+      spawnPointFloat(amount);
+    }
+
+    function spawnPointFloat(amount) {
+      const counter = document.getElementById('points-counter');
+      const rect = counter.getBoundingClientRect();
+      const float = document.createElement('div');
+      float.className = 'point-float';
+      float.textContent = `+${amount}`;
+      float.style.left = (rect.left - 30) + 'px';
+      float.style.top = rect.top + 'px';
+      document.body.appendChild(float);
+      float.addEventListener('animationend', () => float.remove());
+    }
+
+    // Show existing points on load
+    if (totalPoints > 0) updatePointsDisplay();
 
     // ══════════════════════════════════════
     // CHARACTER DATA
@@ -1165,6 +1233,7 @@
           const el = document.querySelector(`.heart-pickup[data-idx="${h.idx}"]`);
           if (el) el.classList.add('collected');
           updateHeartCounter();
+          addPoints(HEART_POINTS);
           const counter = document.getElementById('heart-counter');
           counter.classList.remove('bump');
           void counter.offsetWidth;
@@ -1340,7 +1409,7 @@
         const completed = getCompleted();
         const heartsFound = collectedHearts.length;
         const totalHearts = HEART_DEFS.length;
-        statsEl.textContent = `${completed.length} adventures completed  \u00b7  ${heartsFound} / ${totalHearts} hearts found`;
+        statsEl.textContent = `${completed.length} adventures completed  \u00b7  ${heartsFound} / ${totalHearts} hearts found  \u00b7  ${totalPoints} pts`;
         statsEl.classList.add('visible');
       }, 5000);
 
@@ -1593,6 +1662,7 @@
           const el = document.querySelector(`.heart-pickup[data-idx="${data.idx}"]`);
           if (el) el.classList.add('collected');
           updateHeartCounter();
+          addPoints(HEART_POINTS);
           const counter = document.getElementById('heart-counter');
           counter.classList.remove('bump'); void counter.offsetWidth; counter.classList.add('bump');
         }
