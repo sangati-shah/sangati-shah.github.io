@@ -223,9 +223,17 @@ body.lights-off {
   letter-spacing: 0.12em;
 }
 
-/* ── Home Character Preview ── */
-.home-char-preview {
+/* ── Home Characters Row ── */
+.home-chars-row {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
   margin-bottom: 1.5em;
+}
+
+.home-char-slot {
+  text-align: center;
+  transition: opacity 0.5s ease;
 }
 
 .home-char {

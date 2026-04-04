@@ -73,10 +73,16 @@
         <p class="congrats-text" id="congrats-text"></p>
       </div>
 
-      <!-- Character preview (shown once created) -->
-      <div class="home-char-preview" id="home-char-preview" style="display:none;">
-        <div class="home-char" id="home-char-sprite"></div>
-        <div class="home-char-name" id="home-char-name"></div>
+      <!-- Character previews — left (me) and right (partner) -->
+      <div class="home-chars-row" id="home-chars-row">
+        <div class="home-char-slot" id="my-char-slot">
+          <div class="home-char" id="my-char-sprite"></div>
+          <div class="home-char-name" id="my-char-name"></div>
+        </div>
+        <div class="home-char-slot" id="partner-char-slot" style="opacity:0.25;">
+          <div class="home-char" id="partner-char-sprite"></div>
+          <div class="home-char-name" id="partner-char-name">waiting...</div>
+        </div>
       </div>
 
       <p class="waiting-banner" id="waiting-banner" style="display:none;">waiting for partner &middot; <span id="waiting-code"></span></p>
@@ -155,7 +161,7 @@
       // Smooth transition to home step (same component, no overlay shift)
       showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + code;
-      showHomeChar();
+      showHomeChars();
       showCongrats();
     }
 
@@ -207,6 +213,7 @@
           conn = c;
           c.on('open', () => {
             c.send({ type: 'welcome' });
+            sendMyCharacter();
             setupCursorSharing();
             banner.style.display = 'none';
             document.getElementById('room-info').textContent = 'room ' + code + ' (partner connected)';
@@ -252,6 +259,7 @@
           c.on('data', (data) => {
             if (data.type === 'welcome') {
               enterRoom(code);
+              sendMyCharacter();
               setupCursorSharing();
             }
             handleData(data);
@@ -284,6 +292,12 @@
         partnerCursor.style.display = '';
         partnerCursor.style.left = (data.x * window.innerWidth) + 'px';
         partnerCursor.style.top = (data.y * window.innerHeight) + 'px';
+      } else if (data.type === 'character') {
+        sessionStorage.setItem('partner-character', JSON.stringify(data.char));
+        showPartnerChar(data.char);
+        // Update cursor label with partner name
+        const label = document.querySelector('.partner-label');
+        if (label && data.char.name) label.textContent = data.char.name;
       }
     }
 
@@ -353,6 +367,7 @@
           peer.on('connection', (c) => {
             conn = c;
             c.on('open', () => {
+              sendMyCharacter();
               setupCursorSharing();
               document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner connected)';
             });
@@ -372,6 +387,7 @@
               if (settled) return;
               settled = true;
               conn = c;
+              sendMyCharacter();
               setupCursorSharing();
               document.getElementById('room-info').textContent = 'room ' + roomCode + ' (partner connected)';
               c.on('data', handleData);
@@ -412,7 +428,7 @@
       showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + roomCode;
       history.replaceState(null, '', './');
-      showHomeChar();
+      showHomeChars();
       showCongrats();
       // Re-establish peer connection for cursor sharing
       reconnectPeer();
@@ -422,44 +438,87 @@
       history.replaceState(null, '', './');
     }
 
-    // ── Show character on home if saved ──
-    function showHomeChar() {
-      try {
-        const c = JSON.parse(sessionStorage.getItem('my-character'));
-        if (!c || !c.name) return;
-        const preview = document.getElementById('home-char-preview');
-        const sprite = document.getElementById('home-char-sprite');
-        const nameEl = document.getElementById('home-char-name');
-        sprite.innerHTML = `
-          <div class="hc-hair" style="background:${c.hair}"></div>
-          <div class="hc-face" style="background:${c.skin}"></div>
-          <div class="hc-eyes"><div class="hc-eye"></div><div class="hc-eye"></div></div>
-          <div class="hc-mouth"></div>
-          <div class="hc-body" style="background:${c.shirt}"></div>
-          <div class="hc-legs">
-            <div class="hc-leg" style="background:${c.pants || '#3a3a5c'}"></div>
-            <div class="hc-leg" style="background:${c.pants || '#3a3a5c'}"></div>
-          </div>`;
-        nameEl.textContent = c.name;
-        preview.style.display = '';
+    // ── Character colors ──
+    const HAIR_COLORS = ['#1a1a1a', '#4a3728', '#8b6914', '#d4a843', '#c0392b', '#e67e22', '#ecf0f1', '#6c3483', '#2e86c1'];
+    const SKIN_COLORS = ['#fde7d1', '#f5cba7', '#e0ac69', '#c68642', '#8d5524', '#5c3a1e', '#3b2412', '#f8d5c2', '#a0522d'];
+    const SHIRT_COLORS = ['#e85d75', '#4a7c9b', '#2e7d32', '#f9a825', '#7b1fa2', '#ff6d00', '#1565c0', '#ec407a', '#26a69a'];
+    const PANTS_COLORS = ['#3a3a5c', '#1a1a2e', '#2c3e50', '#4a3728', '#1b5e20', '#4a148c', '#b71c1c', '#f5f5dc', '#37474f'];
+    const RANDOM_NAMES = ['ember', 'clover', 'dusk', 'wren', 'sage', 'fox', 'nova', 'fern', 'lark', 'blaze', 'coral', 'river'];
 
-        // Only update flavor if no congrats is showing
-        let completed = [];
-        try { completed = JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch {}
-        if (completed.length === 0) {
-          const greetings = [
-            'ready for an adventure, ' + c.name + '?',
-            'looking good, ' + c.name + '!',
-            'let\'s make some memories, ' + c.name,
-            c.name + '! our story awaits...',
-          ];
-          document.getElementById('home-flavor').textContent =
-            greetings[Math.floor(Math.random() * greetings.length)];
-        }
-      } catch {}
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function generateRandomChar() {
+      return {
+        name: pick(RANDOM_NAMES),
+        hair: pick(HAIR_COLORS),
+        skin: pick(SKIN_COLORS),
+        shirt: pick(SHIRT_COLORS),
+        pants: pick(PANTS_COLORS),
+      };
     }
 
-    showHomeChar();
+    function ensureMyChar() {
+      let c = null;
+      try { c = JSON.parse(sessionStorage.getItem('my-character')); } catch {}
+      if (!c || !c.name) {
+        c = generateRandomChar();
+        sessionStorage.setItem('my-character', JSON.stringify(c));
+      }
+      return c;
+    }
+
+    function renderCharSprite(spriteEl, c) {
+      spriteEl.innerHTML = `
+        <div class="hc-hair" style="background:${c.hair}"></div>
+        <div class="hc-face" style="background:${c.skin}"></div>
+        <div class="hc-eyes"><div class="hc-eye"></div><div class="hc-eye"></div></div>
+        <div class="hc-mouth"></div>
+        <div class="hc-body" style="background:${c.shirt}"></div>
+        <div class="hc-legs">
+          <div class="hc-leg" style="background:${c.pants || '#3a3a5c'}"></div>
+          <div class="hc-leg" style="background:${c.pants || '#3a3a5c'}"></div>
+        </div>`;
+    }
+
+    function showHomeChars() {
+      const c = ensureMyChar();
+      renderCharSprite(document.getElementById('my-char-sprite'), c);
+      document.getElementById('my-char-name').textContent = c.name;
+
+      // Show partner if we have their data
+      let pc = null;
+      try { pc = JSON.parse(sessionStorage.getItem('partner-character')); } catch {}
+      if (pc && pc.name) showPartnerChar(pc);
+
+      // Update flavor text
+      let completed = [];
+      try { completed = JSON.parse(sessionStorage.getItem('datenight-completed') || '[]'); } catch {}
+      if (completed.length === 0) {
+        const greetings = [
+          'ready for an adventure, ' + c.name + '?',
+          'looking good, ' + c.name + '!',
+          'let\'s make some memories, ' + c.name,
+          c.name + '! our story awaits...',
+        ];
+        document.getElementById('home-flavor').textContent =
+          greetings[Math.floor(Math.random() * greetings.length)];
+      }
+    }
+
+    function showPartnerChar(pc) {
+      renderCharSprite(document.getElementById('partner-char-sprite'), pc);
+      document.getElementById('partner-char-name').textContent = pc.name;
+      document.getElementById('partner-char-slot').style.opacity = '1';
+    }
+
+    function sendMyCharacter() {
+      const c = ensureMyChar();
+      if (conn && conn.open) {
+        conn.send({ type: 'character', char: c });
+      }
+    }
+
+    showHomeChars();
     showCongrats();
 
     // ── Click → particle burst ──
@@ -490,12 +549,12 @@
     document.getElementById('start-adventure-btn').addEventListener('click', (e) => {
       e.preventDefault();
 
-      const charPreview = document.getElementById('home-char-preview');
-      const charSprite = document.getElementById('home-char-sprite');
-      const charRect = charSprite ? charSprite.getBoundingClientRect() : null;
+      const mySlot = document.getElementById('my-char-slot');
+      const mySprite = document.getElementById('my-char-sprite');
+      const charRect = mySprite ? mySprite.getBoundingClientRect() : null;
 
       // Zoom away all content except character
-      const allContent = stepHome.querySelectorAll('.room-title, .room-hint, .room-congrats, .room-buttons, .home-sparkles, .room-info, .waiting-banner, .home-char-name');
+      const allContent = stepHome.querySelectorAll('.room-title, .room-hint, .room-congrats, .room-buttons, .home-sparkles, .room-info, .waiting-banner, .home-char-name, #partner-char-slot');
       allContent.forEach(el => {
         el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 1, 1), opacity 0.4s ease';
         el.style.transform = 'scale(2.5)';
@@ -503,20 +562,20 @@
       });
 
       // Move character to center
-      if (charSprite && charRect) {
-        charSprite.style.animation = 'none';
-        charPreview.style.transition = 'none';
-        charPreview.style.position = 'fixed';
-        charPreview.style.top = charRect.top + 'px';
-        charPreview.style.left = charRect.left + 'px';
-        charPreview.style.width = charRect.width + 'px';
-        charPreview.style.zIndex = '10000';
-        charPreview.style.margin = '0';
+      if (mySprite && charRect) {
+        mySprite.style.animation = 'none';
+        mySlot.style.transition = 'none';
+        mySlot.style.position = 'fixed';
+        mySlot.style.top = charRect.top + 'px';
+        mySlot.style.left = charRect.left + 'px';
+        mySlot.style.width = charRect.width + 'px';
+        mySlot.style.zIndex = '10000';
+        mySlot.style.margin = '0';
 
         requestAnimationFrame(() => {
-          charPreview.style.transition = 'top 0.5s ease, left 0.5s ease';
-          charPreview.style.top = (window.innerHeight / 2 - charRect.height / 2) + 'px';
-          charPreview.style.left = (window.innerWidth / 2 - charRect.width / 2) + 'px';
+          mySlot.style.transition = 'top 0.5s ease, left 0.5s ease';
+          mySlot.style.top = (window.innerHeight / 2 - charRect.height / 2) + 'px';
+          mySlot.style.left = (window.innerWidth / 2 - charRect.width / 2) + 'px';
         });
       }
 
