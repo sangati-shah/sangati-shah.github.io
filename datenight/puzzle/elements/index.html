@@ -592,6 +592,65 @@
     .restart-btn:hover { color: rgba(240,230,211,0.4); }
     @media (pointer: coarse) { .restart-btn { bottom: 4.5rem; left: auto; right: 4.5rem; transform: none; } }
 
+    /* ---- Level Menu ---- */
+    .menu-btn {
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      font-family: 'Caveat', cursive; font-size: 0.85rem;
+      color: rgba(240,230,211,0.25); background: none;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0.2rem 0.8rem; border-radius: 10px;
+      cursor: pointer; z-index: 500; transition: all 0.3s;
+    }
+    .menu-btn:hover { color: rgba(240,230,211,0.6); border-color: rgba(255,255,255,0.15); }
+
+    .level-menu-overlay {
+      position: fixed; inset: 0; background: rgba(14,18,10,0.96);
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 900; gap: 0.8rem;
+    }
+    .level-menu-overlay.visible { display: flex; }
+    .level-menu-title {
+      font-family: 'Abril Fatface', serif; font-size: 1.4rem;
+      color: #d49b3c; margin-bottom: 0.5rem;
+    }
+    .level-menu-list {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      width: min(320px, 85vw);
+    }
+    .level-menu-item {
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      color: rgba(240,230,211,0.5); background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0.6rem 1.2rem; border-radius: 12px;
+      cursor: pointer; transition: all 0.3s; text-align: left;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .level-menu-item:hover {
+      color: rgba(240,230,211,0.8); background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .level-menu-item.current {
+      color: #d49b3c; border-color: rgba(212,155,60,0.3);
+      background: rgba(212,155,60,0.06);
+    }
+    .level-menu-num {
+      font-size: 0.85rem; color: rgba(240,230,211,0.25);
+      min-width: 1.4rem; text-align: center;
+    }
+    .level-menu-item.current .level-menu-num { color: rgba(212,155,60,0.6); }
+    .level-menu-hint {
+      font-size: 0.75rem; color: rgba(240,230,211,0.2);
+      margin-top: 0.1rem;
+    }
+    .level-menu-close {
+      margin-top: 0.8rem; font-family: 'Caveat', cursive; font-size: 1rem;
+      color: rgba(240,230,211,0.3); background: none;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0.4rem 1.5rem; border-radius: 14px;
+      cursor: pointer; transition: all 0.3s;
+    }
+    .level-menu-close:hover { color: rgba(240,230,211,0.6); border-color: rgba(255,255,255,0.15); }
+
     /* Ambient particles — disabled */
   </style>
 </head>
@@ -600,6 +659,14 @@
   <a href="../../world/" class="skip-btn">skip &rarr;</a>
   <div class="status-bar"><span class="pts-num" id="pts-num">0</span> pts</div>
   <div class="level-info" id="level-info"></div>
+  <button class="menu-btn" id="menu-btn">levels</button>
+
+  <div class="level-menu-overlay" id="level-menu-overlay">
+    <div class="level-menu-title">flameboi & aguagurl</div>
+    <div class="level-menu-list" id="level-menu-list"></div>
+    <button class="level-menu-close" id="level-menu-close">resume</button>
+  </div>
+
   <div class="switch-hint" id="switch-hint"></div>
   <div class="gem-counter" id="gem-counter">
     <div class="gem-counter-fire" id="gem-counter-fire"></div>
@@ -1371,6 +1438,41 @@ function tryConnect(attempt){
   c.on('error',()=>{if(settled)return;settled=true;setTimeout(()=>tryConnect(attempt+1),1000);});
   setTimeout(()=>{if(!settled){settled=true;try{c.close();}catch(e){}tryConnect(attempt+1);}},3000);
 }
+
+// ---- Level menu ----
+function buildLevelMenu() {
+  const list = document.getElementById('level-menu-list');
+  list.innerHTML = '';
+  LEVEL_DATA.forEach((data, i) => {
+    const item = document.createElement('div');
+    item.className = 'level-menu-item' + (i === currentLevelIndex ? ' current' : '');
+    item.innerHTML = '<span class="level-menu-num">' + (i + 1) + '</span><div><div>' + data.name + '</div><div class="level-menu-hint">' + data.hint + '</div></div>';
+    item.addEventListener('click', () => {
+      currentLevelIndex = i;
+      won = false;
+      deaths = 0;
+      initLevel();
+      closeLevelMenu();
+      showLevelTransition();
+    });
+    list.appendChild(item);
+  });
+}
+function openLevelMenu() {
+  buildLevelMenu();
+  document.getElementById('level-menu-overlay').classList.add('visible');
+}
+function closeLevelMenu() {
+  document.getElementById('level-menu-overlay').classList.remove('visible');
+}
+document.getElementById('menu-btn').addEventListener('click', () => openLevelMenu());
+document.getElementById('level-menu-close').addEventListener('click', () => closeLevelMenu());
+document.getElementById('level-menu-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeLevelMenu();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLevelMenu();
+});
 
 // ---- Resize handler ----
 window.addEventListener('resize',()=>{
