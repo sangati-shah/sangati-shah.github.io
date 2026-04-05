@@ -1,10 +1,5 @@
 // ── Questions ──
 const questions = [
-  "What's something you've never told anyone but want to tell me?",
-  "What does love feel like to you — not the definition, but the actual feeling?",
-  "What's a fear you don't talk about often?",
-  "When do you feel most loved by me?",
-  "What's a small moment between us that meant more than I probably realize?",
   "What's the most \"that's my girl\" or \"that's my man\" thing I've ever done?",
   "What would you say is the most underrated part of our love story?",
   "What's the part of me you're still trying to figure out?",
@@ -13,6 +8,9 @@ const questions = [
   "What's your favorite day with me?",
   "When was the first time you felt really protective of me?",
   "Smash or pass a frying pan?",
+  "If you had to find me in a crowd without using my name, what would you yell?",
+  "What's one thing about me you'd never tell me but wish I knew?",
+  "What's the most chaotic thing you've seen me do without thinking twice?",
 ];
 
 // Shuffle helper (Fisher-Yates)
