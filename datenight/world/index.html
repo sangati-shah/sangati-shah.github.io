@@ -115,7 +115,7 @@
     /* ── Heart Counter ── */
     .heart-counter {
       position: fixed;
-      top: 1.2rem; right: 1.2rem;
+      top: 3.8rem; right: 1.2rem;
       font-family: 'Caveat', cursive;
       font-size: 1.1rem;
       color: var(--dn-sub, #999);
@@ -144,7 +144,7 @@
     /* ── Points Counter ── */
     .points-counter {
       position: fixed;
-      top: 3rem; right: 1.2rem;
+      top: 5.4rem; right: 1.2rem;
       font-family: 'Caveat', cursive;
       font-size: 1.1rem;
       color: var(--dn-sub, #999);
@@ -1383,7 +1383,7 @@
       container.appendChild(tunnel);
     }
 
-    const HEART_POINTS = 10;
+    const HEART_POINTS = 25;
     let totalPoints = parseInt(localStorage.getItem('puzzle-points') || '0');
 
     function updateHeartCounter() {
