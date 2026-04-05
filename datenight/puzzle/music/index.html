@@ -45,6 +45,41 @@
     .pts-num { color: var(--dn-accent); font-weight: 600; transition: transform 0.3s; }
     .pts-num.bump { transform: scale(1.4); display: inline-block; }
 
+    /* -- Top nav bar (from map) -- */
+    .top-nav {
+      display: none;
+      position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%);
+      z-index: 200;
+      align-items: center; gap: 0.4rem;
+      background: color-mix(in srgb, var(--dn-bg, #f7f2e7) 85%, transparent);
+      border: 1.5px solid color-mix(in srgb, var(--dn-accent, #e85d75) 18%, transparent);
+      border-radius: 20px;
+      padding: 3px 4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .top-nav-btn {
+      font-family: var(--dn-heading-font, 'Caveat', cursive);
+      font-size: 0.85rem;
+      color: var(--dn-sub, #999);
+      background: none; border: none;
+      padding: 4px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .top-nav-btn:hover {
+      color: var(--dn-text, #555);
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 12%, transparent);
+    }
+    .top-nav-dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: color-mix(in srgb, var(--dn-accent, #e85d75) 25%, transparent);
+      flex-shrink: 0;
+    }
+
     /* -- Return pill (from game center) -- */
     .return-pill {
       display: none;
@@ -490,6 +525,11 @@
 </head>
 <body>
 
+  <nav class="top-nav" id="top-nav">
+    <a class="top-nav-btn" id="top-nav-back" href="../../world/">back to map</a>
+    <span class="top-nav-dot"></span>
+    <button class="top-nav-btn" id="top-nav-solo">solo mode</button>
+  </nav>
   <a class="return-pill" id="return-pill" href="../../games/">&larr; return to games</a>
   <nav class="chapter-nav" id="chapter-nav">
     <a class="chapter-btn" href="../../world/">home</a>
@@ -1428,8 +1468,21 @@
       const pill = document.getElementById('return-pill');
       pill.style.display = '';
       if (fromParam === 'map') {
-        pill.href = '../../world/';
-        pill.textContent = '\u2190 back to map';
+        pill.style.display = 'none';
+        const topNav = document.getElementById('top-nav');
+        topNav.style.display = 'flex';
+        // If already in solo mode (no room code), hide the solo button
+        if (!roomCode) {
+          document.getElementById('top-nav-solo').style.display = 'none';
+          topNav.querySelector('.top-nav-dot').style.display = 'none';
+        }
+        // Wire solo mode button
+        document.getElementById('top-nav-solo').addEventListener('click', () => {
+          enterSoloMode();
+          document.getElementById('top-nav-solo').style.display = 'none';
+          const dot = topNav.querySelector('.top-nav-dot');
+          if (dot) dot.style.display = 'none';
+        });
         // On victory, auto-redirect both players back to map under the rhythm orb
         const victoryBtn = document.getElementById('victory-btn');
         victoryBtn.href = '../../world/?after=music';
