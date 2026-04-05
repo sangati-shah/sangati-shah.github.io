@@ -1405,6 +1405,7 @@
       localStorage.setItem('puzzle-points', totalPoints);
       updatePointsDisplay();
       spawnPointFloat(amount);
+      if (window.hudUpdatePoints) window.hudUpdatePoints('left');
     }
 
     function spawnPointFloat(amount) {
