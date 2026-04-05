@@ -1344,10 +1344,10 @@ function updatePlayer(p,role) {
         spawnLandDust(p.x, p.y);
         // Award 5 pts for landing on other player (cooldown prevents spam)
         if (!p._stackCooldown) {
-          addPoints(5);
+          addPoints(20);
           const px = p.x + PLAYER_W / 2 - levelLeft;
           const py = p.y - levelTop - 5;
-          spawnPointsPopup(px, py, '+5', 'pts-stack');
+          spawnPointsPopup(px, py, '+20', 'pts-stack');
           p._stackCooldown = true;
           setTimeout(() => { p._stackCooldown = false; }, 2000);
         }
