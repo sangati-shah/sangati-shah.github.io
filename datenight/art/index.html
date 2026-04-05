@@ -604,7 +604,7 @@
       <div class="art-buttons">
         <button class="art-btn" id="reveal-btn">submit guess</button>
         <button class="art-btn" id="next-btn" style="display:none;">next artwork</button>
-        <a class="art-btn" id="done-btn" href="../world/" style="display:none;">back to map</a>
+        <a class="art-btn" id="done-btn" href="../world/?after=art" style="display:none;">back to map</a>
       </div>
 
       <div id="reveal-card" class="reveal-card" style="display:none;"></div>
@@ -999,7 +999,7 @@
       const pill = document.getElementById('return-pill');
       pill.style.display = '';
       if (fromParam === 'map') {
-        pill.href = '../world/';
+        pill.href = '../world/?after=art';
         pill.textContent = '\u2190 back to map';
       }
     }
