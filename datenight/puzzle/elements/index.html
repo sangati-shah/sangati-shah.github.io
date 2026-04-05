@@ -390,6 +390,27 @@
     }
     .gem.collected { transition: transform 0.3s, opacity 0.3s; transform: scale(2); opacity: 0; }
 
+    /* Floating points animation */
+    .points-popup {
+      position: absolute;
+      z-index: 200;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      font-weight: 700;
+      pointer-events: none;
+      animation: points-rise 0.9s ease-out forwards;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+    .points-popup.pts-fire { color: #ffcc44; }
+    .points-popup.pts-water { color: #66bbff; }
+    .points-popup.pts-both { color: #ffee88; }
+    .points-popup.pts-stack { color: #ff88cc; font-size: 0.9rem; }
+    @keyframes points-rise {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      60% { opacity: 1; transform: translateY(-28px) scale(1.15); }
+      100% { opacity: 0; transform: translateY(-44px) scale(0.9); }
+    }
+
     /* Gem counter */
     .gem-counter {
       display: flex; gap: 0.8rem;
@@ -1107,7 +1128,21 @@ function collectGem(i) {
   if (g.type==='fire') gemsCollectedFire++; else gemsCollectedWater++;
   const el = document.getElementById('gem-'+i);
   if (el) { el.classList.add('collected'); setTimeout(()=>el.remove(),300); }
-  updateGemCounter(); addPoints(10);
+  updateGemCounter(); addPoints(25);
+  const px = g.c * tileW + tileW / 2;
+  const py = g.r * tileH;
+  spawnPointsPopup(px, py, '+25', 'pts-' + g.type);
+  sendPeerData({type:'gem-collected',index:i});
+}
+
+function spawnPointsPopup(x, y, text, cls) {
+  const pop = document.createElement('div');
+  pop.className = 'points-popup ' + cls;
+  pop.textContent = text;
+  pop.style.left = x + 'px';
+  pop.style.top = y + 'px';
+  levelEl.appendChild(pop);
+  setTimeout(() => pop.remove(), 950);
 }
 
 function addAmbientParticles() {}
@@ -1305,7 +1340,18 @@ function updatePlayer(p,role) {
     const xOverlap = p.x + PLAYER_W > other.x && p.x < other.x + PLAYER_W;
     if (xOverlap && pFeetY >= otherTopY && pFeetY <= otherTopY + 8) {
       p.y = other.y - PLAYER_H;
-      if (p.vy > 3 && !p.wasOnGround) spawnLandDust(p.x, p.y);
+      if (p.vy > 3 && !p.wasOnGround) {
+        spawnLandDust(p.x, p.y);
+        // Award 5 pts for landing on other player (cooldown prevents spam)
+        if (!p._stackCooldown) {
+          addPoints(5);
+          const px = p.x + PLAYER_W / 2 - levelLeft;
+          const py = p.y - levelTop - 5;
+          spawnPointsPopup(px, py, '+5', 'pts-stack');
+          p._stackCooldown = true;
+          setTimeout(() => { p._stackCooldown = false; }, 2000);
+        }
+      }
       p.vy = 0;
       p.onGround = true;
     }
@@ -1367,13 +1413,14 @@ function checkVictory() {
   if (won) return;
   if (players.fire.onExit && players.water.onExit) {
     won = true;
-    // Scoring: base 50 + gems bonus, no harsh death penalty
-    let pts = 50;
-    pts += (gemsCollectedFire + gemsCollectedWater) * 10;
-    if (deaths === 0) pts += 30; // Flawless bonus
-    else if (deaths <= 3) pts += 15;
+    // Scoring: 100 for winning
+    let pts = 100;
     totalPoints += pts;
     addPoints(pts);
+    // Show +100 popup between both players
+    const midX = (players.fire.x + players.water.x) / 2 + PLAYER_W / 2 - levelLeft;
+    const midY = Math.min(players.fire.y, players.water.y) - levelTop - 10;
+    spawnPointsPopup(midX, midY, '+100', 'pts-both');
 
     if (currentLevelIndex < LEVEL_DATA.length - 1) {
       // More levels to go
@@ -1535,7 +1582,9 @@ function handlePeerData(data){
   } else if(data.type==='gem-collected'){
     const g=gems[data.index];
     if(g&&!g.collected){g.collected=true;if(g.type==='fire')gemsCollectedFire++;else gemsCollectedWater++;
-      const el=document.getElementById('gem-'+data.index);if(el){el.classList.add('collected');setTimeout(()=>el.remove(),300);}updateGemCounter();}
+      const el=document.getElementById('gem-'+data.index);if(el){el.classList.add('collected');setTimeout(()=>el.remove(),300);}
+      updateGemCounter();addPoints(25);
+      spawnPointsPopup(g.c*tileW+tileW/2, g.r*tileH, '+25', 'pts-'+g.type);}
   }
 }
 function setupPeer(){
