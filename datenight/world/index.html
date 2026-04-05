@@ -1900,14 +1900,23 @@
         actionsEl.classList.add('visible');
       }, 7500);
 
-      // Action handlers
+      // Action handlers — navigate both players together
+      function navigateBoth(url) {
+        sendPeer({ type: 'navigate', url });
+        window.location.href = url;
+      }
+      document.getElementById('ending-fire-link').onclick = (e) => {
+        e.preventDefault();
+        navigateBoth('../intrusive/');
+      };
       document.getElementById('ending-replay').onclick = () => {
         localStorage.removeItem('datenight-completed');
         localStorage.removeItem('datenight-hearts');
+        sendPeer({ type: 'navigate', url: window.location.pathname });
         window.location.reload();
       };
       document.getElementById('ending-home').onclick = () => {
-        window.location.href = '../';
+        navigateBoth('../');
       };
     }
 
@@ -2202,6 +2211,9 @@
       }
       else if (data.type === 'ending') {
         triggerEnding();
+      }
+      else if (data.type === 'navigate') {
+        window.location.href = data.url;
       }
     }
 
