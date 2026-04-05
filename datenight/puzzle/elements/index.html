@@ -792,6 +792,10 @@
 <body class="dark-hud">
   <nav class="top-nav" id="top-nav">
     <a class="top-nav-btn" href="../../world/">back to map</a>
+    <span class="top-nav-dot"></span>
+    <button class="top-nav-btn" id="top-nav-levels">levels</button>
+    <span class="top-nav-dot"></span>
+    <button class="top-nav-btn" id="top-nav-restart">restart</button>
   </nav>
   <a class="return-pill" id="return-pill" href="../../games/">&larr; return to games</a>
   <nav class="chapter-nav" id="chapter-nav" style="display:none">
@@ -917,15 +921,15 @@ const LEVEL_DATA = [
     fireSpawn: [2, 15], waterSpawn: [25, 15],
     map: [
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,1],
       [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,1],
       [1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
       [1,0,0,0,0,0,11,0,0,0,1,1,1,1,1,1,1,1,0,0,0,12,0,0,0,0,1],
       [1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1],
@@ -1709,6 +1713,10 @@ if (fromParam === 'games' || fromParam === 'map') {
   if (fromParam === 'map') {
     document.querySelector('.top-controls').style.display = 'none';
     document.getElementById('top-nav').style.display = 'flex';
+    document.getElementById('top-nav-levels').addEventListener('click', openLevelMenu);
+    document.getElementById('top-nav-restart').addEventListener('click', () => {
+      won = false; deaths = 0; initLevel();
+    });
   } else {
     document.querySelector('.top-controls').style.display = 'none';
     const pill = document.getElementById('return-pill');

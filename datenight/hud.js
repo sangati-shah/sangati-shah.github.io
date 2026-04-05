@@ -48,8 +48,10 @@
     const p = parseInt(localStorage.getItem('puzzle-points') || '0');
     const l = document.getElementById('hud-pts-left');
     const r = document.getElementById('hud-pts-right');
-    if (l) l.textContent = p + ' pts';
-    if (r) r.textContent = p + ' pts';
+    // Only update the side that earned the points
+    if (side === 'left') { if (l) l.textContent = p + ' pts'; }
+    else if (side === 'right') { if (r) r.textContent = p + ' pts'; }
+    else { if (l) l.textContent = p + ' pts'; if (r) r.textContent = p + ' pts'; }
 
     // Slam the card whose points changed
     if (side) {
