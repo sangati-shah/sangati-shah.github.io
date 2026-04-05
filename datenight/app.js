@@ -5,6 +5,14 @@ const questions = [
   "What's a fear you don't talk about often?",
   "When do you feel most loved by me?",
   "What's a small moment between us that meant more than I probably realize?",
+  "What's the most \"that's my girl\" or \"that's my man\" thing I've ever done?",
+  "What would you say is the most underrated part of our love story?",
+  "What's the part of me you're still trying to figure out?",
+  "If you had to write a \"user manual\" for loving me, what's rule #1?",
+  "What's the last thing I did that made you really happy?",
+  "What's your favorite day with me?",
+  "When was the first time you felt really protective of me?",
+  "Smash or pass a frying pan?",
 ];
 
 // Shuffle helper (Fisher-Yates)
