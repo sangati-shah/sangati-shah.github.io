@@ -567,7 +567,7 @@
       </div>
       <div class="victory-title">perfect rhythm!</div>
       <div class="victory-pts" id="victory-pts">+60 pts</div>
-      <a href="../../world/?after=music" class="victory-btn">back to map &rarr;</a>
+      <a href="../../world/?after=music" class="victory-btn" id="victory-btn">back to map &rarr;</a>
     </div>
   </div>
 
@@ -1429,6 +1429,16 @@
       if (fromParam === 'map') {
         pill.href = '../../world/';
         pill.textContent = '\u2190 back to map';
+        // On victory, auto-redirect both players back to map under the rhythm orb
+        const victoryBtn = document.getElementById('victory-btn');
+        victoryBtn.href = '../../world/?after=music';
+        const obs = new MutationObserver(() => {
+          if (document.getElementById('victory-overlay').classList.contains('visible')) {
+            obs.disconnect();
+            setTimeout(() => { window.location.href = '../../world/?after=music'; }, 2500);
+          }
+        });
+        obs.observe(document.getElementById('victory-overlay'), { attributes: true, attributeFilter: ['class'] });
       }
     }
   </script>
