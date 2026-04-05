@@ -1601,6 +1601,13 @@ document.getElementById('victory-next-btn').addEventListener('click',()=>nextLev
 let peer=null,conn=null,sendThrottle=0;
 function peerIdForPuzzle(code){return 'shahhub-puzzle-elements-'+code;}
 function sendPeerData(data){if(conn&&conn.open)conn.send(data);}
+const PEER_CONFIG={config:{iceServers:[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun1.l.google.com:19302'},
+  {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+  {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+  {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},
+]}};
 function sendMyState(){
   sendThrottle++;if(sendThrottle%2!==0)return;
   const me=players[myRole];
@@ -1632,7 +1639,7 @@ function handlePeerData(data){
 function setupPeer(){
   if(!roomCode){enterSoloMode();return;}
   if(isHost){
-    peer=new Peer(peerIdForPuzzle(roomCode));
+    peer=new Peer(peerIdForPuzzle(roomCode),PEER_CONFIG);
     peer.on('open',()=>{peer.on('connection',c=>{
       conn=c;partnerConnected=true;soloMode=false;
       document.getElementById('waiting-overlay').classList.add('hidden');
@@ -1641,7 +1648,7 @@ function setupPeer(){
       sendPeerData({type:'character',char:myChar});
     });});peer.on('error',()=>{});
   } else {
-    peer=new Peer();peer.on('open',()=>tryConnect(0));peer.on('error',()=>{});
+    peer=new Peer(PEER_CONFIG);peer.on('open',()=>tryConnect(0));peer.on('error',()=>{});
   }
 }
 function tryConnect(attempt){

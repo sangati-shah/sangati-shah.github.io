@@ -167,6 +167,18 @@
       return 'shahhub-datenight-' + code;
     }
 
+    const PEER_CONFIG = {
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+          { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+        ]
+      }
+    };
+
     function showStep(step) {
       step1.style.display = 'none';
       stepJoin.style.display = 'none';
@@ -262,7 +274,7 @@
       createBtn.disabled = true;
       showStatus('new-status', 'creating room...');
 
-      peer = new Peer(id);
+      peer = new Peer(id, PEER_CONFIG);
 
       peer.on('open', async () => {
         isHost = true;
@@ -317,7 +329,7 @@
         return;
       }
 
-      peer = new Peer();
+      peer = new Peer(PEER_CONFIG);
 
       let joinTimeout;
 
@@ -345,7 +357,7 @@
             peer.destroy();
             peer = null;
           }
-        }, 8000);
+        }, 15000);
       });
 
       peer.on('error', () => {
@@ -442,7 +454,7 @@
     function reconnectPeer() {
       if (!roomCode) return;
       if (isHost) {
-        peer = new Peer(peerIdFromCode(roomCode));
+        peer = new Peer(peerIdFromCode(roomCode), PEER_CONFIG);
         peer.on('open', () => {
           peer.on('connection', (c) => {
             conn = c;
@@ -457,7 +469,7 @@
         });
         peer.on('error', () => {});
       } else {
-        peer = new Peer();
+        peer = new Peer(PEER_CONFIG);
         peer.on('open', () => {
           function tryReconnect(attempt) {
             if (attempt > 20) return;

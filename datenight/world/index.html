@@ -2183,6 +2183,13 @@
     let peer = null, conn = null;
 
     function peerIdForWorld(code) { return 'shahhub-world-' + code; }
+    const PEER_CONFIG = { config: { iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+      { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+      { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+    ] } };
     function sendPeer(data) { if (conn && conn.open) conn.send(data); }
 
     function handlePeerData(data) {
@@ -2220,7 +2227,7 @@
     function setupPeer() {
       if (!roomCode) return;
       if (isHost) {
-        peer = new Peer(peerIdForWorld(roomCode));
+        peer = new Peer(peerIdForWorld(roomCode), PEER_CONFIG);
         peer.on('open', () => {
           peer.on('connection', c => {
             conn = c;
@@ -2230,7 +2237,7 @@
         });
         peer.on('error', () => {});
       } else {
-        peer = new Peer();
+        peer = new Peer(PEER_CONFIG);
         peer.on('open', () => tryConnect(0));
         peer.on('error', () => {});
       }
