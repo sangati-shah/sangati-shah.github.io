@@ -471,17 +471,14 @@
 
     .ending-chars {
       position: absolute;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: 8px;
+      inset: 0;
       z-index: 10;
+      pointer-events: none;
     }
-    .ending-chars > div { animation: ending-jump 0.6s ease-in-out infinite; }
-    .ending-chars > div:nth-child(2) { animation-delay: 0.3s; }
-    @keyframes ending-jump {
-      0%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-18px); }
+    .ending-bouncer {
+      position: absolute;
+      display: flex; gap: 8px;
+      transition: none;
     }
 
     .ending-message {
@@ -1754,35 +1751,81 @@
         sky.appendChild(star);
       }
 
-      // Build characters in ending scene
-      function makeEndingChar(c) {
-        return `<div style="position:relative;width:32px;height:52px;">
-          <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:14px;border-radius:50% 50% 30% 30%;background:${c.hair};z-index:3;"></div>
-          <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:18px;height:20px;border-radius:50%;background:${c.skin};z-index:2;"></div>
-          <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:10px;display:flex;justify-content:space-between;z-index:4;"><div style="width:3px;height:3px;background:#1a1a1a;border-radius:50%;"></div><div style="width:3px;height:3px;background:#1a1a1a;border-radius:50%;"></div></div>
-          <div style="position:absolute;top:24px;left:50%;transform:translateX(-50%);width:20px;height:16px;border-radius:5px 5px 3px 3px;background:${c.shirt};z-index:1;"></div>
-          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:3px;"><div style="width:7px;height:14px;border-radius:3px 3px 4px 4px;background:${c.pants || '#3a3a5c'};"></div><div style="width:7px;height:14px;border-radius:3px 3px 4px 4px;background:${c.pants || '#3a3a5c'};"></div></div>
+      // Build bouncing characters (DVD screensaver style)
+      function makeEndingChar(c, scale) {
+        const s = scale || 1;
+        const w = Math.round(32 * s), h = Math.round(52 * s);
+        return `<div style="position:relative;width:${w}px;height:${h}px;">
+          <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:${Math.round(22*s)}px;height:${Math.round(14*s)}px;border-radius:50% 50% 30% 30%;background:${c.hair};z-index:3;"></div>
+          <div style="position:absolute;top:${Math.round(6*s)}px;left:50%;transform:translateX(-50%);width:${Math.round(18*s)}px;height:${Math.round(20*s)}px;border-radius:50%;background:${c.skin};z-index:2;"></div>
+          <div style="position:absolute;top:${Math.round(14*s)}px;left:50%;transform:translateX(-50%);width:${Math.round(10*s)}px;display:flex;justify-content:space-between;z-index:4;"><div style="width:${Math.round(3*s)}px;height:${Math.round(3*s)}px;background:#1a1a1a;border-radius:50%;"></div><div style="width:${Math.round(3*s)}px;height:${Math.round(3*s)}px;background:#1a1a1a;border-radius:50%;"></div></div>
+          <div style="position:absolute;top:${Math.round(24*s)}px;left:50%;transform:translateX(-50%);width:${Math.round(20*s)}px;height:${Math.round(16*s)}px;border-radius:5px 5px 3px 3px;background:${c.shirt};z-index:1;"></div>
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:${Math.round(3*s)}px;"><div style="width:${Math.round(7*s)}px;height:${Math.round(14*s)}px;border-radius:3px 3px 4px 4px;background:${c.pants || '#3a3a5c'};"></div><div style="width:${Math.round(7*s)}px;height:${Math.round(14*s)}px;border-radius:3px 3px 4px 4px;background:${c.pants || '#3a3a5c'};"></div></div>
         </div>`;
       }
-      charsContainer.innerHTML = makeEndingChar(myChar) + makeEndingChar(partnerChar);
+
+      // Create bouncing character pair
+      const bouncer = document.createElement('div');
+      bouncer.className = 'ending-bouncer';
+      const charScale = 1.8;
+      bouncer.innerHTML = makeEndingChar(myChar, charScale) + makeEndingChar(partnerChar, charScale);
+      charsContainer.appendChild(bouncer);
+
+      // Bouncing physics
+      const bw = Math.round(32 * charScale) * 2 + 8;
+      const bh = Math.round(52 * charScale);
+      let bx = window.innerWidth / 2 - bw / 2;
+      let by = window.innerHeight / 2 - bh / 2;
+      let bvx = 2.5;
+      let bvy = 2;
+      // Randomize initial direction
+      if (Math.random() > 0.5) bvx = -bvx;
+      if (Math.random() > 0.5) bvy = -bvy;
+
+      let bounceAnimId;
+      function animateBounce() {
+        bx += bvx;
+        by += bvy;
+        if (bx <= 0) { bx = 0; bvx = Math.abs(bvx); spawnBounceTrail(bx + bw/2, by + bh/2); }
+        if (bx + bw >= window.innerWidth) { bx = window.innerWidth - bw; bvx = -Math.abs(bvx); spawnBounceTrail(bx + bw/2, by + bh/2); }
+        if (by <= 0) { by = 0; bvy = Math.abs(bvy); spawnBounceTrail(bx + bw/2, by + bh/2); }
+        if (by + bh >= window.innerHeight) { by = window.innerHeight - bh; bvy = -Math.abs(bvy); spawnBounceTrail(bx + bw/2, by + bh/2); }
+        bouncer.style.left = bx + 'px';
+        bouncer.style.top = by + 'px';
+        bounceAnimId = requestAnimationFrame(animateBounce);
+      }
+
+      // Spawn sparkle trail on wall bounce
+      function spawnBounceTrail(cx, cy) {
+        for (let i = 0; i < 6; i++) {
+          const spark = document.createElement('div');
+          spark.className = 'firework';
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 20 + Math.random() * 30;
+          spark.style.cssText = `left:${cx}px;top:${cy}px;background:${color};--fw-dx:${Math.cos(angle)*dist}px;--fw-dy:${Math.sin(angle)*dist}px;`;
+          sky.appendChild(spark);
+          setTimeout(() => spark.remove(), 1200);
+        }
+      }
 
       // Fade in overlay
       overlay.classList.add('active');
 
+      // Start bouncing characters
+      setTimeout(() => animateBounce(), 500);
+
       // Moon fade in
       setTimeout(() => moon.classList.add('visible'), 800);
 
-      // Shooting stars periodically
-      let shootCount = 0;
-      const shootInterval = setInterval(() => {
+      // Shooting stars periodically (continuous)
+      setInterval(() => {
         const star = document.createElement('div');
         star.className = 'ending-shooting-star';
-        star.style.cssText = `left:${30 + Math.random() * 50}%;top:${5 + Math.random() * 25}%;animation-duration:${1 + Math.random() * 0.8}s;`;
+        star.style.cssText = `left:${20 + Math.random() * 60}%;top:${5 + Math.random() * 30}%;animation-duration:${1 + Math.random() * 0.8}s;`;
         sky.appendChild(star);
         setTimeout(() => star.remove(), 2500);
-        shootCount++;
-        if (shootCount > 8) clearInterval(shootInterval);
-      }, 2500);
+      }, 1800);
 
       // Fireworks sequence
       const colors = [myChar.shirt, partnerChar.shirt, '#d49b3c', '#4fc3f7', '#b388ff', '#e85d75'];
@@ -1800,29 +1843,23 @@
         }
       }
 
-      // Launch fireworks over time
-      let fwCount = 0;
-      const fwInterval = setInterval(() => {
+      // Launch fireworks continuously
+      setInterval(() => {
         const x = 15 + Math.random() * 70;
         const y = 10 + Math.random() * 35;
         spawnFirework(window.innerWidth * x / 100, window.innerHeight * y / 100);
-        fwCount++;
-        if (fwCount > 25) clearInterval(fwInterval);
-      }, 500);
+      }, 600);
 
-      // Float hearts up from characters
-      let heartCount = 0;
-      const heartInterval = setInterval(() => {
+      // Float hearts up from random positions
+      setInterval(() => {
         const heart = document.createElement('div');
         heart.className = 'ending-heart-float';
         const hColor = colors[Math.floor(Math.random() * colors.length)];
-        heart.style.cssText = `left:${window.innerWidth / 2 + (Math.random() - 0.5) * 120}px;bottom:160px;animation-delay:${Math.random() * 0.5}s;`;
+        heart.style.cssText = `left:${Math.random() * 90 + 5}%;bottom:${Math.random() * 40 + 10}%;animation-delay:${Math.random() * 0.5}s;`;
         heart.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="${hColor}"/></svg>`;
         sky.appendChild(heart);
         setTimeout(() => heart.remove(), 4500);
-        heartCount++;
-        if (heartCount > 35) clearInterval(heartInterval);
-      }, 350);
+      }, 500);
 
       // Message — line by line with staggered fade-in
       setTimeout(() => {
