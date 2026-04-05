@@ -206,6 +206,16 @@
     }
 
     function enterRoom(code) {
+      // If switching to a different room, reset all session state
+      const prevRoom = localStorage.getItem('datenight-room');
+      if (prevRoom && prevRoom !== code) {
+        localStorage.removeItem('datenight-completed');
+        localStorage.removeItem('datenight-hearts');
+        localStorage.removeItem('partner-character');
+        localStorage.removeItem('puzzle-points');
+        localStorage.removeItem('my-character');
+        localStorage.removeItem('datenight-map-x');
+      }
       roomCode = code;
       localStorage.setItem('datenight-room', code);
       localStorage.setItem('datenight-host', isHost ? '1' : '0');
