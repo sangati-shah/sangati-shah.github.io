@@ -1764,35 +1764,38 @@
         </div>`;
       }
 
-      // Create bouncing character pair
-      const bouncer = document.createElement('div');
-      bouncer.className = 'ending-bouncer';
+      // Create two separate bouncing characters
       const charScale = 1.8;
-      bouncer.innerHTML = makeEndingChar(myChar, charScale) + makeEndingChar(partnerChar, charScale);
-      charsContainer.appendChild(bouncer);
+      const cw = Math.round(32 * charScale);
+      const ch = Math.round(52 * charScale);
 
-      // Bouncing physics
-      const bw = Math.round(32 * charScale) * 2 + 8;
-      const bh = Math.round(52 * charScale);
-      let bx = window.innerWidth / 2 - bw / 2;
-      let by = window.innerHeight / 2 - bh / 2;
-      let bvx = 2.5;
-      let bvy = 2;
-      // Randomize initial direction
-      if (Math.random() > 0.5) bvx = -bvx;
-      if (Math.random() > 0.5) bvy = -bvy;
+      function makeBouncer(charData, startX, startY, vx, vy, rotSpeed) {
+        const el = document.createElement('div');
+        el.className = 'ending-bouncer';
+        el.innerHTML = makeEndingChar(charData, charScale);
+        charsContainer.appendChild(el);
+        return { el, x: startX, y: startY, vx, vy, rot: 0, rotSpeed };
+      }
 
-      let bounceAnimId;
+      const bouncers = [
+        makeBouncer(myChar, window.innerWidth * 0.35, window.innerHeight * 0.4, 2.8, 2.2, 1.5),
+        makeBouncer(partnerChar, window.innerWidth * 0.65, window.innerHeight * 0.5, -2.4, -2.6, -1.8),
+      ];
+
       function animateBounce() {
-        bx += bvx;
-        by += bvy;
-        if (bx <= 0) { bx = 0; bvx = Math.abs(bvx); spawnBounceTrail(bx + bw/2, by + bh/2); }
-        if (bx + bw >= window.innerWidth) { bx = window.innerWidth - bw; bvx = -Math.abs(bvx); spawnBounceTrail(bx + bw/2, by + bh/2); }
-        if (by <= 0) { by = 0; bvy = Math.abs(bvy); spawnBounceTrail(bx + bw/2, by + bh/2); }
-        if (by + bh >= window.innerHeight) { by = window.innerHeight - bh; bvy = -Math.abs(bvy); spawnBounceTrail(bx + bw/2, by + bh/2); }
-        bouncer.style.left = bx + 'px';
-        bouncer.style.top = by + 'px';
-        bounceAnimId = requestAnimationFrame(animateBounce);
+        for (const b of bouncers) {
+          b.x += b.vx;
+          b.y += b.vy;
+          b.rot += b.rotSpeed;
+          if (b.x <= 0) { b.x = 0; b.vx = Math.abs(b.vx); b.rotSpeed = -b.rotSpeed; spawnBounceTrail(b.x + cw/2, b.y + ch/2); }
+          if (b.x + cw >= window.innerWidth) { b.x = window.innerWidth - cw; b.vx = -Math.abs(b.vx); b.rotSpeed = -b.rotSpeed; spawnBounceTrail(b.x + cw/2, b.y + ch/2); }
+          if (b.y <= 0) { b.y = 0; b.vy = Math.abs(b.vy); b.rotSpeed = -b.rotSpeed; spawnBounceTrail(b.x + cw/2, b.y + ch/2); }
+          if (b.y + ch >= window.innerHeight) { b.y = window.innerHeight - ch; b.vy = -Math.abs(b.vy); b.rotSpeed = -b.rotSpeed; spawnBounceTrail(b.x + cw/2, b.y + ch/2); }
+          b.el.style.left = b.x + 'px';
+          b.el.style.top = b.y + 'px';
+          b.el.style.transform = `rotate(${b.rot}deg)`;
+        }
+        requestAnimationFrame(animateBounce);
       }
 
       // Spawn sparkle trail on wall bounce
