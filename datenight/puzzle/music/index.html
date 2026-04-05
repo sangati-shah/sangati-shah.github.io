@@ -507,7 +507,7 @@
 
   <div class="top-bar">
     <a href="../../world/" class="back-link" id="back-link">&larr; back to adventure</a>
-    <div class="pts-display"><span class="pts-num" id="pts-num">0</span> pts</div>
+    <div class="pts-display" id="pts-display"><span class="pts-num" id="pts-num">0</span> pts</div>
   </div>
 
   <div class="music-app">
@@ -1423,6 +1423,7 @@
     if (fromParam === 'games' || fromParam === 'map') {
       document.getElementById('chapter-nav').style.display = 'none';
       document.getElementById('back-link').style.display = 'none';
+      document.getElementById('pts-display').style.display = 'none';
       document.getElementById('skip-btn').style.display = 'none';
       const pill = document.getElementById('return-pill');
       pill.style.display = '';
