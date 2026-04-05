@@ -756,7 +756,7 @@
       localStorage.setItem('puzzle-points', total);
       const el = document.getElementById('pts-num');
       if (el) { el.textContent = total; el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 300); }
-      if (window.hudUpdatePoints) window.hudUpdatePoints();
+      if (window.hudUpdatePoints) window.hudUpdatePoints('left');
       return total;
     }
     document.getElementById('pts-num').textContent = getPoints();

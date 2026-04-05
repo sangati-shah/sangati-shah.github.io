@@ -200,6 +200,11 @@ function dnCycleTheme(e) {
   // Burst particles from click
   dnSpawnParticles(x, y, next);
 
+  // +1 point for switching theme
+  const pts = parseInt(localStorage.getItem('puzzle-points') || '0') + 1;
+  localStorage.setItem('puzzle-points', pts);
+  if (window.hudUpdatePoints) window.hudUpdatePoints('left');
+
   setTimeout(() => {
     flash.remove();
     dnTransitioning = false;

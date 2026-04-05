@@ -43,12 +43,26 @@
   document.addEventListener('DOMContentLoaded', () => document.body.appendChild(hud));
 
   // Expose updater so pages can refresh points
-  window.hudUpdatePoints = function () {
+  // side: 'left' = my player, 'right' = partner, undefined = both (no slam)
+  window.hudUpdatePoints = function (side) {
     const p = parseInt(localStorage.getItem('puzzle-points') || '0');
     const l = document.getElementById('hud-pts-left');
     const r = document.getElementById('hud-pts-right');
     if (l) l.textContent = p + ' pts';
     if (r) r.textContent = p + ' pts';
+
+    // Slam the card whose points changed
+    if (side) {
+      const card = side === 'right'
+        ? document.getElementById('hud-partner-slot')
+        : document.querySelector('.hud-player.hud-left');
+      if (card) {
+        card.classList.remove('slam');
+        void card.offsetWidth;
+        card.classList.add('slam');
+        card.addEventListener('animationend', () => card.classList.remove('slam'), { once: true });
+      }
+    }
   };
 
   // Expose partner updater (called when PeerJS receives partner character)

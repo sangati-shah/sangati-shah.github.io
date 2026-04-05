@@ -1003,7 +1003,7 @@ function addPoints(n) {
   localStorage.setItem('puzzle-points', total);
   const el = document.getElementById('pts-num');
   if (el) el.textContent = total;
-  if (window.hudUpdatePoints) window.hudUpdatePoints();
+  if (window.hudUpdatePoints) window.hudUpdatePoints('left');
   return total;
 }
 function markCompleted(id) {
