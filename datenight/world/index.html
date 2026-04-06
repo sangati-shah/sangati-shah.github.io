@@ -1448,6 +1448,7 @@
     const orbSpawnY = getSpawnY();
     const player = { x: spawnX, y: 0, vx: 0, vy: 0, jumping: false, ducking: false, facing: 'right', speedBoost: 0 };
     const partner = { x: spawnAfter ? spawnX : spawnX + 40, y: 0, jumping: false, ducking: false };
+    const partnerTarget = { x: partner.x, y: partner.y };
     let entering = false;
     let spawnImmunity = spawnAfter ? true : false;
     let partnerVisible = false;
@@ -2110,6 +2111,8 @@
         partnerVisible = false;
       }
 
+      if (partnerVisible) lerpPartner();
+
       // Shared camera: center on midpoint when partner is visible
       let camX = computeCamX();
       if (smoothCamX === null) smoothCamX = camX;
@@ -2149,19 +2152,25 @@
     // ══════════════════════════════════════
     function updatePartner(data) {
       const localY = data.yOff != null ? groundY() + data.yOff : data.y;
-      partner.x = data.x;
-      partner.y = localY;
+      partnerTarget.x = data.x;
+      partnerTarget.y = localY;
       partner.jumping = data.jumping;
       partner.ducking = !!data.ducking;
       partnerEl.style.display = '';
-      partnerEl.style.left = data.x + 'px';
-      partnerEl.style.top = localY + 'px';
       partnerEl.classList.toggle('walking', Math.abs(data.vx) > 0 && !data.jumping);
       partnerEl.classList.toggle('jumping', data.jumping);
       partnerEl.classList.toggle('ducking', !!data.ducking);
       partnerEl.classList.toggle('facing-left', data.facing === 'left');
       partnerVisible = true;
       lastPartnerMsg = Date.now();
+    }
+
+    function lerpPartner() {
+      const t = 0.25;
+      partner.x += (partnerTarget.x - partner.x) * t;
+      partner.y += (partnerTarget.y - partner.y) * t;
+      partnerEl.style.left = partner.x + 'px';
+      partnerEl.style.top = partner.y + 'px';
     }
 
     function computeCamX() {
