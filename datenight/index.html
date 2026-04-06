@@ -517,11 +517,16 @@
       joinCodeInput.value = urlRoom;
       history.replaceState(null, '', './');
       setTimeout(() => joinBtn.click(), 300);
-    } else if ((fromParam === 'character' || fromParam === 'map') && localStorage.getItem('datenight-room')) {
+    } else if (localStorage.getItem('datenight-room')) {
+      // Auto-reconnect whenever a room code exists (handles back button,
+      // browser navigation, from=character, from=map, and any other path)
       roomCode = localStorage.getItem('datenight-room');
       isHost = localStorage.getItem('datenight-host') === '1';
       showStep(stepHome);
       document.getElementById('room-info').textContent = 'room ' + roomCode;
+      if (params.get('scared') === '1') {
+        document.getElementById('home-flavor').textContent = 'phew that was scary, should we try something different?';
+      }
       history.replaceState(null, '', './');
       showHomeChars();
       showCongrats();
