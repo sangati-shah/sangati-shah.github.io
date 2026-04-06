@@ -1226,10 +1226,12 @@ const players = {
 let gateAOpen = false, gateBOpen = false;
 const keys = { left:false, right:false, up:false };
 let deaths = 0, won = false, partnerConnected = false;
+const partnerTargetPos = { x: 0, y: 0 };
 let totalPoints = 0;
 
 function resetPlayers() {
   setSpawns();
+  const ps=isHost?waterSpawn:fireSpawn;partnerTargetPos.x=ps.x;partnerTargetPos.y=ps.y;
   players.fire.x = fireSpawn.x; players.fire.y = fireSpawn.y;
   players.fire.vx = 0; players.fire.vy = 0; players.fire.onGround = false;
   players.fire.alive = true; players.fire.onExit = false;
@@ -1557,6 +1559,7 @@ function gameLoop() {
   }
   updatePlayer(players.fire,'fire');
   updatePlayer(players.water,'water');
+  if(!soloMode){const p=players[partnerRole];p.x+=(partnerTargetPos.x-p.x)*0.25;p.y+=(partnerTargetPos.y-p.y)*0.25;}
   updateGates(); renderPlayers(); checkVictory();
   if (!soloMode) sendMyState();
   requestAnimationFrame(gameLoop);
@@ -1621,8 +1624,10 @@ function handlePeerData(data){
   if(data.type==='state'){
     if(soloMode){soloMode=false;document.getElementById('switch-hint').innerHTML='';}
     const p=players[partnerRole];
-    p.x=data.tx!=null?data.tx*tileW+levelLeft:data.x;
-    p.y=data.ty!=null?data.ty*tileH+levelTop:data.y;
+    const rx=data.tx!=null?data.tx*tileW+levelLeft:data.x;
+    const ry=data.ty!=null?data.ty*tileH+levelTop:data.y;
+    partnerTargetPos.x=rx; partnerTargetPos.y=ry;
+    if(!p.alive&&data.alive){p.x=rx;p.y=ry;}
     p.vx=data.vx;p.vy=data.vy;p.alive=data.alive;
     p.onExit=data.onExit;p.onGround=data.onGround;p._onPlateA=data._onPlateA;p._onPlateB=data._onPlateB;
   } else if(data.type==='victory'){
