@@ -1611,7 +1611,9 @@ const PEER_CONFIG={config:{iceServers:[
 function sendMyState(){
   sendThrottle++;if(sendThrottle%2!==0)return;
   const me=players[myRole];
-  sendPeerData({type:'state',x:Math.round(me.x*10)/10,y:Math.round(me.y*10)/10,
+  sendPeerData({type:'state',
+    tx:Math.round((me.x-levelLeft)/tileW*100)/100,
+    ty:Math.round((me.y-levelTop)/tileH*100)/100,
     vx:Math.round(me.vx*10)/10,vy:Math.round(me.vy*10)/10,
     alive:me.alive,onExit:me.onExit,onGround:me.onGround,_onPlateA:me._onPlateA,_onPlateB:me._onPlateB});
 }
@@ -1619,7 +1621,9 @@ function handlePeerData(data){
   if(data.type==='state'){
     if(soloMode){soloMode=false;document.getElementById('switch-hint').innerHTML='';}
     const p=players[partnerRole];
-    p.x=data.x;p.y=data.y;p.vx=data.vx;p.vy=data.vy;p.alive=data.alive;
+    p.x=data.tx!=null?data.tx*tileW+levelLeft:data.x;
+    p.y=data.ty!=null?data.ty*tileH+levelTop:data.y;
+    p.vx=data.vx;p.vy=data.vy;p.alive=data.alive;
     p.onExit=data.onExit;p.onGround=data.onGround;p._onPlateA=data._onPlateA;p._onPlateB=data._onPlateB;
   } else if(data.type==='victory'){
     if(!won){won=true;addPoints(data.pts);markCompleted('elements');
