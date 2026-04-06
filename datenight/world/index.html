@@ -2138,7 +2138,7 @@
       const now = Date.now();
       if (now - lastPeerSend > 50) {
         lastPeerSend = now;
-        sendPeer({ type: 'pos', x: player.x, y: player.y, vx: player.vx, jumping: player.jumping, ducking: player.ducking, facing: player.facing });
+        sendPeer({ type: 'pos', x: player.x, yOff: player.y - groundY(), vx: player.vx, jumping: player.jumping, ducking: player.ducking, facing: player.facing });
       }
 
       requestAnimationFrame(gameLoop);
@@ -2148,13 +2148,14 @@
     // PARTNER
     // ══════════════════════════════════════
     function updatePartner(data) {
+      const localY = data.yOff != null ? groundY() + data.yOff : data.y;
       partner.x = data.x;
-      partner.y = data.y;
+      partner.y = localY;
       partner.jumping = data.jumping;
       partner.ducking = !!data.ducking;
       partnerEl.style.display = '';
       partnerEl.style.left = data.x + 'px';
-      partnerEl.style.top = data.y + 'px';
+      partnerEl.style.top = localY + 'px';
       partnerEl.classList.toggle('walking', Math.abs(data.vx) > 0 && !data.jumping);
       partnerEl.classList.toggle('jumping', data.jumping);
       partnerEl.classList.toggle('ducking', !!data.ducking);
