@@ -7,15 +7,26 @@
   --ghibli-accent: #c25b56;
   --ghibli-btn-bg: rgba(255,252,245,0.7);
   --ghibli-btn-border: #c2b8a3;
-  --ghibli-warm-white: rgba(255,252,245,0.5);
+  --ghibli-btn-text: #3a5743;
+  --ghibli-link: #c25b56;
+  --ghibli-link-hover: #3a5743;
+  --heading-font: 'Quicksand', sans-serif;
+  --body-font: 'Nunito', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   background: var(--ghibli-bg);
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-family: var(--body-font);
+  color: var(--ghibli-text);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* Soft watercolor wash background */
@@ -35,243 +46,359 @@ body::before {
   z-index: 0;
 }
 
+/* ── Canvas ── */
+#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Layout ── */
 main {
-  max-width: 1400px;
-  margin: auto;
-  padding: 2rem;
-  text-align: center;
   position: relative;
   z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 6rem 2rem 3rem;
 }
 
-h1 {
-  font-family: 'Quicksand', sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
+/* ── Hero ── */
+.hero {
+  margin-bottom: 4rem;
+}
+
+.hero h1 {
+  font-family: var(--heading-font);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
   font-weight: 700;
-  margin-bottom: 1rem;
   color: var(--ghibli-text);
+  margin: 0 0 0.25rem;
+  line-height: 1.1;
+  transition: color 0.4s ease;
 }
 
-.tagline {
-  font-size: 1.1rem;
-  color: var(--ghibli-accent);
-  margin-bottom: 1.5em;
+.title {
+  font-family: var(--heading-font);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 500;
+  color: var(--ghibli-sub);
+  margin: 0 0 1.2rem;
+  transition: color 0.4s ease;
 }
 
 .bio {
-  max-width: 600px;
-  margin: 0 auto 2em;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  line-height: 1.7;
   color: var(--ghibli-text);
+  margin: 0 0 1.5rem;
+  transition: color 0.4s ease;
 }
 
-.nav-bar {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  height: 650px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  gap: 0.25rem;
-}
-
-.nav‑item, .nav-item {
-  position: relative;
-  font-family: 'Quicksand', sans-serif;
-  font-size: clamp(16px, 1.8vw, 20px);
-  font-weight: 700;
-  color: white;
+.bio a {
+  color: var(--ghibli-link);
   text-decoration: none;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.bio a:hover {
+  color: var(--ghibli-link-hover);
+  border-bottom-color: var(--ghibli-link-hover);
+}
+
+/* ── Social Links ── */
+.social-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.social-links a {
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: 0.02em;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--ghibli-btn-bg);
+  border: 1px solid var(--ghibli-btn-border);
+  transition: transform 0.2s ease, background 0.4s ease, border-color 0.4s ease;
 }
 
-.nav‑item:hover, .nav-item:hover {
-  filter: brightness(1.15) saturate(1.1);
-  z-index: 10;
-  transform: scale(1.03);
+.social-links a:hover {
+  transform: translateY(-2px);
 }
 
-/* About - forest green */
-.about {
-  background: linear-gradient(135deg, rgba(58, 87, 67, 0.92), rgba(58, 87, 67, 0.82));
-  grid-column: 6 / 9;
-  grid-row: 2 / 4;
-  padding: clamp(1.5em, 3vh, 3em) clamp(2.2em, 4vw, 4.5em);
-  clip-path: polygon(0% 0, 100% 0, 100% 100%, 38% 100%);
-  box-shadow: 4px 4px 20px rgba(58, 87, 67, 0.15);
+.social-links svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--ghibli-text);
+  transition: fill 0.4s ease;
 }
 
-/* Resume - terracotta rose */
-.resume {
-  background: linear-gradient(135deg, rgba(194, 91, 86, 0.92), rgba(194, 91, 86, 0.82));
-  grid-column: 8 / 9;
-  grid-row: 4 / 5;
-  width: clamp(55px, 5vw, 65px);
-  height: clamp(55px, 5vw, 65px);
-  padding: 0;
-  justify-self: end;
-  align-self: start;
-  border-radius: 14px;
-}
-
-/* Projects - sage green */
+/* ── Projects ── */
 .projects {
-  background: linear-gradient(135deg, rgba(155, 181, 160, 0.92), rgba(155, 181, 160, 0.82));
-  grid-column: 5 / 9;
-  grid-row: 4 / 6;
-  transform: rotate(50deg);
-  padding: clamp(1em, 2.2vh, 2.5em) clamp(3em, 8vw, 6.5em);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-  box-shadow: 4px 4px 20px rgba(155, 181, 160, 0.15);
+  margin-bottom: 4rem;
 }
 
-/* Sketches - warm tan */
-.sketches {
-  background: linear-gradient(135deg, rgba(194, 184, 163, 0.92), rgba(194, 184, 163, 0.82));
-  grid-column: 5 / 8;
-  grid-row: 6 / 8;
-  transform: rotate(50deg);
-  padding: clamp(1em, 2.2vh, 2.5em) clamp(3em, 8vw, 6.5em);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  box-shadow: 4px 4px 20px rgba(194, 184, 163, 0.15);
+.projects h2 {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ghibli-sub);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1rem;
+  transition: color 0.4s ease;
 }
 
-/* LinkedIn - muted forest */
-.linkedin {
-  background: linear-gradient(135deg, rgba(58, 87, 67, 0.8), rgba(58, 87, 67, 0.7));
-  grid-column: 4 / 5;
-  grid-row: 5 / 6;
-  width: clamp(55px, 5vw, 65px);
-  height: clamp(55px, 5vw, 65px);
+.project-list {
+  list-style: none;
+  margin: 0;
   padding: 0;
-  justify-self: start;
-  align-self: start;
-  border-radius: 14px;
 }
 
-/* GitHub - deeper green */
-.github {
-  background: linear-gradient(135deg, rgba(42, 65, 48, 0.92), rgba(42, 65, 48, 0.82));
-  grid-column: 4 / 5;
-  grid-row: 6 / 7;
-  width: clamp(55px, 5vw, 65px);
-  height: clamp(55px, 5vw, 65px);
+.project-item a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(155, 181, 160, 0.2);
+  transition: padding-left 0.2s ease;
+}
+
+.project-item a:hover {
+  padding-left: 0.5rem;
+}
+
+.project-item.featured a {
+  border-left: 3px solid var(--ghibli-accent);
+  padding-left: 1rem;
+  transition: padding-left 0.2s ease, border-color 0.4s ease;
+}
+
+.project-item.featured a:hover {
+  padding-left: 1.5rem;
+}
+
+.project-name {
+  font-family: var(--heading-font);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ghibli-text);
+  white-space: nowrap;
+  transition: color 0.4s ease;
+}
+
+.project-desc {
+  color: var(--ghibli-sub);
+  font-size: 0.9rem;
+  flex: 1;
+  transition: color 0.4s ease;
+}
+
+.project-arrow {
+  color: var(--ghibli-sub);
+  font-size: 1.1rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.4s ease;
+}
+
+.project-item a:hover .project-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Theme Generator ── */
+.theme-generator {
+  margin-bottom: 4rem;
+}
+
+.theme-generator h2 {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ghibli-sub);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.4rem;
+  transition: color 0.4s ease;
+}
+
+.theme-hint {
+  font-size: 0.9rem;
+  color: var(--ghibli-sub);
+  margin: 0 0 1rem;
+  transition: color 0.4s ease;
+}
+
+.theme-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.theme-controls select,
+.theme-controls input,
+.theme-controls button {
+  font-family: var(--body-font);
+  font-size: 0.9rem;
+  border: 1px solid var(--ghibli-btn-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  outline: none;
+  transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+
+.theme-controls select {
+  background: var(--ghibli-btn-bg);
+  color: var(--ghibli-btn-text);
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.theme-controls input {
+  flex: 1;
+  background: rgba(255, 252, 245, 0.5);
+  color: var(--ghibli-text);
+  min-width: 0;
+}
+
+.theme-controls input::placeholder {
+  color: var(--ghibli-sub);
+}
+
+.theme-controls button {
+  background: var(--ghibli-accent);
+  color: #fff;
+  border-color: var(--ghibli-accent);
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.15s ease, background 0.4s ease, border-color 0.4s ease;
+}
+
+.theme-controls button:hover {
+  transform: translateY(-1px);
+}
+
+.theme-controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.theme-status {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--ghibli-sub);
+  transition: color 0.4s ease;
+}
+
+.theme-status.error {
+  color: var(--ghibli-accent);
+}
+
+.reset-btn {
+  margin-top: 0.75rem;
+  font-family: var(--body-font);
+  font-size: 0.85rem;
+  color: var(--ghibli-sub);
+  background: none;
+  border: none;
+  cursor: pointer;
   padding: 0;
-  justify-self: start;
-  align-self: start;
-  border-radius: 14px;
+  text-decoration: underline;
+  transition: color 0.2s ease;
 }
 
-/* Journal - accent terracotta */
-.journal {
-  background: linear-gradient(135deg, rgba(194, 91, 86, 0.92), rgba(194, 91, 86, 0.85));
-  grid-column: 4 / 7;
-  grid-row: 7 / 9;
-  padding: clamp(1.5em, 3vh, 3em) clamp(2.2em, 4vw, 4.5em);
-  clip-path: polygon(0 0, 55% 0, 95% 100%, 0 100%);
-  box-shadow: 4px 4px 20px rgba(194, 91, 86, 0.15);
-}
-
-/* Text rotation for Projects and Sketches */
-.text-straight {
-  display: inline-block;
-  transform: rotate(-50deg);
-}
-
-/* Square SVG icons */
-.square svg {
-  width: clamp(26px, 3.2vw, 36px);
-  height: clamp(26px, 3.2vw, 36px);
-  fill: white;
-}
-
-section {
-  margin-bottom: 3em;
-  text-align: left;
-}
-
-section h2 {
-  font-family: 'Quicksand', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  border-bottom: 2px solid rgba(58, 87, 67, 0.2);
-  padding-bottom: 0.2em;
+.reset-btn:hover {
   color: var(--ghibli-text);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-top: 1em;
+/* Loading spinner for generate button */
+.theme-controls button.loading {
+  position: relative;
+  color: transparent;
 }
 
-.grid img {
-  width: 100%;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(58, 87, 67, 0.08);
+.theme-controls button.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Footer ── */
 footer {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
   padding: 10px;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--body-font);
   color: var(--ghibli-sub);
-  font-size: 1rem;
-  margin-top: 3em;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+  transition: color 0.4s ease;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .nav-bar {
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(12, 1fr);
-    gap: 0.2rem;
-    height: 550px;
+/* ── Entrance animations ── */
+.hero,
+.projects,
+.theme-generator {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.projects {
+  animation-delay: 0.1s;
+}
+
+.theme-generator {
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  main {
+    padding: 4rem 1.25rem 2rem;
   }
 
-  .about {
-    grid-column: 5 / 8;
-    grid-row: 1 / 3;
+  .theme-controls {
+    flex-direction: column;
   }
 
-  .resume {
-    grid-column: 7 / 8;
-    grid-row: 3 / 4;
+  .theme-controls select {
+    min-width: unset;
   }
 
-  .projects {
-    grid-column: 4 / 7;
-    grid-row: 3 / 6;
-  }
-
-  .sketches {
-    grid-column: 2 / 5;
-    grid-row: 6 / 9;
-  }
-
-  .linkedin {
-    grid-column: 2 / 3;
-    grid-row: 9 / 10;
-  }
-
-  .github {
-    grid-column: 3 / 4;
-    grid-row: 9 / 10;
-  }
-
-  .journal {
-    grid-column: 2 / 5;
-    grid-row: 9 / 11;
+  .project-desc {
+    display: none;
   }
 }
