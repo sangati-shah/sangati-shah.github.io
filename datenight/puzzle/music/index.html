@@ -528,7 +528,7 @@
   <nav class="top-nav" id="top-nav">
     <a class="top-nav-btn" id="top-nav-back" href="../../world/?after=music">back to map</a>
     <span class="top-nav-dot"></span>
-    <button class="top-nav-btn" id="top-nav-solo">solo mode</button>
+    <button class="top-nav-btn" id="top-nav-solo" style="display:none">solo mode</button>
   </nav>
   <a class="return-pill" id="return-pill" href="../../games/">&larr; return to games</a>
   <nav class="chapter-nav" id="chapter-nav">
@@ -1082,12 +1082,15 @@
       { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
     ] } };
 
+    let soloTimer = null;
     function setupPeer() {
       if (!roomCode) return;
+      soloTimer = setTimeout(() => { if (!conn) enterSoloMode(); }, 5000);
       if (isHost) {
         peer = new Peer(peerIdForPuzzle(roomCode), PEER_CONFIG);
         peer.on('open', () => {
           peer.on('connection', c => {
+            clearTimeout(soloTimer);
             conn = c;
             c.on('data', handlePeerData);
             c.on('close', () => { conn = null; window.location.href = '../../world/?after=music'; });
@@ -1102,12 +1105,13 @@
     }
 
     function tryConnect(attempt) {
-      if (attempt > 20) return;
+      if (attempt > 20) { if (!conn) enterSoloMode(); return; }
       const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
       let settled = false;
       c.on('open', () => {
         if (settled) return;
         settled = true;
+        clearTimeout(soloTimer);
         conn = c; c.on('data', handlePeerData);
         c.on('close', () => { conn = null; window.location.href = '../../world/?after=music'; });
       });
@@ -1478,18 +1482,10 @@
         pill.style.display = 'none';
         const topNav = document.getElementById('top-nav');
         topNav.style.display = 'flex';
-        // If already in solo mode (no room code), hide the solo button
-        if (!roomCode) {
-          document.getElementById('top-nav-solo').style.display = 'none';
-          topNav.querySelector('.top-nav-dot').style.display = 'none';
-        }
-        // Wire solo mode button
-        document.getElementById('top-nav-solo').addEventListener('click', () => {
-          enterSoloMode();
-          document.getElementById('top-nav-solo').style.display = 'none';
-          const dot = topNav.querySelector('.top-nav-dot');
-          if (dot) dot.style.display = 'none';
-        });
+        // Solo mode is auto-detected; hide button and dot
+        document.getElementById('top-nav-solo').style.display = 'none';
+        const topDot = topNav.querySelector('.top-nav-dot');
+        if (topDot) topDot.style.display = 'none';
         // On victory, auto-redirect both players back to map under the rhythm orb
         const victoryBtn = document.getElementById('victory-btn');
         victoryBtn.href = '../../world/?after=music';
