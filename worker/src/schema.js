@@ -5,6 +5,7 @@ export const SYSTEM_PROMPT = `You are a theme generator for a personal portfolio
 The JSON must have exactly this structure:
 {
   "name": "short theme name",
+  "narration": "A short, evocative 1-sentence poetic description of the vibe (e.g. 'Neon rain on empty streets, bass humming through wet concrete.')",
   "colors": {
     "bg": "#hex page background",
     "text": "#hex primary text",
@@ -72,6 +73,9 @@ export function validateTheme(obj) {
 
     // name
     theme.name = typeof obj.name === 'string' ? obj.name.slice(0, 50) : 'custom';
+
+    // narration
+    theme.narration = typeof obj.narration === 'string' ? obj.narration.slice(0, 200) : '';
 
     // colors
     if (!obj.colors || typeof obj.colors !== 'object') return null;
