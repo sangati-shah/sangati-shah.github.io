@@ -887,7 +887,7 @@
   <div class="waiting-overlay" id="waiting-overlay">
     <div class="waiting-title">flameboi & aguagurl</div>
     <div class="waiting-sub">waiting for your partner<span class="waiting-dots"></span><br/>fire + water = unstoppable</div>
-    <button class="solo-btn" id="solo-btn">play solo</button>
+    <div class="solo-btn" id="solo-btn" style="display:none"></div>
   </div>
 
   <div class="mobile-controls" id="mobile-controls">
@@ -1596,7 +1596,6 @@ function setupMobile(){
   bs.addEventListener('mousedown',e=>{e.preventDefault();switchSoloCharacter();});
 }
 setupMobile();
-document.getElementById('solo-btn').addEventListener('click',()=>enterSoloMode());
 document.getElementById('restart-btn').addEventListener('click',()=>restartLevel());
 document.getElementById('victory-next-btn').addEventListener('click',()=>nextLevel());
 
@@ -1645,11 +1644,14 @@ function handlePeerData(data){
       spawnPointsPopup(g.c*tileW+tileW/2, g.r*tileH, '+25', 'pts-'+g.type);}
   }
 }
+let soloTimer=null;
 function setupPeer(){
   if(!roomCode){enterSoloMode();return;}
+  soloTimer=setTimeout(()=>{if(!partnerConnected)enterSoloMode();},5000);
   if(isHost){
     peer=new Peer(peerIdForPuzzle(roomCode),PEER_CONFIG);
     peer.on('open',()=>{peer.on('connection',c=>{
+      clearTimeout(soloTimer);
       conn=c;partnerConnected=true;soloMode=false;
       document.getElementById('waiting-overlay').classList.add('hidden');
       document.getElementById('switch-hint').innerHTML='';
@@ -1661,10 +1663,10 @@ function setupPeer(){
   }
 }
 function tryConnect(attempt){
-  if(attempt>20)return;
+  if(attempt>20){if(!partnerConnected)enterSoloMode();return;}
   const c=peer.connect(peerIdForPuzzle(roomCode),{reliable:true});
   let settled=false;
-  c.on('open',()=>{if(settled)return;settled=true;conn=c;partnerConnected=true;soloMode=false;
+  c.on('open',()=>{if(settled)return;settled=true;clearTimeout(soloTimer);conn=c;partnerConnected=true;soloMode=false;
     document.getElementById('waiting-overlay').classList.add('hidden');
     document.getElementById('switch-hint').innerHTML='';
     c.on('data',handlePeerData);c.on('close',()=>{conn=null;window.location.href='../../world/?after=elements';});sendPeerData({type:'character',char:myChar});});

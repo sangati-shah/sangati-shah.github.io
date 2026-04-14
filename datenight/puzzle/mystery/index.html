@@ -1051,12 +1051,15 @@
       { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
     ] } };
 
+    let soloTimer = null;
     function setupPeer() {
       if (!roomCode) return;
+      soloTimer = setTimeout(() => { if (!conn) enterSoloMode(); }, 5000);
       if (isHost) {
         peer = new Peer(peerIdForPuzzle(roomCode), PEER_CONFIG);
         peer.on('open', () => {
           peer.on('connection', c => {
+            clearTimeout(soloTimer);
             conn = c;
             c.on('data', handlePeerData);
             c.on('close', () => { conn = null; window.location.href = '../../world/?after=mystery'; });
@@ -1076,12 +1079,13 @@
     }
 
     function tryConnect(attempt) {
-      if (attempt > 20) return;
+      if (attempt > 20) { if (!conn) enterSoloMode(); return; }
       const c = peer.connect(peerIdForPuzzle(roomCode), { reliable: true });
       let settled = false;
       c.on('open', () => {
         if (settled) return;
         settled = true;
+        clearTimeout(soloTimer);
         conn = c; c.on('data', handlePeerData);
         c.on('close', () => { conn = null; window.location.href = '../../world/?after=mystery'; });
       });
