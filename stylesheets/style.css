@@ -140,6 +140,117 @@ main {
   transition: fill 0.4s ease;
 }
 
+/* ── What I'm Building ── */
+.building {
+  margin-bottom: 3rem;
+}
+
+.building h2 {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ghibli-sub);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+  transition: color 0.4s ease;
+}
+
+.building-card {
+  padding: 1.2rem 1.4rem;
+  background: var(--ghibli-btn-bg);
+  border: 1px solid var(--ghibli-btn-border);
+  border-radius: 12px;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.building-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ghibli-text);
+  margin: 0;
+  transition: color 0.4s ease;
+}
+
+.building-text a {
+  color: var(--ghibli-link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.building-text a:hover {
+  color: var(--ghibli-link-hover);
+  border-bottom-color: var(--ghibli-link-hover);
+}
+
+/* ── Career Timeline ── */
+.timeline {
+  margin-bottom: 3.5rem;
+}
+
+.timeline h2 {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ghibli-sub);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1.2rem;
+  transition: color 0.4s ease;
+}
+
+.timeline-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.timeline-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.timeline-year {
+  font-family: var(--heading-font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ghibli-sub);
+  transition: color 0.4s ease;
+}
+
+.timeline-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ghibli-text);
+  white-space: nowrap;
+  transition: color 0.4s ease;
+}
+
+.timeline-node.active .timeline-year {
+  color: var(--ghibli-accent);
+}
+
+.timeline-node.active .timeline-label {
+  font-weight: 700;
+  color: var(--ghibli-accent);
+}
+
+.timeline-line {
+  flex: 1;
+  height: 1px;
+  background: var(--ghibli-btn-border);
+  min-width: 20px;
+  margin: 0 0.5rem;
+  align-self: center;
+  margin-top: -0.3rem;
+  transition: background 0.4s ease;
+}
+
 /* ── Projects ── */
 .projects {
   margin-bottom: 4rem;
@@ -322,6 +433,14 @@ main {
   color: var(--ghibli-text);
 }
 
+.theme-powered {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: var(--ghibli-sub);
+  opacity: 0.6;
+  transition: color 0.4s ease;
+}
+
 /* Loading spinner for generate button */
 .theme-controls button.loading {
   position: relative;
@@ -362,6 +481,8 @@ footer {
 
 /* ── Entrance animations ── */
 .hero,
+.building,
+.timeline,
 .projects,
 .theme-generator {
   opacity: 0;
@@ -369,12 +490,20 @@ footer {
   animation: fadeUp 0.5s ease forwards;
 }
 
-.projects {
+.building {
   animation-delay: 0.1s;
 }
 
-.theme-generator {
+.timeline {
+  animation-delay: 0.15s;
+}
+
+.projects {
   animation-delay: 0.2s;
+}
+
+.theme-generator {
+  animation-delay: 0.3s;
 }
 
 @keyframes fadeUp {
@@ -400,5 +529,13 @@ footer {
 
   .project-desc {
     display: none;
+  }
+
+  .timeline-label {
+    font-size: 0.75rem;
+  }
+
+  .timeline-year {
+    font-size: 0.65rem;
   }
 }
