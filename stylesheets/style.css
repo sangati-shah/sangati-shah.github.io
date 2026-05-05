@@ -73,12 +73,12 @@ main {
 
 .hero-tiger {
   display: block;
-  width: 100vw;
+  width: 75vw;
   height: auto;
   position: relative;
   left: 50%;
-  margin-left: -50vw;
-  margin-top: -6rem;
+  margin-left: -37.5vw;
+  margin-top: -4rem;
   margin-bottom: 1rem;
   background: transparent;
   pointer-events: none;
