@@ -71,6 +71,18 @@ main {
   margin-bottom: 4rem;
 }
 
+.hero-tiger {
+  display: block;
+  width: min(95vw, 1024px);
+  height: auto;
+  margin: -5rem auto 2rem;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  background: transparent;
+  pointer-events: none;
+}
+
 .hero h1 {
   font-family: var(--heading-font);
   font-size: clamp(2.4rem, 5vw, 3.2rem);
