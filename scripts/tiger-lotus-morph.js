@@ -35,20 +35,21 @@
   wrapper.appendChild(tiger);
   wrapper.appendChild(lotus);
 
+  const stage = wrapper.closest('.hero-morph-stage');
+  const pin = wrapper.closest('.hero-pin');
+
   let ticking = false;
   function update() {
     ticking = false;
-    const stage = wrapper.parentElement;
-    if (!stage) return;
+    if (!stage || !pin) return;
     const stageRect = stage.getBoundingClientRect();
-    const wrapperH = wrapper.getBoundingClientRect().height;
-    const stickRange = stageRect.height - wrapperH;
+    const pinH = pin.getBoundingClientRect().height;
+    const stickRange = stageRect.height - pinH;
     if (stickRange <= 0) return;
-    // While the sticky wrapper is pinned, -stageRect.top advances from 0 to stickRange.
     const stuckProgress = Math.max(0, Math.min(stickRange, -stageRect.top)) / stickRange;
-    // Phase the animation: tiger visible for the first 25%, morph through
-    // 25%-85%, lotus visible for the last 15%.
-    let p = (stuckProgress - 0.25) / 0.6;
+    // Tiger holds for the first ~15%, morph plays across the next ~70%,
+    // lotus holds for the final ~15%.
+    let p = (stuckProgress - 0.15) / 0.7;
     if (!isFinite(p)) p = 0;
     p = Math.max(0, Math.min(1, p));
     wrapper.style.setProperty('--morph', p.toFixed(4));
