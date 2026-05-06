@@ -97,14 +97,12 @@ main {
   fill-opacity: max(0, 1 - var(--morph) * 2);
   stroke-dasharray: 1;
   stroke-dashoffset: max(0, var(--morph) * 2 - 1);
-  vector-effect: non-scaling-stroke;
 }
 
 .hero-morph .morph-lotus path {
   fill-opacity: max(0, var(--morph) * 2 - 1);
   stroke-dasharray: 1;
   stroke-dashoffset: max(0, 1 - var(--morph) * 2);
-  vector-effect: non-scaling-stroke;
 }
 
 .hero h1 {
