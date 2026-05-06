@@ -71,17 +71,26 @@ main {
   margin-bottom: 4rem;
 }
 
-.hero-morph {
-  --morph: 0;
-  display: block;
-  width: 75vw;
+.hero-morph-stage {
   position: relative;
+  width: 75vw;
   left: 50%;
   margin-left: -37.5vw;
   margin-top: -4rem;
   margin-bottom: 1rem;
+  /* Tall enough to give scroll room for the sticky child to animate. */
+  height: 140vh;
   pointer-events: none;
+}
+
+.hero-morph {
+  --morph: 0;
+  position: sticky;
+  top: 4vh;
+  display: block;
+  width: min(100%, calc((92vh) * 733 / 583));
   aspect-ratio: 733 / 583;
+  margin: 0 auto;
 }
 
 .hero-morph svg {

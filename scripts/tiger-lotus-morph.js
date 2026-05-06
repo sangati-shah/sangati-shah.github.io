@@ -38,15 +38,17 @@
   let ticking = false;
   function update() {
     ticking = false;
-    const rect = wrapper.getBoundingClientRect();
-    const h = rect.height;
-    if (h <= 0) return;
-    // Morph starts only after the user has scrolled enough that the tiger's
-    // head (at the bottom of the SVG) has been seen. Begin once the wrapper
-    // top has been pulled ~45% above the viewport top, finish as it exits.
-    const startTop = -h * 0.45;
-    const endTop = -h * 1.05;
-    let p = (startTop - rect.top) / (startTop - endTop);
+    const stage = wrapper.parentElement;
+    if (!stage) return;
+    const stageRect = stage.getBoundingClientRect();
+    const wrapperH = wrapper.getBoundingClientRect().height;
+    const stickRange = stageRect.height - wrapperH;
+    if (stickRange <= 0) return;
+    // While the sticky wrapper is pinned, -stageRect.top advances from 0 to stickRange.
+    const stuckProgress = Math.max(0, Math.min(stickRange, -stageRect.top)) / stickRange;
+    // Phase the animation: tiger visible for the first 25%, morph through
+    // 25%-85%, lotus visible for the last 15%.
+    let p = (stuckProgress - 0.25) / 0.6;
     if (!isFinite(p)) p = 0;
     p = Math.max(0, Math.min(1, p));
     wrapper.style.setProperty('--morph', p.toFixed(4));
